@@ -19,6 +19,9 @@ Ensure you take the right assets: the `firmware[suffix].bin`. You should not dow
 
 ### Development and compile-it-yourself
 
+Users who wish to modify the Configuration.h and/or Configuration_adv.h files and recompile the firmware (e.g. to increase the maximum nozzle temperature setting) will need to download and unpack the Source.zip or Source.tar file from the latest formal release section.  (The CODE in the latest extui branch here is not compiling, for reasons we have not yet resolved.)  
+As a result of recent updates to Visual Studio Code and Platormio, you will also need to modify the marlin.py file and platformio.ini file (or download the modified versions from the most recent CODE and overwrite those files in the unpacked Source files.)  [Please always check the Wiki](https://github.com/CR6Community/Marlin/wiki) for the latest info, before raising a new Issue on this or other problems you encounter.
+
 There are several example configurations available for your convenience which can be found in the [`config`](./config) directory. Copy the files from the config subdirectory which reflects the needed hardware configuration to the root of the [`Marlin`](./Marlin) directory. To build the firmware Visual Studio Code with the Platform.io plugin installed is needed. Please set the Platform.io environment variable `default_envs` in the file `platformio.ini` to the string found in the previous copied file `platformio-environment.txt`.
 
 Examples for the following hardware configurations are currently available:
@@ -56,6 +59,8 @@ Once upstream Marlin supports the strain gauge, [currently being whipped into sh
 - Provide builds for the CR-6 and SKR boards for the less technically inclined
 
 ## Community firmware support & communities
+
+[Please always check the Wiki](https://github.com/CR6Community/Marlin/wiki) for the latest info, before raising a new Issue on any problems you encounter.
 
 Get in touch with the developers! We [have our own Discord server](https://discord.gg/RKrxYy3Q9N).
 
