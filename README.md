@@ -14,7 +14,7 @@ Ensure you take the right assets: the `firmware[suffix].bin`. You should not dow
 
 *Support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
 
-*At least one CF Release 6 user has confirmed that the v4.5.3 firmware configuration also supports the Creality v1.1.03 (ERA) board.*
+* The v4.5.3 firmware configuration also supports the Creality v1.1.03 (ERA) board.*
 
 ### Development and compile-it-yourself
 
