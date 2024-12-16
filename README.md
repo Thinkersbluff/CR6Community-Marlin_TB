@@ -6,13 +6,14 @@ _For other configurations for the Creality CR-6 printer (like BigTreeTech SKR bo
 
 ## Downloads
 
-Please find official releases in the [Releases section](https://github.com/CR6Community/Marlin/releases). Take the release which belongs to the particular touch screen firmware you are going to flash. 
+Please find official releases in the [Releases section](https://github.com/CR6Community/Marlin/releases). 
 
-Please read the release notes *very carefully* - the online version on the repo contains all the instructions you need, the instructions bundled with the firmware are now out of date.
+Please read the release notes *very carefully* - the online version on the repo contains all the instructions you need. 
+CAUTION: the instructions bundled with the firmware are now out of date.
 
 Ensure you take the right assets: the `firmware[suffix].bin`. You should not download the `Source code` archive if you are downloading with the purpose of directly flashing your printer.
 
-*Support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
+* Support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
 
 * The v4.5.3 firmware configuration also supports the Creality v1.1.03 (ERA) board.*
 
