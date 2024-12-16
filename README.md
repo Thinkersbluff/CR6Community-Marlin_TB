@@ -28,7 +28,7 @@ Examples for the following hardware configurations are currently available:
 
 - Creality stock TFT with:
    - Creality v4.5.2 motherboard (CR-6 SE)
-   - Creality v4.5.3 motherboard (CR-6 SE and CR-6 MAX)
+   - Creality v4.5.3 and 1.1.0.3 ERA motherboard (CR-6 SE and CR-6 MAX)
    - BigTreeTech SKR CR-6 (CR-6 SE)
 - BigTreeTech SKR CR-6 with BigTreeTech TFT v3.0
 
