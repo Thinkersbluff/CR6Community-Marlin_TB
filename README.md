@@ -8,8 +8,9 @@ _For other configurations for the Creality CR-6 printer (like BigTreeTech SKR bo
 
 Please find official releases in the [Releases section](https://github.com/CR6Community/Marlin/releases). 
 
-Please read the release notes *very carefully* - the online version on the repo contains all the instructions you need. 
-NOTE: the display firmware instructions and files bundled with the original firmware releases are not compatible with newer Creality CR6 printer displays.  We have therefore rebundled the mainboard firmware release files to remove the dispay firmware and have instead privided links to a Refactored version, at Release 6.1.
+Please read the release notes *very carefully* - the online version on the repo contains all the instructions you need.  
+
+NOTE: the display firmware instructions and files bundled with the original firmware releases are not compatible with newer Creality CR6 printer displays.  We have therefore rebundled the mainboard firmware release files to remove the display firmware and have instead provided links to a Refactored version, as Release 6.1.1.
 
 Ensure you take the right assets: the `firmware[suffix].bin`. You should not download the `Source code` archive if you are downloading with the purpose of directly flashing your printer.
 
