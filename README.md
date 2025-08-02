@@ -1,8 +1,11 @@
 # Community firmware for the Creality CR-6 3D printer
 
-**This branch is cnfigured for the Creality CR-6 SE with stock v4.5.2 motherboard and the stock display.**
+**This branch is cnfigured for Thinkersbluff's own Creality CR-6 SE with:
+- stock v1.1.0.3 ERA motherboard
+- PT1000 hotend thermistor (sensor_0 = 1047)
+- stock display.**
 
-_For other configurations for the Creality CR-6 printer (like BigTreeTech SKR board and optional BTT TFT v3.0 display - please check the [branches and development section](#development-and-compile-it-yourself) section below._
+_For other configurations for the Creality CR-6 printer (like BigTreeTech SKR board and optional BTT TFT v3.0 display - please check the extui branch and [branches and development section](#development-and-compile-it-yourself) section below._
 
 ## Downloads
 
