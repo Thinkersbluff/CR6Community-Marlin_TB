@@ -174,3 +174,5 @@ __pycache__
 # Simulation / Native
 eeprom.dat
 imgui.ini
+build_output*.log
+compile_commands.json
