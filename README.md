@@ -6,15 +6,24 @@ _For other configurations for the Creality CR-6 printer (like BigTreeTech SKR bo
 
 ## Downloads
 
-Please find official releases in the [Releases section](https://github.com/CR6Community/Marlin/releases). Take the release which belongs to the particular touch screen firmware you are going to flash. Please read the release notes *carefully* - it contains all the instructions you need.
+Please find official releases in the [Releases section](https://github.com/CR6Community/Marlin/releases). 
+
+Please read the release notes *very carefully* - the online version on the repo contains all the instructions you need.  
+
+NOTE: the display firmware instructions and files bundled with the original firmware releases are not compatible with newer Creality CR6 printer displays.  We have therefore rebundled the mainboard firmware release files to remove the display firmware and have instead provided links to a Refactored version, as Release 6.1.1.
 
 Ensure you take the right assets: the `firmware[suffix].bin`. You should not download the `Source code` archive if you are downloading with the purpose of directly flashing your printer.
 
-*Support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
+* Support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
+
 
 *The v4.5.3 firmware configuration also supports the Creality v1.1.03 (ERA) board.*
 
+
 ### Development and compile-it-yourself
+
+Users who wish to modify the Configuration.h and/or Configuration_adv.h files and recompile the firmware (e.g. to increase the maximum nozzle temperature setting) will need to download and unpack the Source.zip or Source.tar file from the latest formal release section.  (The CODE in the latest extui branch here is not compiling, for reasons we have not yet resolved.)  
+As a result of recent updates to Visual Studio Code and Platormio, you will also need to modify the marlin.py file and platformio.ini file (or download the modified versions from the most recent CODE and overwrite those files in the unpacked Source files.)  [Please always check the Wiki](https://github.com/CR6Community/Marlin/wiki) for the latest info, before raising a new Issue on this or other problems you encounter.
 
 There are several example configurations available for your convenience which can be found in the [`config`](./config) directory. Copy the files from the config subdirectory which reflects the needed hardware configuration to the root of the [`Marlin`](./Marlin) directory. To build the firmware Visual Studio Code with the Platform.io plugin installed is needed. Please set the Platform.io environment variable `default_envs` in the file `platformio.ini` to the string found in the previous copied file `platformio-environment.txt`.
 
@@ -22,7 +31,7 @@ Examples for the following hardware configurations are currently available:
 
 - Creality stock TFT with:
    - Creality v4.5.2 motherboard (CR-6 SE)
-   - Creality v4.5.3 motherboard (CR-6 SE and CR-6 MAX)
+   - Creality v4.5.3 and 1.1.0.3 ERA motherboard (CR-6 SE and CR-6 MAX)
    - BigTreeTech SKR CR-6 (CR-6 SE)
 - BigTreeTech SKR CR-6 with BigTreeTech TFT v3.0
 
@@ -53,6 +62,8 @@ Once upstream Marlin supports the strain gauge, [currently being whipped into sh
 - Provide builds for the CR-6 and SKR boards for the less technically inclined
 
 ## Community firmware support & communities
+
+[Please always check the Wiki](https://github.com/CR6Community/Marlin/wiki) for the latest info, before raising a new Issue on any problems you encounter.
 
 Get in touch with the developers! We [have our own Discord server](https://discord.gg/RKrxYy3Q9N).
 
