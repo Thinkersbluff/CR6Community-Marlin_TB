@@ -924,7 +924,7 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 95}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 690}
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -988,7 +988,7 @@
   #endif
 #endif
 
-#define DEFAULT_EJERK    15  // May be used by Linear Advance
+#define DEFAULT_EJERK    7.5  // May be used by Linear Advance
 
 /**
  * Junction Deviation Factor
