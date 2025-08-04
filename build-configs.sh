@@ -38,8 +38,35 @@ if [ -d "$OUTPUT_DIR" ]; then
 fi
 mkdir -p "$OUTPUT_DIR"
 
-# Get list of available configurations
-CONFIGS=($(ls config/ | grep -v README.md))
+# Get list of available configurations (only those with required files)
+echo "Scanning configurations..."
+CONFIGS=()
+for config_dir in config/*/; do
+    config_name=$(basename "$config_dir")
+    
+    # Skip README.md and other non-config files
+    if [ "$config_name" = "README.md" ]; then
+        continue
+    fi
+    
+    # Check for required files
+    if [ ! -f "$config_dir/Configuration.h" ]; then
+        echo "WARNING: Skipping $config_name - missing Configuration.h"
+        continue
+    fi
+    
+    if [ ! -f "$config_dir/Configuration_adv.h" ]; then
+        echo "WARNING: Skipping $config_name - missing Configuration_adv.h"
+        continue
+    fi
+    
+    if [ ! -f "$config_dir/platformio-environment.txt" ]; then
+        echo "WARNING: Skipping $config_name - missing platformio-environment.txt"
+        continue
+    fi
+    
+    CONFIGS+=("$config_name")
+done
 
 echo "Available configurations:"
 for config in "${CONFIGS[@]}"; do
@@ -97,14 +124,18 @@ build_config() {
         echo "Building firmware..."
         
         # Use Docker to build with proper environment
-        docker-compose run --rm marlin bash -c "
+        docker-compose run --rm -e PLATFORM_ENV="$platform_env" marlin bash -c "
             set -e
+            cd /code
             echo 'Applying configuration: $config_name'
             cp $config_dir/Configuration*.h Marlin/
             
-            echo 'Building firmware for platform: $platform_env'
-            platformio run -e $platform_env --target clean
-            platformio run -e $platform_env
+            echo 'Updating platformio.ini default_envs to: '\$PLATFORM_ENV
+            sed -i 's/^default_envs = .*/default_envs = '\$PLATFORM_ENV'/' platformio.ini
+            
+            echo 'Building firmware for platform: '\$PLATFORM_ENV
+            platformio run -e \$PLATFORM_ENV --target clean
+            platformio run -e \$PLATFORM_ENV
             
             echo 'Build completed successfully'
         "
@@ -167,9 +198,17 @@ EOF
     fi
     
     if [ "$DRY_RUN" != "true" ]; then
-        # Create ZIP file
+        # Add repository URL shortcut at ZIP root level
+        cat > "$OUTPUT_DIR/CR6Community-Marlin-Repository.url" << EOF
+[InternetShortcut]
+URL=https://github.com/Thinkersbluff/CR6Community-Marlin_TB
+IconFile=https://github.com/favicon.ico
+IconIndex=0
+EOF
+        
+        # Create ZIP file including both the build directory and the URL file
         local zip_file="$OUTPUT_DIR/$RELEASE_NAME-$config_name-$TIMESTAMP.zip"
-        (cd "$OUTPUT_DIR" && zip -r "$(basename "$zip_file")" "$(basename "$build_output_dir")")
+        (cd "$OUTPUT_DIR" && zip -r "$(basename "$zip_file")" "$(basename "$build_output_dir")" "CR6Community-Marlin-Repository.url")
         
         # Generate SHA256
         local sha256=$(sha256sum "$zip_file" | cut -d' ' -f1)
@@ -196,7 +235,7 @@ fi
 
 # Restore original configuration
 echo "Restoring original configuration..."
-docker-compose run --rm marlin bash -c "git checkout HEAD -- Marlin/Configuration*.h"
+docker-compose run --rm marlin bash -c "cd /code && git checkout HEAD -- Marlin/Configuration*.h platformio.ini"
 
 echo ""
 echo "=== Build Summary ==="
