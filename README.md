@@ -1,11 +1,18 @@
 # Community firmware for the Creality CR-6 3D printer
 
-**This branch is cnfigured for Thinkersbluff's own Creality CR-6 SE with:
+**The extui branch is pre-configured for Thinkersbluff's own Creality CR-6 SE with:
 - stock v1.1.0.3 ERA motherboard
 - PT1000 hotend thermistor (sensor_0 = 1047)
-- stock display.**
+- Orbiter v1.5 extruder (690 steps/mm)
+- Phaetus Dragon HF all-metal hotend
+- stock TFT display.
 
-_For other configurations for the Creality CR-6 printer (like BigTreeTech SKR board and optional BTT TFT v3.0 display - please check the extui branch and [branches and development section](#development-and-compile-it-yourself) section below._
+To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.
+
+_To compile a unique version of this firmware tailored for your own customized CR6-SE or MAX, clone the repo or download Sources.zip from the latest Release and follow the instructions in the [branches and development section](#development-and-compile-it-yourself) section below._
+
+This repository comes complete with the original comprehensive automation suite and new documentation on how to install and use that suite, for anyone who decides to clone this repo and work with it locally.
+Note: That documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
 
 ## Downloads
 
