@@ -12,7 +12,8 @@ To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock
 _To compile a unique version of this firmware tailored for your own customized CR6-SE or MAX, clone the repo or download Sources.zip from the latest Release and follow the instructions in the [Development and compile-it-yourself](#development-and-compile-it-yourself) section below._
 
 This repository comes complete with the original comprehensive automation suite and new documentation on how to install and use that suite, for anyone who decides to clone this repo and work with it locally.
-Note: That documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
+Note: The new documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
+      There are also Powershell scripts and documentation on how to use those on Windows and in the VSCode terminal window.
 
 _**CAUTION:  From here, down, the text and links are still the text from the upstream repo.**_
            This text will be updated and a formal release of pre-compiled examples of v6.2 is coming soon!
@@ -39,24 +40,24 @@ Validated examples are maintained here for the following hardware configurations
    - BigTreeTech SKR CR-6 (CR-6 SE)
 - BigTreeTech SKR CR-6 with BigTreeTech TFT v3.0
 
+## A note about the original project
+
+The developers of the original CR6Community Firmware had hoped that the upstream Marlin3D team would merge their work back into the Marlin3D mainstream.
+Unfortunately, the upstream developers pulled an early version of the project, and by the time this code achieved its own feature enhancement goals, the GitHub Diff functionality could no longer support remerging the two streams.
+
+Version 6.1 thus has become a dead-ended fork of Marlin, based on Marlin release 2.0.8.1.
+Our development team had, however, also begun rebaselining to Marlin 2.9.0.1, when they stopped work back in 2021.
+That code does not compile, and it contains a couple of bugs, but otherwise works fine with the refactored display firmware at version 1.1.
+
+This project takes a snapshot of that work, fixes the bugs, and updates it to compile with the current versions of Platformio, VSCode, Git, and Python 3.12.3.
+It also continues to use and extend the original accompanying test and development automation suite.
+
 ## Purpose of this repository
 
 This fork of Marlin is meant for:
 
 - Providing a stable version of the CR6 Community Firmware at version 6.2 (which is based on Marlin 2.9.0.1) for the CR-6 SE and MAX printers with Creality 4.5.2, 4.5.3 or 1.1.0.3 ERA motherboards or the [BTT SKR CR6](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) motherboard
-- Updating and documenting the accompanying development and test environment, to lower the barrier for others who wish to support other printer variants.
-
-## A note about the original project
-
-The developers of the original CR6Community Firmware had hoped that the upstream Marlin3D team would merge their work back into the Marlin3D mainstream.
-Unfortunately, the upstream developers pulled an early version of the project, and by the time this code achieved its own feature enhancement foals, the GitHub Diff functionality could no longer support remerging the two streams.
-
-Version 6.1 thus has become a dead-ended fork of Marlin, based on their release 2.0.8.1.
-The development team had, however, also begun rebaselining to Marlin 2.9.0.1, when they stopped work back in 2021.
-That code does not compile, and it contains a couple of bugs, but otherwise works fine with the refactored display firmware at version 1.1.
-
-This project takes a snapshot of that work, fixes the bugs, and updates it to compile with the current versions of Platformio, VSCode, Git, and Python 3.12.3.
-It also continues to support and use the original accompanying test and development automation suite.
+- Updating and documenting the accompanying development and test environment, to make it easier for non-programmers like Thinkersbluff who wish to support other printer variants.
 
 ## Community firmware support & communities
 
