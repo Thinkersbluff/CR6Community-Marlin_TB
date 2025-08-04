@@ -639,7 +639,7 @@ const struct DGUS_VP_Variable ListOfVP[] PROGMEM = {
   VPHELPER(VP_SCREENCHANGE, nullptr, ScreenHandler.ScreenChangeHook, nullptr),
   VPHELPER(VP_CONFIRMED, nullptr, ScreenHandler.ScreenConfirmedOK, nullptr),
 
-#if ALL(HAS_BED_PROBE_SETTINGS, HAS_BED_PROBE)
+#if HAS_BED_PROBE
   VPHELPER(VP_TOGGLE_PROBING_HEATERS_OFF_ONOFF_BUTTON, nullptr, ScreenHandler.HandleToggleProbeHeaters, nullptr),
   VPHELPER(VP_TOGGLE_PROBING_HEATERS_OFF_ONOFF_ICON, &probe.settings.turn_heaters_off, nullptr, (ScreenHandler.DGUSLCD_SendIconValue<ICON_ACCURACY_TOGGLE_ON, ICON_ACCURACY_TOGGLE_OFF>)),
 
