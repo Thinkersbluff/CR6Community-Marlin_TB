@@ -7,6 +7,8 @@ This document describes the comprehensive build and test infrastructure availabl
 - [Quick Start](#quick-start)
 - [Docker Environment](#docker-environment)
 - [Build Methods](#build-methods)
+- [Linux Build Scripts](#linux-build-scripts)
+- [Permission Management](#permission-management)
 - [Testing Infrastructure](#testing-infrastructure)
 - [Configuration Management](#configuration-management)
 - [Makefile Targets](#makefile-targets)
@@ -117,6 +119,265 @@ platformio run -e STM32F103RET6_creality
 2. Update `platformio.ini` `default_envs` to match `platformio-environment.txt`
 3. Build using PlatformIO IDE or command line
 
+## Linux Build Scripts
+
+For users running on Linux systems, we provide native shell scripts that offer equivalent functionality to the PowerShell scripts used in the Windows development environment.
+
+### build-configs.sh
+
+A native Linux script that provides the same functionality as `Run-ExampleConfigBuilds.ps1`:
+
+```bash
+# Build all configurations with default release name
+./build-configs.sh
+
+# Build all configurations with custom release name
+./build-configs.sh v2.1.3.2
+
+# Build specific configuration
+./build-configs.sh test-build cr6-se-v4.5.3-mb
+
+# Dry run - test without actually building
+./build-configs.sh test-build cr6-se-v4.5.3-mb true
+```
+
+#### Parameters and Options
+
+The script accepts up to three positional parameters:
+
+1. **Release Name** (optional, default: "test-build")
+   - Sets the prefix for output ZIP files and directories
+   - Used for version tagging in release builds
+   - Example: `v2.1.3.2`, `nightly-build`, `feature-test`
+
+2. **Single Build** (optional)
+   - Specify a single configuration to build instead of all configurations
+   - Must match a directory name in the `config/` folder
+   - Example: `cr6-se-v4.5.3-mb`, `btt-skr-cr6-with-btt-tft`
+
+3. **Dry Run** (optional, default: false)
+   - Set to `true` to test the script without actually building firmware
+   - Useful for validating configurations and checking script logic
+   - Shows what would be built without consuming time/resources
+
+#### Advanced Usage Examples
+
+```bash
+# Release build for all configurations
+./build-configs.sh v2.1.3.2
+
+# Test specific configuration without building
+./build-configs.sh test-build cr6-max-stock-mb true
+
+# Build only BTT configurations (using pattern matching)
+for config in $(ls config/ | grep btt); do
+    ./build-configs.sh release-candidate "$config"
+done
+
+# Quick test build of modified configuration
+./build-configs.sh debug-test cr6-se-v4.5.3-mb
+```
+
+#### Script Features
+
+The script includes:
+- **Docker-based building** using the project's docker-compose configuration
+- **Automatic ZIP packaging** of firmware files with organized directory structure
+- **SHA256 checksum generation** for release verification and integrity checking
+- **Configuration validation** ensuring required files exist before building
+- **Platform environment detection** from `platformio-environment.txt` files
+- **No-autobuild support** respects `no-autobuild.txt` flags in configurations
+- **Proper error handling** with detailed progress reporting and failure detection
+- **Git state restoration** automatically restores original configuration files
+- **Timestamped outputs** for build tracking and organization
+
+#### Output Structure
+
+Built packages are organized as follows:
+```
+.pio/build-output/
+├── [release-name]-[config-name]-[timestamp].zip
+├── [release-name]-[config-name]-[timestamp]/
+│   ├── Firmware/
+│   │   └── Motherboard firmware/
+│   │       └── firmware.bin
+│   ├── configs/
+│   │   ├── Configuration.h
+│   │   └── Configuration_adv.h
+│   └── description.txt
+└── checksums.txt
+```
+
+#### Configuration Requirements
+
+Each configuration directory must contain:
+- `Configuration.h` - Main Marlin configuration
+- `Configuration_adv.h` - Advanced settings  
+- `platformio-environment.txt` - Target platform specification
+
+Optional files:
+- `description.txt` - Custom description (auto-generated if missing)
+- `no-autobuild.txt` - Skip in batch builds (still builds if specifically requested)
+
+#### No-Autobuild Flag
+
+To prevent a configuration from being built during batch builds (when running `./build-configs.sh` without specifying a single configuration), create a `no-autobuild.txt` file in the configuration directory:
+
+```bash
+# Create the file with explanation text
+echo "Community Firmware releases are not automaticallly building this folder" > config/my-config/no-autobuild.txt
+```
+
+The file should contain a brief explanation of why the configuration is excluded from automatic builds. Common reasons include:
+- Experimental or untested configurations
+- Specialized hardware variants with limited user base  
+- Development/debugging configurations
+- Configurations requiring manual verification before release
+
+**Important**: The `no-autobuild.txt` flag only affects batch builds. You can still build the configuration explicitly:
+```bash
+# This will build even with no-autobuild.txt present
+./build-configs.sh release-name my-excluded-config
+```
+
+### run-powershell.sh
+
+For cases where PowerShell scripts must be executed on Linux systems:
+
+```bash
+# Execute PowerShell script through Docker
+./run-powershell.sh scripts/Run-ExampleConfigBuilds.ps1 cr6-se-v4.5.3-mb
+
+# Run with additional parameters
+./run-powershell.sh scripts/Generate-ConfigExample.ps1 -ConfigName cr6-se-v4.5.3-mb
+```
+
+This wrapper provides:
+- PowerShell Core execution via Docker container
+- Proper volume mounting for script access
+- Execution policy bypass for script execution
+- Parameter forwarding to PowerShell scripts
+
+## Permission Management
+
+Docker containers can create files owned by root, causing permission issues in development workflows. This section covers prevention and resolution strategies.
+
+### Preventing Permission Issues
+
+1. **Use Docker User Mapping** (Recommended):
+   ```bash
+   # Add to docker-compose.yml or run with user mapping
+   docker run --user $(id -u):$(id -g) ...
+   ```
+
+2. **Set Proper Umask**:
+   ```bash
+   # Add to ~/.bashrc or session
+   umask 0022
+   ```
+
+3. **Use Development Containers** with proper user configuration in `.devcontainer/devcontainer.json`:
+   ```json
+   {
+     "remoteUser": "vscode",
+     "containerUser": "vscode"
+   }
+   ```
+
+### Diagnosing Permission Problems
+
+Common symptoms:
+- PlatformIO/VS Code initialization failures
+- "Permission denied" errors when building
+- Cannot modify files in `.pio/build/` directory
+- Files owned by root in development directories
+
+Check file ownership:
+```bash
+# Check ownership of build directories
+ls -la .pio/build/
+
+# Check for root-owned files in workspace
+find . -user root -ls
+```
+
+### Fixing Permission Issues
+
+#### Method 1: Fix Ownership (Quick Fix)
+```bash
+# Fix ownership of PlatformIO directories
+sudo chown -R $USER:$USER .pio/
+
+# Fix ownership of entire project (if needed)
+sudo chown -R $USER:$USER .
+```
+
+#### Method 2: Clean and Rebuild
+```bash
+# Remove all build artifacts
+sudo rm -rf .pio/build/*
+
+# Fix ownership of remaining directories
+sudo chown -R $USER:$USER .pio/
+
+# Clean PlatformIO cache
+pio system prune --force
+```
+
+#### Method 3: Reset PlatformIO Environment
+```bash
+# Complete PlatformIO reset
+sudo rm -rf ~/.platformio/
+sudo rm -rf .pio/
+
+# Reinstall PlatformIO
+pip install --user platformio
+```
+
+### Docker-Specific Solutions
+
+For Docker-based builds, ensure proper user mapping:
+
+```bash
+# Build with user mapping
+docker-compose run --user $(id -u):$(id -g) marlin-build
+
+# Or modify docker-compose.yml to include:
+services:
+  marlin-build:
+    user: "${UID:-1000}:${GID:-1000}"
+```
+
+### Best Practices
+
+1. **Always check permissions** before starting development
+2. **Use consistent user mapping** in Docker configurations
+3. **Regularly clean build artifacts** to prevent accumulation
+4. **Set up proper umask** in development environment
+5. **Document permission requirements** for team members
+
+### Automated Permission Checks
+
+Add to your development workflow:
+
+```bash
+#!/bin/bash
+# check-permissions.sh - Verify development environment permissions
+
+echo "Checking PlatformIO permissions..."
+if [ -d ".pio" ]; then
+    ROOT_FILES=$(find .pio -user root 2>/dev/null | wc -l)
+    if [ $ROOT_FILES -gt 0 ]; then
+        echo "WARNING: Found $ROOT_FILES root-owned files in .pio/"
+        echo "Run: sudo chown -R \$USER:\$USER .pio/"
+    else
+        echo "✓ PlatformIO permissions OK"
+    fi
+else
+    echo "✓ No .pio directory found"
+fi
+```
+
 ## Testing Infrastructure
 
 ### Test Platforms
@@ -192,7 +453,7 @@ Each configuration directory contains:
 
 ### Hardware-Specific Environments
 
-#### Creality Motherboards (v4.5.2, v4.5.3)
+#### Creality Motherboards (v4.5.2, v4.5.3 and v1.1.0.3 ERA)
 - **Environment**: `STM32F103RET6_creality`
 - **Boards**: `BOARD_CREALITY_V452`, `BOARD_CREALITY_V453`
 - **Compatible with**: CR6 SE, CR6 Max
@@ -306,7 +567,7 @@ opt_set               # Set configuration values
 ./buildroot/bin/restore_configs
 ```
 
-### PowerShell Scripts (Maintainers)
+### PowerShell Scripts (Maintainers on Windows sysem)
 Located in `scripts/`:
 - `Generate-ConfigExample.ps1` - Create new configuration
 - `Update-ConfigExamples.ps1` - Update all configurations
@@ -339,12 +600,42 @@ docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs conf
 
 ### Common Issues
 
+#### Permission Denied Errors
+If you encounter permission issues, particularly with PlatformIO or Docker:
+
+1. **Check file ownership**: `ls -la .pio/build/`
+2. **Fix ownership**: `sudo chown -R $USER:$USER .pio/`
+3. **Clean build artifacts**: `sudo rm -rf .pio/build/*`
+4. **Use Docker user mapping**: See [Permission Management](#permission-management) section
+
+#### PlatformIO Initialization Failures
+- Usually caused by root-owned files in `.pio/` directory
+- Follow the permission fixing steps above
+- If persistent, reset PlatformIO: `sudo rm -rf ~/.platformio/ .pio/`
+
 #### Docker Permission Issues
 ```bash
 # Add user to docker group
 sudo usermod -aG docker $USER
 # Then logout/login or run:
 newgrp docker
+```
+
+#### Linux Keyring Issues
+If you see keyring errors when opening VS Code:
+```bash
+# Check keyring service status
+systemctl --user status gnome-keyring-daemon
+
+# Reset keyring if needed
+rm -rf ~/.local/share/keyrings/
+```
+
+#### PowerShell Script Execution on Linux
+Use the provided wrapper instead of direct execution:
+```bash
+# Use this instead of direct PowerShell
+./run-powershell.sh scripts/Run-ExampleConfigBuilds.ps1 [arguments]
 ```
 
 #### Build Environment Incompatibility
@@ -361,6 +652,34 @@ newgrp docker
 ```bash
 # If builds fail due to memory constraints
 docker-compose run --rm marlin bash -c "ulimit -m 2097152 && platformio run -e STM32F103RET6_creality"
+```
+
+### Permission Management Quick Fixes
+
+#### Automated Permission Check
+```bash
+#!/bin/bash
+# check-permissions.sh - Verify development environment permissions
+echo "Checking PlatformIO permissions..."
+if [ -d ".pio" ]; then
+    ROOT_FILES=$(find .pio -user root 2>/dev/null | wc -l)
+    if [ $ROOT_FILES -gt 0 ]; then
+        echo "WARNING: Found $ROOT_FILES root-owned files in .pio/"
+        echo "Run: sudo chown -R \$USER:\$USER .pio/"
+    else
+        echo "✓ PlatformIO permissions OK"
+    fi
+else
+    echo "✓ No .pio directory found"
+fi
+```
+
+#### Complete Environment Reset
+```bash
+# Nuclear option - reset everything
+sudo rm -rf .pio/
+sudo rm -rf ~/.platformio/
+pip install --user platformio
 ```
 
 ### Debug Information
@@ -380,9 +699,31 @@ make tests-single-local-docker TEST_TARGET=STM32F103RET6_creality VERBOSE_PLATFO
 docker-compose run --rm marlin bash
 ```
 
+#### Environment Verification
+```bash
+#!/bin/bash
+# verify-environment.sh
+echo "=== Environment Check ==="
+echo "OS: $(uname -s -r)"
+echo "Docker: $(docker --version 2>/dev/null || echo 'Not installed')"
+echo "Docker Compose: $(docker-compose --version 2>/dev/null || echo 'Not installed')"
+echo "PlatformIO: $(pio --version 2>/dev/null || echo 'Not installed')"
+echo "Python: $(python3 --version 2>/dev/null || echo 'Not installed')"
+echo ""
+echo "=== Permission Check ==="
+if [ -d ".pio" ]; then
+    ROOT_FILES=$(find .pio -user root 2>/dev/null | wc -l)
+    echo "Root-owned files in .pio/: $ROOT_FILES"
+fi
+echo "Current user: $(whoami)"
+echo "Docker group membership: $(groups | grep -o docker || echo 'Not in docker group')"
+```
+
 ### Getting Help
 
 - **Community Discord**: [CR6 Community Discord](https://discord.gg/RKrxYy3Q9N)
+- **GitHub Issues**: Report bugs and permission issues with full error output
+- **Include System Info**: OS, Docker version, PlatformIO version when reporting issues
 - **GitHub Issues**: Use for bugs and feature requests
 - **Marlin Documentation**: [marlinfw.org](http://marlinfw.org)
 

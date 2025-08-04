@@ -1,0 +1,160 @@
+#!/bin/bash
+# Linux equivalent of Run-ExampleConfigBuilds.ps1
+# Builds multiple configuration examples and packages them for release
+
+RELEASE_NAME="${1:-test-build}"
+SINGLE_BUILD="${2:-}"
+DRY_RUN="${3:-}"
+
+OUTPUT_DIR=".pio/build-output"
+TIMESTAMP=$(date +%Y-%m-%d-%H-%M)
+
+echo "=== CR6 Community Firmware Build Script ==="
+echo "Release Name: $RELEASE_NAME"
+echo "Timestamp: $TIMESTAMP"
+echo ""
+
+# Clean output directory
+if [ -d "$OUTPUT_DIR" ]; then
+    echo "Cleaning previous build output..."
+    rm -rf "$OUTPUT_DIR"
+fi
+mkdir -p "$OUTPUT_DIR"
+
+# Get list of available configurations
+CONFIGS=($(ls config/ | grep -v README.md))
+
+echo "Available configurations:"
+for config in "${CONFIGS[@]}"; do
+    echo "  - $config"
+done
+echo ""
+
+build_config() {
+    local config_name="$1"
+    local config_dir="config/$config_name"
+    
+    echo "=== Building $config_name ==="
+    
+    # Check if configuration exists
+    if [ ! -d "$config_dir" ]; then
+        echo "ERROR: Configuration directory not found: $config_dir"
+        return 1
+    fi
+    
+    # Get platform environment
+    local platform_env
+    if [ -f "$config_dir/platformio-environment.txt" ]; then
+        platform_env=$(cat "$config_dir/platformio-environment.txt" | tr -d '\n\r')
+    else
+        echo "ERROR: platformio-environment.txt not found in $config_dir"
+        return 1
+    fi
+    
+    echo "Platform environment: $platform_env"
+    
+    # Check for no-autobuild flag
+    if [ -f "$config_dir/no-autobuild.txt" ] && [ "$config_name" != "$SINGLE_BUILD" ]; then
+        echo "Skipping $config_name (marked no-autobuild)"
+        return 0
+    fi
+    
+    # Create build output directory
+    local build_output_dir="$OUTPUT_DIR/$RELEASE_NAME-$config_name-$TIMESTAMP"
+    local firmware_dir="$build_output_dir/Firmware/Motherboard firmware"
+    local config_copy_dir="$build_output_dir/configs"
+    
+    mkdir -p "$firmware_dir"
+    mkdir -p "$config_copy_dir"
+    
+    if [ "$DRY_RUN" != "true" ]; then
+        echo "Building firmware..."
+        
+        # Use Docker to build with proper environment
+        docker-compose run --rm marlin bash -c "
+            set -e
+            echo 'Applying configuration: $config_name'
+            cp $config_dir/Configuration*.h Marlin/
+            
+            echo 'Building firmware for platform: $platform_env'
+            platformio run -e $platform_env --target clean
+            platformio run -e $platform_env
+            
+            echo 'Build completed successfully'
+        "
+        
+        if [ $? -ne 0 ]; then
+            echo "ERROR: Build failed for $config_name"
+            return 1
+        fi
+        
+        # Copy firmware binary
+        local firmware_files=($(find .pio/build/$platform_env -name "firmware*.bin" 2>/dev/null))
+        if [ ${#firmware_files[@]} -eq 0 ]; then
+            echo "ERROR: No firmware binary found for $config_name"
+            return 1
+        fi
+        
+        cp "${firmware_files[0]}" "$firmware_dir/"
+        echo "Firmware copied: $(basename "${firmware_files[0]}")"
+        
+    else
+        echo "DRY RUN: Would build $config_name with platform $platform_env"
+    fi
+    
+    # Copy configuration files
+    cp "$config_dir"/*.h "$config_copy_dir/" 2>/dev/null || true
+    
+    # Copy description if available
+    if [ -f "$config_dir/description.txt" ]; then
+        cp "$config_dir/description.txt" "$build_output_dir/"
+    else
+        echo "Configuration: $config_name" > "$build_output_dir/description.txt"
+        echo "Platform: $platform_env" >> "$build_output_dir/description.txt"
+        echo "Built: $TIMESTAMP" >> "$build_output_dir/description.txt"
+    fi
+    
+    if [ "$DRY_RUN" != "true" ]; then
+        # Create ZIP file
+        local zip_file="$OUTPUT_DIR/$RELEASE_NAME-$config_name-$TIMESTAMP.zip"
+        (cd "$OUTPUT_DIR" && zip -r "$(basename "$zip_file")" "$(basename "$build_output_dir")")
+        
+        # Generate SHA256
+        local sha256=$(sha256sum "$zip_file" | cut -d' ' -f1)
+        echo "$sha256  $(basename "$zip_file")" >> "$OUTPUT_DIR/checksums.txt"
+        
+        echo "Created: $(basename "$zip_file")"
+        echo "SHA256: $sha256"
+    fi
+    
+    echo "Completed: $config_name"
+    echo ""
+}
+
+# Main build loop
+if [ -n "$SINGLE_BUILD" ]; then
+    echo "Building single configuration: $SINGLE_BUILD"
+    build_config "$SINGLE_BUILD"
+else
+    echo "Building all configurations..."
+    for config in "${CONFIGS[@]}"; do
+        build_config "$config"
+    done
+fi
+
+# Restore original configuration
+echo "Restoring original configuration..."
+docker-compose run --rm marlin bash -c "git checkout HEAD -- Marlin/Configuration*.h"
+
+echo ""
+echo "=== Build Summary ==="
+if [ -f "$OUTPUT_DIR/checksums.txt" ]; then
+    echo "Built packages:"
+    cat "$OUTPUT_DIR/checksums.txt"
+else
+    echo "No packages built (dry run or errors occurred)"
+fi
+
+echo ""
+echo "Build script completed!"
+echo "Output directory: $OUTPUT_DIR"
