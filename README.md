@@ -14,7 +14,7 @@ _To compile a unique version of this firmware tailored for your own customized C
 This repository comes complete with the original comprehensive automation suite and new documentation on how to install and use that suite, for anyone who decides to clone this repo and work with it locally.
 Note: That documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
 
-_CAUTION:  From here, down, the text and links are still the text from the upstream repo._
+_**CAUTION:  From here, down, the text and links are still the text from the upstream repo.**_
            This text will be updated and a formal release of pre-compiled examples of v6.2 is coming soon!
 
 ## Downloads
@@ -31,47 +31,44 @@ Ensure you take the right assets: the `firmware[suffix].bin`. You should not dow
 
 There are several example configurations available for your convenience which can be found in the [`config`](./config) directory. Copy the files from the config subdirectory which reflects the needed hardware configuration to the root of the [`Marlin`](./Marlin) directory. To build the firmware Visual Studio Code with the Platform.io plugin installed is needed. Please set the Platform.io environment variable `default_envs` in the file `platformio.ini` to the string found in the previous copied file `platformio-environment.txt`.
 
-Examples for the following hardware configurations are currently available:
+Validated examples are maintained here for the following hardware configurations:
 
 - Creality stock TFT with:
    - Creality v4.5.2 motherboard (CR-6 SE)
-   - Creality v4.5.3 motherboard (CR-6 SE and CR-6 MAX)
+   - Creality v4.5.3 or 1.1.0.3 ERA motherboard (CR-6 SE and CR-6 MAX)
    - BigTreeTech SKR CR-6 (CR-6 SE)
 - BigTreeTech SKR CR-6 with BigTreeTech TFT v3.0
 
-Legacy branches:
-
-- **[`creality-cr6-merge-attempt`](https://github.com/CR6Community/Marlin/tree/creality-cr6-merge-attempt)** - initial branch based on Creality v1.0.3.7 firmware source code release and upgraded until the community firmware 3 release. All new releases are released from the `extui` branch.
-
-Original source code tracking:
-
-- **[`cr6-creality-changes`](https://github.com/CR6Community/Marlin/tree/cr6-creality-changes)** - tracks the changes from the Creality source code dump against Marlin upstream. As of now we have the Creality v1.0.3.7 firmware on this branch, based on Marlin pre-2.0.
-
-    - **[`v1.0.3.7`](https://github.com/CR6Community/Marlin/tree/official-fw/v1.0.3.7)**
-    - **[`v1.0.4.1`](https://github.com/CR6Community/Marlin/tree/official-fw/v1.0.4.1)**
-
-- **[`cr6-btt-dump`](https://github.com/CR6Community/Marlin/tree/cr6-btt-dump) - tracks the changes from the [Big Tree Tech SKR board firmware](https://github.com/bigtreetech/BIGTREETECH-SKR-CR6/tree/master/firmware/BTT-SKR-CR6)** source code (which does not have any git history). It appears the for the moment BTT source code is based on the Creality v1.0.3.7 source code release.
-
-## Purpose of this community firmware
+## Purpose of this repository
 
 This fork of Marlin is meant for:
 
-- Providing up to date and stable Marlin for the CR-6 SE native and [BTT SKR CR6](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) motherboard
-- [Expanding the features](https://github.com/CR6Community/CR-6-touchscreen) of the limited Creality CR-6 stock touch screen
+- Providing a stable version of the CR6 Community Firmware at version 6.2 (which is based on Marlin 2.9.0.1) for the CR-6 SE and MAX printers with Creality 4.5.2, 4.5.3 or 1.1.0.3 ERA motherboards or the [BTT SKR CR6](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) motherboard
+- Updating and documenting the accompanying development and test environment, to lower the barrier for others who wish to support other printer variants.
 
-Once upstream Marlin supports the strain gauge, [currently being whipped into shape in this PR @Sebazzz has submitted](https://github.com/MarlinFirmware/Marlin/pull/19958), the future of this project will probably be:
+## A note about the original project
 
-- Still expanding the features of the touch screen and merge upstream
-- Continuously update this fork to the latest Marlin stable versions
-- Provide builds for the CR-6 and SKR boards for the less technically inclined
+The developers of the original CR6Community Firmware had hoped that the upstream Marlin3D team would merge their work back into the Marlin3D mainstream.
+Unfortunately, the upstream developers pulled an early version of the project, and by the time this code achieved its own feature enhancement foals, the GitHub Diff functionality could no longer support remerging the two streams.
+
+Version 6.1 thus has become a dead-ended fork of Marlin, based on their release 2.0.8.1.
+The development team had, however, also begun rebaselining to Marlin 2.9.0.1, when they stopped work back in 2021.
+That code does not compile, and it contains a couple of bugs, but otherwise works fine with the refactored display firmware at version 1.1.
+
+This project takes a snapshot of that work, fixes the bugs, and updates it to compile with the current versions of Platformio, VSCode, Git, and Python 3.12.3.
+It also continues to support and use the original accompanying test and development automation suite.
 
 ## Community firmware support & communities
 
-Get in touch with the developers! We [have our own Discord server](https://discord.gg/RKrxYy3Q9N).
+Get in touch with the original developers or Thinkersbluff! We [have our own Discord server](https://discord.gg/RKrxYy3Q9N).
 
-The following CR-6 communities exist:
+This YouTube channel directly supports our CR6Community:
 
-- [Facebook independend CR-6 community](https://www.facebook.com/groups/cr6community)
+ - [Making Things Real 101 - CR6Community Support](https://youtube.com/@makingthingsreal101?feature=shared)
+
+Other CR-6 communities exist:
+
+- [Facebook independent CR-6 community](https://www.facebook.com/groups/cr6community)
 - [Reddit /r/CR6](https://www.reddit.com/r/CR6/)
 
 Communities hosted by Creality:
