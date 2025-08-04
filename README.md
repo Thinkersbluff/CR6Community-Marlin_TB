@@ -14,6 +14,9 @@ _To compile a unique version of this firmware tailored for your own customized C
 This repository comes complete with the original comprehensive automation suite and new documentation on how to install and use that suite, for anyone who decides to clone this repo and work with it locally.
 Note: That documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
 
+_CAUTION:  From here, down, the text and links are still the text from the upstream repo._
+           This text will be updated and a formal release of pre-compiled examples of v6.2 is coming soon!
+
 ## Downloads
 
 Please find official releases in the [Releases section](https://github.com/CR6Community/Marlin/releases). Take the release which belongs to the particular touch screen firmware you are going to flash. Please read the release notes *carefully* - it contains all the instructions you need.
