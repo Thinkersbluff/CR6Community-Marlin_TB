@@ -10,11 +10,11 @@ The following examples are available:
 - [BTT SKR CR6 with Creality stock TFT](./btt-skr-cr6-with-stock-creality-tft)
 
 - [With v4.5.2 motherboard](./cr6-se-v4.5.2-mb)
-- [With v4.5.3 motherboard](./cr6-se-v4.5.3-mb)
+- [With v4.5.3 motherboard or 1.1.0.3 ERA motherboard](./cr6-se-v4.5.3-mb)
 
 **For the CR-6 MAX:**
 
-- [With stock v4.5.3 motherboard](./cr6-max-stock-mb)
+- [With stock v4.5.3 motherboard or 1.1.0.3 ERA motherboard](./cr6-max-stock-mb)
 - [BTT SKR CR6 with BTT TFT](./cr6-max-btt-skr-cr6-with-btt-tft)
 - [BTT SKR CR6 with Creality stock TFT](./cr6-max-btt-skr-cr6-with-stock-creality-tft)
 
@@ -49,8 +49,8 @@ To run builds for all examples (repository maintainers):
 
     scripts/Run-ExampleConfigBuilds.ps1 -TouchscreenRepositoryPath [path to cr6 touch screen repository]
 
-This script is meant to be executed in the VSCode console and in preperation for firmware release.
+This script is meant to be executed in the VSCode console and in preparation for firmware release.
 
 #### How it works
 
-The base configuration for this repository is based on the most common hardware configuration: The Creality CR-6 SE with v4.5.2 motherboard. All other configurations are derived from that configuration. Using diff files the original configuration can be amended, then built.
+The base configuration for this repository is based on the most common hardware configuration: The Creality CR-6 SE with v1.1.0.3 ERA motherboard. All other configurations are derived from that configuration. Using diff files the original configuration can be amended, then built.
