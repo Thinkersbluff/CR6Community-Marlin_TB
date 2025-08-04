@@ -19,25 +19,37 @@ This Readme is currently being updated and a formal release of pre-compiled exam
 
 ## Downloads
 
-Please find official releases in the **PENDING** [Releases section] . Take the release which belongs to the particular touch screen firmware you are going to flash. Please read the release notes *carefully* - it contains all the instructions you need.
+Please find official releases in the **PENDING** [Releases section] . 
+Please read the release notes *carefully*, to ensure that you download the right asset.
 
-Ensure you take the right assets: the `firmware[suffix].bin`. You should not download the `Source code` archive if you are downloading with the purpose of directly flashing your printer.
+If your printer is a CR6-SE or CR-6-MAX in stock condition, you will see a .zip file whose name describes your printer.
+Download and extract that file, read any included notes and flash the included `firmware[suffix].bin`file to your printer. 
 
-*Support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
+*Additional support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
+*The same firmware[suffix].bin supports both the Creality v4.5.3 and the Creality v1.1.03 (ERA) board.*
 
-*The v4.5.3 firmware configuration also supports the Creality v1.1.03 (ERA) board.*
+If you want to modify the default Configuration.h or Configuration_adv.h file(s) and recompile the firmware for your own system, then you should instead download the Source.zip file.
 
 ### Development and compile-it-yourself
 
-There are several example configurations available for your convenience which can be found in the [`config`](./config) directory. Copy the files from the config subdirectory which reflects the needed hardware configuration to the root of the [`Marlin`](./Marlin) directory. To build the firmware Visual Studio Code with the Platform.io plugin installed is needed. Please set the Platform.io environment variable `default_envs` in the file `platformio.ini` to the string found in the previous copied file `platformio-environment.txt`.
+There are several example configurations available for your convenience which can be found in the [`config`](./config) directory. Delete the Configuration.h and Configuration_adv files already in the root of the [`Marlin`](./Marlin) directory and copy/paste the equivalent files from the config subdirectory named for the target hardware configuration. 
 
-Validated examples are maintained here for the following hardware configurations:
+To do your own compilation, you will need to download and install Microsoft Visual Studio Code and install at least the Platform.io extension.
+There is an optional Auto Build Marlin extension for VSCode, you could also install.
+Edit the configuration files as you wish.  Ensure that the Platform.io environment variable `default_envs` in the platformio.ini file is set to the text in the `platformio-environment.txt` file in that same config folder, before you try to build the firmware.
+
+If you run into troubles figuring out how to install, configure and compile with VSCode and Platform.io, you can look for help on YouTube or try asking the GitHub CoPilot to troubleshoot and repair your setup, right in VSCode!
+
+Validated configuration examples and pre-compiled flashable assets using those configurations are maintained here for the following hardware configurations:
 
 - Creality stock TFT with:
    - Creality v4.5.2 motherboard (CR-6 SE)
    - Creality v4.5.3 or 1.1.0.3 ERA motherboard (CR-6 SE and CR-6 MAX)
    - BigTreeTech SKR CR-6 (CR-6 SE)
 - BigTreeTech SKR CR-6 with BigTreeTech TFT v3.0
+
+The original project also experimented with examples for other printers with compatible display hardware, but that is more than Thinkersbluff has time to research.
+Those examples remain in this repo, and may work for you, but they are not supported here.
 
 ## A note about the original project
 
