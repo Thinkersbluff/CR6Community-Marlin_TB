@@ -54,6 +54,21 @@ sudo usermod -aG docker $USER
 sudo systemctl start docker && sudo systemctl enable docker
 ```
 
+#### GPG Key Management
+The development environment requires GPG keys for package verification:
+- **Docker keys**: Automatically installed with Docker packages
+- **Microsoft keys**: Required for VS Code repository (if using VS Code)
+
+```bash
+# Check installed keys
+ls -la /etc/apt/trusted.gpg.d/
+
+# If Microsoft key is missing (VS Code repository issues):
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -o root -g root -m 644 packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+rm packages.microsoft.gpg
+```
+
 #### Build Docker Container
 ```bash
 # Build the development container
