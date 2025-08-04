@@ -9,7 +9,7 @@
 
 To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.
 
-_To compile a unique version of this firmware tailored for your own customized CR6-SE or MAX, clone the repo or download Sources.zip from the latest Release and follow the instructions in the [branches and development section](#development-and-compile-it-yourself) section below._
+_To compile a unique version of this firmware tailored for your own customized CR6-SE or MAX, clone the repo or download Sources.zip from the latest Release and follow the instructions in the [Development and compile-it-yourself](#development-and-compile-it-yourself) section below._
 
 This repository comes complete with the original comprehensive automation suite and new documentation on how to install and use that suite, for anyone who decides to clone this repo and work with it locally.
 Note: That documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
