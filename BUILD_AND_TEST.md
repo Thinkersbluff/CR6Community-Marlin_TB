@@ -139,11 +139,17 @@ A native Linux script that provides the same functionality as `Run-ExampleConfig
 
 # Dry run - test without actually building
 ./build-configs.sh test-build cr6-se-v4.5.3-mb true
+
+# Build with custom touchscreen repository path
+./build-configs.sh v2.1.3.2 "" "" ../path/to/CR-6-Touchscreen
+
+# Build single config with touchscreen repo
+./build-configs.sh release-name cr6-se-v4.5.3-mb false ../CR-6-Touchscreen
 ```
 
 #### Parameters and Options
 
-The script accepts up to three positional parameters:
+The script accepts up to four positional parameters:
 
 1. **Release Name** (optional, default: "test-build")
    - Sets the prefix for output ZIP files and directories
@@ -160,6 +166,12 @@ The script accepts up to three positional parameters:
    - Useful for validating configurations and checking script logic
    - Shows what would be built without consuming time/resources
 
+4. **Touchscreen Repository Path** (optional, default: "../CR-6-Touchscreen")
+   - Path to the CR-6 touchscreen firmware repository
+   - Only needed if your touchscreen repo is in a different location than the default
+   - The script looks for `DWIN_SET` folder at `[this-path]/src/DWIN/DWIN_SET`
+   - Set to non-existent path to deliberately skip touchscreen firmware
+
 #### Advanced Usage Examples
 
 ```bash
@@ -169,6 +181,9 @@ The script accepts up to three positional parameters:
 # Test specific configuration without building
 ./build-configs.sh test-build cr6-max-stock-mb true
 
+# Build with custom touchscreen repository path (only if not at default location)
+./build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
+
 # Build only BTT configurations (using pattern matching)
 for config in $(ls config/ | grep btt); do
     ./build-configs.sh release-candidate "$config"
@@ -176,7 +191,42 @@ done
 
 # Quick test build of modified configuration
 ./build-configs.sh debug-test cr6-se-v4.5.3-mb
+
+# Skip touchscreen firmware entirely (disable touchscreen)
+./build-configs.sh v2.1.3.2 "" "" /nonexistent/path
 ```
+
+#### Touchscreen Firmware Integration
+
+The script automatically includes CR-6 touchscreen firmware when:
+
+1. **DWIN_SET folder exists** at `[touchscreen-repo]/src/DWIN/DWIN_SET`
+2. **Configuration supports touchscreen** (no `no-touchscreen.txt` file present)
+
+**Touchscreen Repository Setup:**
+```bash
+# Clone the touchscreen repository to the default location
+git clone https://github.com/CR6Community/CR-6-touchscreen ../CR-6-Touchscreen
+
+# Verify DWIN_SET folder exists at expected location
+ls ../CR-6-Touchscreen/src/DWIN/DWIN_SET/
+
+# Build will automatically find and package touchscreen firmware
+./build-configs.sh v2.1.3.2
+
+# If your touchscreen repo is elsewhere, specify the path:
+./build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
+```
+
+**How It Works:**
+- **DWIN_SET found**: Creates `DWIN_SET.zip` containing all touchscreen firmware files
+- **DWIN_SET missing**: Creates `CR-6-Touchscreen-Download.url` shortcut to GitHub repository
+- **No touchscreen configs**: Skips touchscreen processing for BTT TFT configurations
+
+**Configurations without Touchscreen:**
+Some configurations exclude touchscreen firmware by including a `no-touchscreen.txt` file:
+- BTT SKR CR6 configurations (use BTT TFT instead of CR-6 touchscreen)
+- Custom configurations with different display solutions
 
 #### Script Features
 
@@ -184,9 +234,11 @@ The script includes:
 - **Docker-based building** using the project's docker-compose configuration
 - **Automatic ZIP packaging** of firmware files with organized directory structure
 - **SHA256 checksum generation** for release verification and integrity checking
+- **Display firmware packaging** automatically packages DWIN_SET folder or creates download link
 - **Configuration validation** ensuring required files exist before building
 - **Platform environment detection** from `platformio-environment.txt` files
 - **No-autobuild support** respects `no-autobuild.txt` flags in configurations
+- **No-touchscreen support** respects `no-touchscreen.txt` flags for BTT TFT configurations
 - **Proper error handling** with detailed progress reporting and failure detection
 - **Git state restoration** automatically restores original configuration files
 - **Timestamped outputs** for build tracking and organization
@@ -199,8 +251,11 @@ Built packages are organized as follows:
 ├── [release-name]-[config-name]-[timestamp].zip
 ├── [release-name]-[config-name]-[timestamp]/
 │   ├── Firmware/
-│   │   └── Motherboard firmware/
-│   │       └── firmware.bin
+│   │   ├── Motherboard firmware/
+│   │   │   └── firmware.bin
+│   │   └── Display Firmware/
+│   │       ├── DWIN_SET.zip  (if DWIN_SET folder found)
+│   │       └── CR-6-Touchscreen-Download.url  (if DWIN_SET not found)
 │   ├── configs/
 │   │   ├── Configuration.h
 │   │   └── Configuration_adv.h
@@ -218,6 +273,7 @@ Each configuration directory must contain:
 Optional files:
 - `description.txt` - Custom description (auto-generated if missing)
 - `no-autobuild.txt` - Skip in batch builds (still builds if specifically requested)
+- `no-touchscreen.txt` - Exclude touchscreen firmware from this configuration
 
 #### No-Autobuild Flag
 

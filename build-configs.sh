@@ -5,6 +5,7 @@
 RELEASE_NAME="${1:-test-build}"
 SINGLE_BUILD="${2:-}"
 DRY_RUN="${3:-}"
+TOUCHSCREEN_REPO_PATH="${4:-../CR-6-Touchscreen}"
 
 OUTPUT_DIR=".pio/build-output"
 TIMESTAMP=$(date +%Y-%m-%d-%H-%M)
@@ -12,6 +13,22 @@ TIMESTAMP=$(date +%Y-%m-%d-%H-%M)
 echo "=== CR6 Community Firmware Build Script ==="
 echo "Release Name: $RELEASE_NAME"
 echo "Timestamp: $TIMESTAMP"
+echo "Touchscreen Repo: $TOUCHSCREEN_REPO_PATH"
+echo ""
+
+# Check for touchscreen DWIN_SET folder
+DWIN_SET_PATH="$TOUCHSCREEN_REPO_PATH/src/DWIN/DWIN_SET"
+TOUCHSCREEN_AVAILABLE=false
+
+if [ -d "$DWIN_SET_PATH" ]; then
+    echo "=== Touchscreen DWIN_SET Found ==="
+    echo "DWIN_SET folder located at: $DWIN_SET_PATH"
+    TOUCHSCREEN_AVAILABLE=true
+else
+    echo "=== Touchscreen DWIN_SET Not Found ==="
+    echo "DWIN_SET folder not found at: $DWIN_SET_PATH"
+    echo "Will create URL shortcut instead"
+fi
 echo ""
 
 # Clean output directory
@@ -62,10 +79,19 @@ build_config() {
     # Create build output directory
     local build_output_dir="$OUTPUT_DIR/$RELEASE_NAME-$config_name-$TIMESTAMP"
     local firmware_dir="$build_output_dir/Firmware/Motherboard firmware"
+    local display_dir="$build_output_dir/Firmware/Display Firmware"
     local config_copy_dir="$build_output_dir/configs"
     
     mkdir -p "$firmware_dir"
+    mkdir -p "$display_dir"
     mkdir -p "$config_copy_dir"
+    
+    # Check for touchscreen support
+    local has_touchscreen=true
+    if [ -f "$config_dir/no-touchscreen.txt" ]; then
+        has_touchscreen=false
+        echo "Configuration excludes touchscreen firmware"
+    fi
     
     if [ "$DRY_RUN" != "true" ]; then
         echo "Building firmware..."
@@ -104,6 +130,32 @@ build_config() {
     
     # Copy configuration files
     cp "$config_dir"/*.h "$config_copy_dir/" 2>/dev/null || true
+    
+    # Handle touchscreen/display firmware
+    if [ "$has_touchscreen" = true ]; then
+        if [ "$TOUCHSCREEN_AVAILABLE" = true ] && [ "$DRY_RUN" != "true" ]; then
+            echo "Creating DWIN_SET.zip from touchscreen firmware..."
+            # Create ZIP file of DWIN_SET folder
+            local dwin_zip="$display_dir/DWIN_SET.zip"
+            (cd "$(dirname "$DWIN_SET_PATH")" && zip -r "$(basename "$dwin_zip")" "$(basename "$DWIN_SET_PATH")")
+            mv "$(dirname "$DWIN_SET_PATH")/DWIN_SET.zip" "$dwin_zip"
+            echo "Display firmware packaged: DWIN_SET.zip"
+        elif [ "$DRY_RUN" = "true" ]; then
+            echo "DRY RUN: Would create DWIN_SET.zip from $DWIN_SET_PATH"
+        else
+            echo "Creating URL shortcut for touchscreen firmware download..."
+            # Create URL shortcut file
+            cat > "$display_dir/CR-6-Touchscreen-Download.url" << EOF
+[InternetShortcut]
+URL=https://github.com/CR6Community/CR-6-touchscreen
+IconFile=https://github.com/favicon.ico
+IconIndex=0
+EOF
+            echo "Created download link: CR-6-Touchscreen-Download.url"
+        fi
+    elif [ "$DRY_RUN" != "true" ]; then
+        echo "Configuration uses BTT TFT - no CR-6 touchscreen firmware needed"
+    fi
     
     # Copy description if available
     if [ -f "$config_dir/description.txt" ]; then
