@@ -171,6 +171,13 @@ __pycache__
 # IOLogger logs
 *_log.csv
 
+# System packages and temporary files
+*.deb
+*.rpm
+*.pkg
+temp/
+tmp/
+
 # Simulation / Native
 eeprom.dat
 imgui.ini
