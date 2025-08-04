@@ -15,12 +15,11 @@ This repository comes complete with the original comprehensive automation suite 
 Note: The new documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
       There are also Powershell scripts and documentation on how to use those on Windows and in the VSCode terminal window.
 
-_**CAUTION:  From here, down, the text and links are still the text from the upstream repo.**_
-           This text will be updated and a formal release of pre-compiled examples of v6.2 is coming soon!
+This Readme is currently being updated and a formal release of pre-compiled examples of v6.2 is coming soon!
 
 ## Downloads
 
-Please find official releases in the [Releases section](https://github.com/CR6Community/Marlin/releases). Take the release which belongs to the particular touch screen firmware you are going to flash. Please read the release notes *carefully* - it contains all the instructions you need.
+Please find official releases in the **PENDING** [Releases section] . Take the release which belongs to the particular touch screen firmware you are going to flash. Please read the release notes *carefully* - it contains all the instructions you need.
 
 Ensure you take the right assets: the `firmware[suffix].bin`. You should not download the `Source code` archive if you are downloading with the purpose of directly flashing your printer.
 
