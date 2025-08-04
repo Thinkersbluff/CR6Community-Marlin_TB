@@ -235,7 +235,8 @@ The script includes:
 - **Automatic ZIP packaging** of firmware files with organized directory structure
 - **SHA256 checksum generation** for release verification and integrity checking
 - **Display firmware packaging** automatically packages DWIN_SET folder or creates download link
-- **Configuration validation** ensuring required files exist before building
+- **Repository URL inclusion** adds link to source repository in each build package
+- **Configuration validation** ensuring required files exist before building (skips incomplete configurations)
 - **Platform environment detection** from `platformio-environment.txt` files
 - **No-autobuild support** respects `no-autobuild.txt` flags in configurations
 - **No-touchscreen support** respects `no-touchscreen.txt` flags for BTT TFT configurations
@@ -249,17 +250,18 @@ Built packages are organized as follows:
 ```
 .pio/build-output/
 ├── [release-name]-[config-name]-[timestamp].zip
-├── [release-name]-[config-name]-[timestamp]/
-│   ├── Firmware/
-│   │   ├── Motherboard firmware/
-│   │   │   └── firmware.bin
-│   │   └── Display Firmware/
-│   │       ├── DWIN_SET.zip  (if DWIN_SET folder found)
-│   │       └── CR-6-Touchscreen-Download.url  (if DWIN_SET not found)
-│   ├── configs/
-│   │   ├── Configuration.h
-│   │   └── Configuration_adv.h
-│   └── description.txt
+│   ├── [release-name]-[config-name]-[timestamp]/
+│   │   ├── Firmware/
+│   │   │   ├── Motherboard firmware/
+│   │   │   │   └── firmware.bin
+│   │   │   └── Display Firmware/
+│   │   │       ├── DWIN_SET.zip  (if DWIN_SET folder found)
+│   │   │       └── CR-6-Touchscreen-Download.url  (if DWIN_SET not found)
+│   │   ├── configs/
+│   │   │   ├── Configuration.h
+│   │   │   └── Configuration_adv.h
+│   │   └── description.txt
+│   └── CR6Community-Marlin-Repository.url
 └── checksums.txt
 ```
 
@@ -361,11 +363,11 @@ find . -user root -ls
 
 #### Method 1: Fix Ownership (Quick Fix)
 ```bash
-# Fix ownership of PlatformIO directories
-sudo chown -R $USER:$USER .pio/
-
-# Fix ownership of entire project (if needed)
+# Fix ownership of entire repository (recommended first step)
 sudo chown -R $USER:$USER .
+
+# Specific fix for PlatformIO directories only
+sudo chown -R $USER:$USER .pio/
 ```
 
 #### Method 2: Clean and Rebuild
@@ -390,18 +392,49 @@ sudo rm -rf .pio/
 pip install --user platformio
 ```
 
-### Docker-Specific Solutions
+#### Method 4: Docker User Mapping (Permanent Solution)
+The repository is configured to prevent permission issues by running Docker containers with your user ID instead of root. This is handled automatically via:
 
-For Docker-based builds, ensure proper user mapping:
+- `.env` file with your UID/GID
+- Modified `docker-compose.yml` with user mapping
+- Updated `Dockerfile` that creates a matching user
+
+If you encounter permission issues, first try Method 1 (fix ownership), then rebuild the Docker environment:
 
 ```bash
-# Build with user mapping
-docker-compose run --user $(id -u):$(id -g) marlin-build
+# Fix ownership and rebuild Docker environment
+sudo chown -R $USER:$USER .
+docker-compose down
+docker-compose build --no-cache
+```
 
-# Or modify docker-compose.yml to include:
+### Docker-Specific Solutions
+
+The repository is configured to prevent permission issues by running Docker containers with your user ID. This is handled automatically via:
+
+- **User mapping**: `docker-compose.yml` includes `user: "${UID:-1000}:${GID:-1000}"`
+- **Environment variables**: `.env` file contains your user/group IDs  
+- **Container user**: Dockerfile creates a `user` account that matches your host user
+
+For manual Docker builds, ensure proper user mapping:
+
+```bash
+# Build with user mapping (if not using docker-compose)
+docker run --user $(id -u):$(id -g) marlin-dev
+
+# The docker-compose.yml already handles this automatically:
 services:
-  marlin-build:
+  marlin:
     user: "${UID:-1000}:${GID:-1000}"
+```
+
+If you need to rebuild the Docker environment after permission issues:
+
+```bash
+# Complete Docker environment reset
+docker-compose down
+docker volume rm cr6community-marlin_tb_platformio-cache
+docker-compose build --no-cache
 ```
 
 ### Best Practices
