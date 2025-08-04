@@ -25,6 +25,13 @@ Please read the release notes *carefully*, to ensure that you download the right
 If your printer is a CR6-SE or CR-6-MAX in stock condition, you will see a .zip file whose name describes your printer.
 Download and extract that file, read any included notes and flash the included `firmware[suffix].bin`file to your printer. 
 
+### About the display firmware
+Version 6.2 of the motherboard firmware still works with the refactored v1.1.x display firmware.
+If you are upgrading your CR6Community motherboard firmware from v6.1 to v6.2, you have no display firmware changes to make.
+If you are upgrading from Creality stock firmware to CR6Community v6.2, you should install the display firmware first for the most seamless experience.
+There is [a link to the display firmware](https://github.com/CR6Community/CR-6-touchscreen) in the .zip file you download.
+
+### Notes:
 *Additional support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
 *The same firmware[suffix].bin supports both the Creality v4.5.3 and the Creality v1.1.03 (ERA) board.*
 
