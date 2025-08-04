@@ -25,7 +25,7 @@ The following examples are available:
 
 ## Helper scripts
 
-There are some helper scripts. You need Powershell Core (`pwsh`) to run them.
+There are some .ps1 helper scripts, normally intended for running on Windows-based systems. You need Powershell Core (`pwsh`) to run them.  You may be able to configure a linux-based system to also run these scripts, but that is known to be a problem on Linux Mint 22.1 "Xia".  See BUILD_AND_TEST.MD for how to the alternative build-configs.sh script, if you cannot get these .ps1 scripts to run correctly on your Linux system.
 
 ### Generating configuration examples
 To generate or update a configuration example, do the modifications and then run:
