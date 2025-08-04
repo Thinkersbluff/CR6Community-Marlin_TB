@@ -52,7 +52,7 @@ void FilamentLoadUnloadHandler::HandleLoadUnloadButton(DGUS_VP_Variable &var, vo
         case FILCHANGE_ACTION_LOAD_BUTTON:
             syncOperation.start();
 
-            ChangeFilamentWithTemperature(PSTR("M701 L%s P0"));
+            ChangeFilamentWithTemperature(PSTR("M701 L%.1f P0"));
 
             syncOperation.done();
         break;
@@ -60,7 +60,7 @@ void FilamentLoadUnloadHandler::HandleLoadUnloadButton(DGUS_VP_Variable &var, vo
         case FILCHANGE_ACTION_UNLOAD_BUTTON:
             syncOperation.start();
 
-            ChangeFilamentWithTemperature(PSTR("M702 U%s"));
+            ChangeFilamentWithTemperature(PSTR("M702 U%.1f"));
 
             syncOperation.done();
         break;
@@ -87,11 +87,26 @@ void FilamentLoadUnloadHandler::ChangeFilamentWithTemperature(PGM_P command) {
     // Inject load filament command
     SetStatusMessage(PSTR("Filament load/unload..."));
 
+    // Ensure length has a reasonable default value
+    if (length < 1.0f) length = 150.0f;
+
     char cmd[64];
-    sprintf_P(cmd, command, length);
+    // Build command string directly instead of using sprintf_P with format string
+    char lengthStr[16];
+    dtostrf(length, 1, 1, lengthStr);  // Convert float to string with 1 decimal place
+    
+    if (strstr_P(command, PSTR("M701"))) {
+        snprintf_P(cmd, sizeof(cmd), PSTR("M701 L%s P0"), lengthStr);
+    } else if (strstr_P(command, PSTR("M702"))) {
+        snprintf_P(cmd, sizeof(cmd), PSTR("M702 U%s"), lengthStr);
+    } else {
+        strcpy_P(cmd, command);  // Fallback to original command
+    }
     
     // Handle commands
     SERIAL_ECHOPAIR("Injecting command: ", cmd);
+    SERIAL_ECHOPAIR(" (length=", length);
+    SERIAL_ECHOPGM(")");
     GcodeSuite::process_subcommands_now(cmd);
     SERIAL_ECHOPGM_P("- done");
 
