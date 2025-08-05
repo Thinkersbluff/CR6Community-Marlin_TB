@@ -76,6 +76,7 @@ This fork of Marlin is meant for:
 
 - Providing a stable version of the CR6 Community Firmware at version 6.2 (which is based on Marlin 2.9.0.1) for the CR-6 SE and MAX printers with Creality 4.5.2, 4.5.3 or 1.1.0.3 ERA motherboards or the [BTT SKR CR6](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) motherboard
 - Updating and documenting the accompanying development and test environment, to make it easier for non-programmers like Thinkersbluff who wish to support other printer variants.
+- Taking advantage of the Marlin firmware change activities and online commitment/release history, to cherry-pick critical fixes for bugs in Marlin 2.0.9.1, which were only discovered and resolved in later releases.
 
 ## Community firmware support & communities
 
