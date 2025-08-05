@@ -133,6 +133,16 @@ build_config() {
             echo 'Updating platformio.ini default_envs to: '\$PLATFORM_ENV
             sed -i 's/^default_envs = .*/default_envs = '\$PLATFORM_ENV'/' platformio.ini
             
+            # For BTT boards, ensure correct motherboard selection
+            if [[ \$PLATFORM_ENV == *'btt'* ]]; then
+                echo 'Applying BTT board configuration...'
+                # Ensure board is set correctly for BTT environment
+                sed -i 's/^[[:space:]]*#define[[:space:]]*MOTHERBOARD[[:space:]]*BOARD_CREALITY_V453/#define MOTHERBOARD BOARD_BTT_SKR_CR6/' Marlin/Configuration.h
+                sed -i 's/^[[:space:]]*#define[[:space:]]*MOTHERBOARD[[:space:]]*BOARD_CREALITY_V452/#define MOTHERBOARD BOARD_BTT_SKR_CR6/' Marlin/Configuration.h
+                sed -i 's/^[[:space:]]*#define[[:space:]]*MOTHERBOARD[[:space:]]*BOARD_CREALITY_V427/#define MOTHERBOARD BOARD_BTT_SKR_CR6/' Marlin/Configuration.h
+                echo 'BTT board configuration applied'
+            fi
+            
             echo 'Building firmware for platform: '\$PLATFORM_ENV
             platformio run -e \$PLATFORM_ENV --target clean
             platformio run -e \$PLATFORM_ENV
