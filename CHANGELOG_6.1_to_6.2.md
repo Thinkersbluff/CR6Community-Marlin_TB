@@ -119,6 +119,18 @@ All example configurations have been updated to:
 
 ## Official Marlin Release Notes
 For a more detailed review, you can also check the official Marlin release notes:
+These are the changelogs summarizing what happened to Marlin between release 2.0.8.1 and 2.0.9.1:
 
+[Marlin 2.0.8.2 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.8.2)
+[Marlin 2.0.8.3 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.8.3)
+[Marlin 2.0.8.4 Release Notes]((https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.8.4)
 [Marlin 2.0.9 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9)
 [Marlin 2.0.9.1 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.1)
+
+These release notes may describe bugs that were introduced or discovered during the above evolution and subsequently improved or fixed at a revision later than 2.0.9.1:
+[Marlin 2.0.9.2 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.2)
+[Marlin 2.0.9.3 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.3)
+[Marlin 2.0.9.4 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.4)
+[Marlin 2.0.9.5 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.5)
+[Marlin 2.0.9.6 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.6)
+[Marlin 2.0.9.7 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.7)
