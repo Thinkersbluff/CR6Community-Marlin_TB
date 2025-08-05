@@ -115,3 +115,10 @@ All example configurations have been updated to:
 ---
 
 *This changelog covers the major changes between CR6 Community Firmware v6.1 (Marlin 2.0.8.1) and v6.2 (Marlin 2.0.9.1). For detailed commit history, see the repository's git log.*
+
+
+## Official Marlin Release Notes
+For a more detailed review, you can also check the official Marlin release notes:
+
+[Marlin 2.0.9 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9)
+[Marlin 2.0.9.1 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.1)
