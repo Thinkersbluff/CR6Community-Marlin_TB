@@ -134,3 +134,81 @@ These release notes may describe bugs that were introduced or discovered during 
 [Marlin 2.0.9.5 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.5)
 [Marlin 2.0.9.6 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.6)
 [Marlin 2.0.9.7 Release Notes](https://github.com/MarlinFirmware/Marlin/releases/tag/2.0.9.7)
+
+## 🚨 Critical Issues Addressed After v6.2 (Marlin 2.0.9.1)
+
+The following summarizes significant bugs, security issues, and critical fixes that were discovered and resolved in Marlin versions 2.0.9.2 through 2.0.9.7. **While v6.2 is based on Marlin 2.0.9.1, users should be aware of these issues that were subsequently identified and fixed:**
+
+### 🔥 **Critical Safety & Security Issues**
+
+#### Thermal Management & Safety
+- **🚑️ Thermal Runaway Fixes** (2.0.9.3) - Fixed `AUTOTEMP` bug that could cause thermal runaway conditions
+- **🐛 Heater Control Issues** (2.0.9.3) - Fixed `loud_kill` heater disable functionality
+- **🐛 Temperature Sensor Issues** (2.0.9.3, 2.0.9.4) - Multiple MAX31865 PT100/PT1000 sensor fixes for accuracy
+- **🩹 Temperature Monitoring** (2.0.9.4) - Fixed temperature variance monitoring and redundant sensor issues
+
+#### Hardware Control & Safety
+- **🚑️ Power Management** (2.0.9.3) - Fixed conditional `M81` suicide command issues
+- **🐛 Stepper Motor Control** (2.0.9.2) - Fixed multi-endstop stepping and sensorless homing accuracy
+- **🐛 Probe Safety** (2.0.9.2, 2.0.9.3) - Fixed probe deployment issues and BLTouch improvements
+- **🩹 Emergency Situations** (2.0.9.3) - Fixed AVR watchdog pile-up that could cause system lockups
+
+### ⚠️ **High-Impact Functional Issues**
+
+#### Motion Control & Accuracy
+- **🐛 G2/G3 Arc Motion** (2.0.9.2) - Fixed angular motion calculation errors in arc movements
+- **🐛 CoreXY Multi-Axis** (2.0.9.2) - Fixed CoreXY plus extra axes motion control
+- **🐛 Leveling Systems** (2.0.9.2, 2.0.9.3) - Multiple bed leveling fixes (UBL, ABL, Delta calibration)
+- **🐛 IDEX Issues** (2.0.9.3) - Fixed dual extruder positioning and duplication mode
+
+#### Communication & Control
+- **🚑️ Serial Communication** (2.0.9.3) - Fixed `M105` regression and serial buffer issues
+- **🐛 SD Card Problems** (2.0.9.3, 2.0.9.5) - Fixed SD mount bugs and file handling issues
+- **🐛 Host Communication** (2.0.9.3, 2.0.9.4) - Fixed emergency parser and host status notifications
+
+#### Display & User Interface
+- **🐛 LCD/TFT Issues** (2.0.9.2, 2.0.9.3) - Multiple display controller fixes and touch interface problems
+- **🚑️ Touch Screen Freezes** (2.0.9.5) - Fixed BIQU BX touch freeze issues
+- **🐛 E3V2 Display Problems** (2.0.9.3, 2.0.9.4) - Multiple Ender-3 V2 display and UI fixes
+
+### 📊 **Board-Specific Critical Fixes**
+
+#### STM32 Platform Issues
+- **🐛 STM32 Timing** (2.0.9.2) - Fixed STM32 delay issues and double reset problems
+- **🐛 FSMC TFT Initialization** (2.0.9.2) - Fixed TFT display initialization failures
+- **🐛 STM32 PWM Issues** (2.0.9.3) - Fixed PWM control and fast PWM implementation
+- **🐛 SDIO Problems** (2.0.9.5) - Fixed SDIO SD card interface for STM32 boards
+
+#### Specific Board Fixes
+- **🐛 SKR Mini E3 V2** (2.0.9.3) - Fixed I2C-based EEPROM issues
+- **🐛 BTT Boards** (2.0.9.2, 2.0.9.3) - Multiple BigTreeTech board pin and configuration fixes
+- **🐛 MKS Boards** (2.0.9.2, 2.0.9.3) - Fixed Robin Nano and other MKS board issues
+- **🐛 Chitu F103** (2.0.9.6, 2.0.9.7) - Fixed build issues for Tronxy with Chitu F103
+
+### 🔧 **Build & Compatibility Issues**
+
+#### Compilation Problems
+- **🐛 Arduino IDE** (2.0.9.3) - Fixed Arduino IDE compilation errors
+- **🐛 PlatformIO Updates** (2.0.9.6) - Support for latest PlatformIO versions
+- **🔨 Build Failures** (2.0.9.2-2.0.9.5) - Multiple platform-specific build fixes
+
+#### Feature Interactions
+- **🐛 Linear Advance** (2.0.9.3) - Fixed Linear Advance with low E-jerk settings
+- **🐛 TMC Driver Issues** (2.0.9.2-2.0.9.4) - Multiple TMC stepper driver fixes and improvements
+- **🐛 Mixing Extruder** (2.0.9.2) - Fixed mixing extruder code errors
+
+### 📈 **Impact Assessment for CR6 Community Firmware v6.2 Users**
+
+**Risk Level: MODERATE** - While v6.2 is stable for most users, the above issues represent potential problems that could affect:
+
+1. **Print Quality** - Arc motion and leveling issues could affect print accuracy
+2. **Hardware Safety** - Thermal management and power control issues could pose safety risks
+3. **Reliability** - Communication and display issues could cause print failures
+4. **Board Compatibility** - STM32 and specific board issues could affect certain hardware variants
+
+**Recommendation**: Users experiencing any issues similar to those described above should consider:
+- Monitoring for similar symptoms in their setups
+- Reviewing the specific fixes in later Marlin versions
+- Considering an upgrade path to incorporate critical safety fixes if problems are encountered
+
+*Note: This analysis is based on official Marlin release notes and identifies issues that were present in 2.0.9.1 but subsequently discovered and fixed. The CR6 Community Firmware v6.2 may not be affected by all these issues due to different configuration and code paths.*
