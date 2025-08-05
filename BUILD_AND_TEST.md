@@ -228,6 +228,11 @@ Some configurations exclude touchscreen firmware by including a `no-touchscreen.
 - BTT SKR CR6 configurations (use BTT TFT instead of CR-6 touchscreen)
 - Custom configurations with different display solutions
 
+When a configuration contains `no-touchscreen.txt`, the build script will:
+- Skip touchscreen firmware packaging entirely
+- Copy the `no-touchscreen.txt` file to the `Display Firmware/` folder in the release ZIP
+- This informs end users why no touchscreen firmware is included with their build
+
 #### Script Features
 
 The script includes:
@@ -255,8 +260,9 @@ Built packages are organized as follows:
 │   │   │   ├── Motherboard firmware/
 │   │   │   │   └── firmware.bin
 │   │   │   └── Display Firmware/
-│   │   │       ├── DWIN_SET.zip  (if DWIN_SET folder found)
-│   │   │       └── CR-6-Touchscreen-Download.url  (if DWIN_SET not found)
+│   │   │       ├── DWIN_SET.zip  (if DWIN_SET folder found and touchscreen supported)
+│   │   │       ├── CR-6-Touchscreen-Download.url  (if DWIN_SET not found and touchscreen supported)
+│   │   │       └── no-touchscreen.txt  (if configuration excludes touchscreen)
 │   │   ├── configs/
 │   │   │   ├── Configuration.h
 │   │   │   └── Configuration_adv.h

@@ -194,8 +194,18 @@ IconIndex=0
 EOF
             echo "Created download link: CR-6-Touchscreen-Download.url"
         fi
-    elif [ "$DRY_RUN" != "true" ]; then
-        echo "Configuration uses BTT TFT - no CR-6 touchscreen firmware needed"
+    else
+        # Configuration excludes touchscreen - copy the no-touchscreen.txt file to explain
+        if [ -f "$config_dir/no-touchscreen.txt" ] && [ "$DRY_RUN" != "true" ]; then
+            cp "$config_dir/no-touchscreen.txt" "$display_dir/"
+            echo "Copied no-touchscreen.txt to Display Firmware folder"
+        elif [ "$DRY_RUN" = "true" ]; then
+            echo "DRY RUN: Would copy no-touchscreen.txt to Display Firmware folder"
+        fi
+        
+        if [ "$DRY_RUN" != "true" ]; then
+            echo "Configuration uses BTT TFT - no CR-6 touchscreen firmware needed"
+        fi
     fi
     
     # Copy description if available
