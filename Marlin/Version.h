@@ -34,7 +34,7 @@
  * Verbose version identifier which should contain a reference to the location
  * from where the binary was downloaded or the source code was compiled.
  */
-#define DETAILED_BUILD_VERSION "CR-6 community firmware - release 6.1 (based on Marlin 2.0.8.1)"
+#define DETAILED_BUILD_VERSION "CR-6 community firmware - release 6.2 (based on Marlin 2.0.9.1)"
 
 /**
  * The STRING_DISTRIBUTION_DATE represents when the binary file was built,
@@ -56,7 +56,7 @@
  * has a distinct Github fork— the Source Code URL should just be the main
  * Marlin repository.
  */
-#define SOURCE_CODE_URL "https://github.com/CR6Community/Marlin"
+#define SOURCE_CODE_URL "https://github.com/Thinkersbluff/CR6Community-Marlin_TB"
 
 /**
  * Default generic printer UUID.
@@ -67,7 +67,7 @@
  * The WEBSITE_URL is the location where users can get more information such as
  * documentation about a specific Marlin release.
  */
-#define WEBSITE_URL "github.com/CR6Community"
+#define WEBSITE_URL "github.com/Thinkersbluff"
 
 /**
  * Set the vendor info the serial USB interface, if changable
