@@ -18,15 +18,22 @@ except ImportError:
     print("Or in a virtual environment: pip install pyserial")
     sys.exit(1)
 
+# Import shared configuration
+try:
+    from temp_config import config
+except ImportError:
+    print("Error: temp_config.py not found.")
+    print("Please ensure temp_config.py is in the same directory.")
+    sys.exit(1)
 
 class SimpleTemperatureMonitor:
     """Simple temperature monitoring for 3D printer ADC evaluation."""
 
-    def __init__(self, port: str = '/dev/ttyUSB0', baud: int = 115200, timeout: int = 2):
-        """Initialize the temperature monitor."""
-        self.serial_port = port
-        self.baud_rate = baud
-        self.timeout = timeout
+    def __init__(self, port: Optional[str] = None, baud: Optional[int] = None, timeout: Optional[int] = None):
+        """Initialize the temperature monitor with config file settings."""
+        self.serial_port = port or config.serial_port
+        self.baud_rate = baud or config.baud_rate
+        self.timeout = timeout or config.timeout
         self.serial_connection: Optional[serial.Serial] = None
 
         # Setup signal handler
@@ -46,7 +53,7 @@ class SimpleTemperatureMonitor:
                 self.serial_port, self.baud_rate, timeout=self.timeout
             )
             print(f"Connected to printer on {self.serial_port} at {self.baud_rate} baud")
-            time.sleep(2)  # Wait for connection to stabilize
+            time.sleep(config.stabilization_delay)  # Wait for connection to stabilize
             return True
         except (serial.SerialException, OSError) as error:
             print(f"Failed to connect to printer: {error}")
@@ -133,7 +140,7 @@ class SimpleTemperatureMonitor:
         while time.time() < end_time:
             try:
                 # Request temperature report
-                self.send_command("M105")
+                self.send_command(config.temperature_command)
 
                 # Read response
                 response = self.read_response()
@@ -160,7 +167,7 @@ class SimpleTemperatureMonitor:
                     # Also print raw response for debugging
                     print(f"Raw: {response}")
 
-                time.sleep(2)  # Read every 2 seconds
+                time.sleep(config.sample_interval)  # Read at configured interval
 
             except KeyboardInterrupt:
                 break
@@ -172,11 +179,17 @@ class SimpleTemperatureMonitor:
         self.calculate_statistics(hotend_temps, "Hotend")
         self.calculate_statistics(bed_temps, "Bed")
 
-    def run(self, duration_minutes: int = 5) -> None:
+    def run(self, duration_minutes: Optional[int] = None) -> None:
         """Main execution method."""
+        duration = duration_minutes or config.default_duration_minutes
+        
         print("3D Printer Temperature Monitor")
         print("Testing 12-bit ADC improvements (STM32F103RET6, BTT SKR boards, etc.)")
         print("=" * 72)
+        
+        # Display configuration
+        config.print_config_summary()
+        print()
 
         # Connect to printer
         if not self.connect_printer():
@@ -196,7 +209,7 @@ class SimpleTemperatureMonitor:
                     print(f"Response: {response}")
 
             # Start temperature monitoring
-            self.monitor_temperatures(duration_minutes)
+            self.monitor_temperatures(duration)
 
         except KeyboardInterrupt:
             pass
@@ -211,7 +224,7 @@ class SimpleTemperatureMonitor:
 def main() -> None:
     """Main entry point."""
     monitor = SimpleTemperatureMonitor()
-    monitor.run(duration_minutes=5)
+    monitor.run()  # Uses config.default_duration_minutes
 
 
 if __name__ == "__main__":
