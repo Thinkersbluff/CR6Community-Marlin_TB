@@ -28,25 +28,37 @@ except ImportError:
     print("Or in a virtual environment: pip install matplotlib numpy")
     sys.exit(1)
 
+# Import shared configuration
+try:
+    from temp_config import config
+except ImportError:
+    print("Error: temp_config.py not found.")
+    print("Please ensure temp_config.py is in the same directory.")
+    sys.exit(1)
+
 
 class TemperaturePlotter:
     """Real-time temperature plotter for 3D printer ADC evaluation."""
 
-    def __init__(self, port: str = '/dev/ttyUSB0', baud: int = 115200):
-        """Initialize the temperature plotter."""
-        self.serial_port = port
-        self.baud_rate = baud
-        self.timeout = 1
+    def __init__(self, port: Optional[str] = None, baud: Optional[int] = None):
+        """Initialize the temperature plotter with config file settings."""
+        self.serial_port = port or config.serial_port
+        self.baud_rate = baud or config.baud_rate
+        self.timeout = config.timeout
 
         # Data storage
-        self.times: Deque[float] = deque(maxlen=300)  # 5 minutes of data
-        self.hotend_temps: Deque[float] = deque(maxlen=300)
-        self.bed_temps: Deque[float] = deque(maxlen=300)
+        maxlen = config.max_data_points
+        self.times: Deque[float] = deque(maxlen=maxlen)
+        self.hotend_temps: Deque[float] = deque(maxlen=maxlen)
+        self.bed_temps: Deque[float] = deque(maxlen=maxlen)
         self.start_time: Optional[float] = None
         self.serial_connection: Optional[serial.Serial] = None
 
         # Setup plot
-        self.fig, (self.ax1, self.ax2) = plt.subplots(2, 1, figsize=(12, 8))
+        plot_config = config.get_plotting_config()
+        fig_width = plot_config.get('figure_size_width', 12)
+        fig_height = plot_config.get('figure_size_height', 8)
+        self.fig, (self.ax1, self.ax2) = plt.subplots(2, 1, figsize=(fig_width, fig_height))
 
         # Setup signal handler
         signal.signal(signal.SIGINT, self._signal_handler)
@@ -66,7 +78,7 @@ class TemperaturePlotter:
                 self.serial_port, self.baud_rate, timeout=self.timeout
             )
             print(f"Connected to printer on {self.serial_port} at {self.baud_rate} baud")
-            time.sleep(1)  # Wait for connection to stabilize
+            time.sleep(config.stabilization_delay)  # Wait for connection to stabilize
             return True
         except (serial.SerialException, OSError) as error:
             print(f"Failed to connect to printer: {error}")
@@ -130,7 +142,7 @@ class TemperaturePlotter:
             return
 
         # Send temperature request
-        self.send_command("M105")
+        self.send_command(config.temperature_command)
 
         # Read response
         response = self.read_response()
@@ -202,6 +214,10 @@ class TemperaturePlotter:
         print("Testing ADC improvements (STM32F103RET6, BTT SKR boards, etc.)")
         print("=" * 56)
         print("Close the plot window to exit")
+        
+        # Display configuration
+        config.print_config_summary()
+        print()
 
         # Connect to printer
         if not self.connect_printer():
@@ -213,9 +229,10 @@ class TemperaturePlotter:
             plt.tight_layout()
             plt.ion()  # Interactive mode
 
-            # Start animation (updates every 1000ms = 1 second)
+            # Start animation with configured update interval
+            update_interval = config.get('plotting', 'update_interval_ms', 1000)
             _ani = animation.FuncAnimation(
-                self.fig, self.update_plot, interval=1000, cache_frame_data=False
+                self.fig, self.update_plot, interval=update_interval, cache_frame_data=False
             )
 
             # Show plot
