@@ -32,7 +32,7 @@ except ImportError:
 class TemperaturePlotter:
     """Real-time temperature plotter for 3D printer ADC evaluation."""
 
-    def __init__(self, port: str = '/dev/ttyUSB0', baud: int = 250000):
+    def __init__(self, port: str = '/dev/ttyUSB0', baud: int = 115200):
         """Initialize the temperature plotter."""
         self.serial_port = port
         self.baud_rate = baud

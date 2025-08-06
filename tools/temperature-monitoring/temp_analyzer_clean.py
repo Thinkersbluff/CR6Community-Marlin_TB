@@ -24,7 +24,7 @@ except ImportError:
 class TemperatureMonitor:
     """Monitor and analyze 3D printer temperature stability."""
 
-    def __init__(self, port: str = '/dev/ttyUSB0', baud: int = 250000):
+    def __init__(self, port: str = '/dev/ttyUSB0', baud: int = 115200):
         """Initialize temperature monitor."""
         self.serial_port = port
         self.baud_rate = baud

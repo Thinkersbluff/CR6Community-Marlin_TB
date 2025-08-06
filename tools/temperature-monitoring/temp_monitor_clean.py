@@ -22,7 +22,7 @@ except ImportError:
 class SimpleTemperatureMonitor:
     """Simple temperature monitoring for 3D printer ADC evaluation."""
 
-    def __init__(self, port: str = '/dev/ttyUSB0', baud: int = 250000, timeout: int = 2):
+    def __init__(self, port: str = '/dev/ttyUSB0', baud: int = 115200, timeout: int = 2):
         """Initialize the temperature monitor."""
         self.serial_port = port
         self.baud_rate = baud
