@@ -30,8 +30,8 @@ If you are upgrading from Creality stock firmware to CR6Community v6.2, you shou
 If you need it, there is a copy of the DWIN_SET folder in the .zip file you download.  If you encounter problems installing it, try looking for help [here in the documentation:](https://github.com/CR6Community/CR-6-touchscreen)
 
 ### Notes:
+*The same firmware[suffix].bin that supports the Creality v4.5.3 motherboard also supports the Creality v1.1.03 (ERA) board.*
 *Additional support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
-*The same firmware[suffix].bin supports both the Creality v4.5.3 and the Creality v1.1.03 (ERA) board.*
 
 If you want to modify the default Configuration.h or Configuration_adv.h file(s) and recompile the firmware for your own system, then you should instead download the Source.zip file.
 
