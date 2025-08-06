@@ -20,18 +20,25 @@ except ImportError:
     print("Or in a virtual environment: pip install pyserial")
     sys.exit(1)
 
+try:
+    from temp_config import config
+except ImportError:
+    print("Error: temp_config module not found.")
+    print("Ensure temp_config.py and config.json are in the same directory.")
+    sys.exit(1)
+
 
 class TemperatureMonitor:
     """Monitor and analyze 3D printer temperature stability."""
 
-    def __init__(self, port: str = '/dev/ttyUSB0', baud: int = 115200):
-        """Initialize temperature monitor."""
-        self.serial_port = port
-        self.baud_rate = baud
-        self.timeout = 1
+    def __init__(self) -> None:
+        """Initialize temperature monitor with config.json settings."""
+        self.serial_port = config.serial_port
+        self.baud_rate = config.baud_rate
+        self.timeout = config.timeout
 
-        self.temps_hotend: Deque[float] = deque(maxlen=60)
-        self.temps_bed: Deque[float] = deque(maxlen=60)
+        self.temps_hotend: Deque[float] = deque(maxlen=config.max_data_points)
+        self.temps_bed: Deque[float] = deque(maxlen=config.max_data_points)
         self.start_time: Optional[float] = None
         self.serial_connection: Optional[serial.Serial] = None
 
@@ -162,9 +169,15 @@ class TemperatureMonitor:
         range_info = f"(min: {min_temp:.3f}, max: {max_temp:.3f})"
         print(f"  Range: {range_temp:.4f}°C {range_info}")
 
-        stability = "EXCELLENT" if stdev < 0.1 else \
-                   "GOOD" if stdev < 0.3 else \
-                   "FAIR" if stdev < 0.5 else "POOR"
+        # Get stability thresholds from config
+        thresholds = config.get('analysis', 'stability_thresholds', {})
+        excellent_threshold = thresholds.get('excellent_std_dev', 0.15)
+        good_threshold = thresholds.get('good_std_dev', 0.25)
+        fair_threshold = thresholds.get('fair_std_dev', 0.5)
+        
+        stability = "EXCELLENT" if stdev < excellent_threshold else \
+                   "GOOD" if stdev < good_threshold else \
+                   "FAIR" if stdev < fair_threshold else "POOR"
         print(f"  Stability: {stability}")
 
     def print_final_stats(self) -> None:
@@ -175,15 +188,22 @@ class TemperatureMonitor:
 
         if self.temps_hotend:
             self.print_stats(list(self.temps_hotend), "HOTEND")
-            print(self.create_text_graph(list(self.temps_hotend), width=40, label="Hotend Graph"))
+            final_graph_width = config.get('display', 'graph_width', 60)
+            print(self.create_text_graph(list(self.temps_hotend), width=final_graph_width, label="Hotend Graph"))
 
         if self.temps_bed:
             self.print_stats(list(self.temps_bed), "BED")
-            print(self.create_text_graph(list(self.temps_bed), width=40, label="Bed Graph"))
+            final_graph_width = config.get('display', 'graph_width', 60)
+            print(self.create_text_graph(list(self.temps_bed), width=final_graph_width, label="Bed Graph"))
 
+        # Get thresholds from config
+        thresholds = config.get('analysis', 'stability_thresholds', {})
+        good_std_threshold = thresholds.get('good_std_dev', 0.25)
+        good_range_threshold = thresholds.get('good_range', 1.0)
+        
         print("\nWith 12-bit ADC, you should expect:")
-        print("  - Standard deviation < 0.2°C for good stability")
-        print("  - Range < 1.0°C over time")
+        print(f"  - Standard deviation < {good_std_threshold}°C for good stability")
+        print(f"  - Range < {good_range_threshold}°C over time")
         print("  - Smooth, consistent readings")
 
     def run(self) -> None:
@@ -204,7 +224,7 @@ class TemperatureMonitor:
         try:
             while True:
                 # Send temperature request
-                self.send_command("M105")
+                self.send_command(config.temperature_command)
 
                 # Read response
                 response = self.read_response()
@@ -231,23 +251,27 @@ class TemperatureMonitor:
 
                         # Show recent statistics
                         if len(self.temps_hotend) >= 10:
-                            hotend_data = list(self.temps_hotend)[-30:]
-                            self.print_stats(hotend_data, "Hotend (last 30 readings)")
+                            rolling_window = config.get('display', 'rolling_window_size', 30)
+                            hotend_data = list(self.temps_hotend)[-rolling_window:]
+                            self.print_stats(hotend_data, f"Hotend (last {rolling_window} readings)")
 
                         if len(self.temps_bed) >= 10:
-                            bed_data = list(self.temps_bed)[-30:]
-                            self.print_stats(bed_data, "Bed (last 30 readings)")
+                            rolling_window = config.get('display', 'rolling_window_size', 30)
+                            bed_data = list(self.temps_bed)[-rolling_window:]
+                            self.print_stats(bed_data, f"Bed (last {rolling_window} readings)")
 
                         # Show mini graphs
                         if len(self.temps_hotend) >= 10:
                             print("\nRecent Hotend Trend:")
-                            recent_data = list(self.temps_hotend)[-20:]
-                            print(self.create_text_graph(recent_data, width=30))
+                            graph_points = min(20, config.get('display', 'rolling_window_size', 30))
+                            recent_data = list(self.temps_hotend)[-graph_points:]
+                            graph_width = config.get('display', 'graph_width', 60) // 2
+                            print(self.create_text_graph(recent_data, width=graph_width))
 
                         print(f"\nRaw response: {response}")
                         print("\nPress Ctrl+C to stop and see final analysis...")
 
-                time.sleep(2)  # Read every 2 seconds
+                time.sleep(config.sample_interval)  # Use configured sample interval
 
         except KeyboardInterrupt:
             pass
