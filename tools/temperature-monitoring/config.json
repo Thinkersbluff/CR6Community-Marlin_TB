@@ -1,0 +1,43 @@
+{
+  "serial": {
+    "port": "/dev/ttyUSB0",
+    "baud_rate": 115200,
+    "timeout": 2,
+    "stabilization_delay": 2.0,
+    "comment": "Serial communication settings for 3D printer connection"
+  },
+  "monitoring": {
+    "default_duration_minutes": 5,
+    "sample_interval_seconds": 1.0,
+    "max_data_points": 300,
+    "temperature_request_command": "M105",
+    "comment": "Temperature monitoring parameters"
+  },
+  "display": {
+    "graph_width": 60,
+    "graph_height": 10,
+    "rolling_window_size": 30,
+    "decimal_places": 3,
+    "comment": "Display and visualization settings"
+  },
+  "plotting": {
+    "figure_size_width": 12,
+    "figure_size_height": 8,
+    "update_interval_ms": 1000,
+    "line_width": 1,
+    "grid_alpha": 0.3,
+    "comment": "Matplotlib plotting configuration"
+  },
+  "analysis": {
+    "stability_thresholds": {
+      "excellent_std_dev": 0.15,
+      "good_std_dev": 0.25,
+      "fair_std_dev": 0.5,
+      "excellent_range": 0.5,
+      "good_range": 1.0,
+      "fair_range": 2.0
+    },
+    "minimum_samples_for_stats": 10,
+    "comment": "Temperature stability analysis parameters"
+  }
+}
