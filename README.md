@@ -15,8 +15,6 @@ This repository comes complete with the original comprehensive automation suite 
 Note: The new documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
       There are also Powershell scripts and documentation on how to use those on Windows and in the VSCode terminal window.
 
-This Readme is currently being updated and a formal release of pre-compiled examples of v6.2 is coming soon!
-
 ## Downloads
 
 Please find official releases in the [Releases section](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/releases/tag/v2.0.9.1-cr6-community-release-6.2) . 
