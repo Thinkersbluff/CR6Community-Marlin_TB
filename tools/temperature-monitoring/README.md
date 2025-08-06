@@ -75,15 +75,46 @@ pip install pyserial matplotlib numpy
 
 ### Advanced Configuration
 
-All tools can be customized by modifying the class initialization:
+All tools use a centralized configuration system via `config.json`. To customize settings:
 
-```python
-# Custom serial port and baud rate
-monitor = TemperatureMonitor(port='/dev/ttyUSB1', baud=115200)
+1. **Edit the config.json file** in this directory
+2. **Modify the relevant sections** for your setup
+3. **All tools automatically use the updated settings**
 
-# Custom monitoring duration
-monitor.run(duration_minutes=10)
+#### Key Configuration Sections:
+
+```json
+{
+  "serial": {
+    "port": "/dev/ttyUSB0",
+    "baud_rate": 115200,
+    "timeout": 2.0
+  },
+  "monitoring": {
+    "sample_interval": 1.0,
+    "stabilization_delay": 30,
+    "temperature_command": "M105"
+  }
+}
 ```
+
+#### Common Customizations:
+
+```bash
+# Change serial port (Linux)
+"port": "/dev/ttyUSB1"
+
+# Change baud rate (match your firmware)
+"baud_rate": 250000
+
+# Adjust sampling frequency
+"sample_interval": 0.5  # Sample every 0.5 seconds
+
+# Change monitoring duration
+"default_duration_minutes": 10
+```
+
+The tools will automatically load settings from `config.json` at startup. No code changes required!
 
 ### Testing Workflow for ADC Comparison
 
