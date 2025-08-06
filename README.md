@@ -114,7 +114,7 @@ For general Marlin support, please check:
 
 - Submit **bug fixes** as pull requests to the current active default branch (`extui`)
 - Follow the [coding standards](https://marlinfw.org/docs/development/coding_standards.html)
-- Please submit your questions and concerns in the [issue tracker](https://github.com/MarlinFirmware/Marlin/issues)
+- Please submit your questions and concerns in the [issue tracker](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/issues)
 
 ## Credits
 
