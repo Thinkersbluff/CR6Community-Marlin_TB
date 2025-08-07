@@ -4,7 +4,7 @@
 - stock v1.1.0.3 ERA motherboard
 - PT1000 hotend thermistor (sensor_0 = 1047)
 - Orbiter v1.5 extruder (690 steps/mm)
-- Phaetus Dragon HF all-metal hotend
+- All-metal hotend (HEATER_0_MAXTEMP 375)
 - stock TFT display.
 
 To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.
