@@ -25,12 +25,12 @@ The following examples are available:
 
 ## Helper scripts
 
-There are some .ps1 helper scripts, normally intended for running on Windows-based systems. You need Powershell Core (`pwsh`) to run them.  You may be able to configure a linux-based system to also run these scripts, but that is known to be a problem on Linux Mint 22.1 "Xia".  See BUILD_AND_TEST.MD for how to the alternative build-configs.sh script, if you cannot get these .ps1 scripts to run correctly on your Linux system.
+There are some .ps1 helper scripts, normally intended for running on Windows-based systems. You need Powershell Core (`pwsh`) to run them.  You may be able to configure a linux-based system to also run these scripts, but that is known to be a problem on Linux Mint 22.1 "Xia".  See BUILD_AND_TEST.MD for how to use the alternative tools/build/build-configs.sh script, if you cannot get these .ps1 scripts to run correctly on your Linux system.
 
 ### Generating configuration examples
 To generate or update a configuration example, do the modifications and then run:
 
-    scripts/Generate-ConfigExample.ps1 -Name MyExampleName
+    tools/scripts/powershell/Generate-ConfigExample.ps1 -Name MyExampleName
 
 ### Applying configuration examples
 To apply a configuration example, just copy the `Configuration*` files from the example directory to the "Marlin" directory.
@@ -39,7 +39,7 @@ To apply a configuration example, just copy the `Configuration*` files from the 
 
 To refresh configuration examples (repository maintainers):
 
-    scripts/Update-ConfigExamples.ps1
+    tools/scripts/powershell/Update-ConfigExamples.ps1
 
 This script essentially runs an update on all configuration examples based on the changes of the current configuration (diff).
 
@@ -47,7 +47,7 @@ This script essentially runs an update on all configuration examples based on th
 
 To run builds for all examples (repository maintainers):
 
-    scripts/Run-ExampleConfigBuilds.ps1 -TouchscreenRepositoryPath [path to cr6 touch screen repository]
+    tools/scripts/powershell/Run-ExampleConfigBuilds.ps1 -TouchscreenRepositoryPath [path to cr6 touch screen repository]
 
 This script is meant to be executed in the VSCode console and in preparation for firmware release.
 

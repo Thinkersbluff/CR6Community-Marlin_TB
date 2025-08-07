@@ -50,6 +50,21 @@ cd tools/scripts/linux
 
 ### Technical Details:
 Our scripts use automatic repository root detection, so they work correctly regardless of where you run them from. However, following the "run from script location" pattern creates consistency and helps build good habits for repository navigation.
+
+### Docker Usage:
+```bash
+# Docker files are located in tools/build/docker/
+cd tools/build/docker
+
+# Build the container
+docker-compose build
+
+# Run a build
+docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
+
+# Get an interactive shell
+docker-compose run --rm marlin bash
+```
 - Git repository cloned locally
 
 ### Basic Docker Build
@@ -104,16 +119,21 @@ rm packages.microsoft.gpg
 
 #### Build Docker Container
 ```bash
-# Build the development container
+# Build the development container (from repository root)
 make setup-local-docker
-# or manually:
+
+# Or manually from Docker directory:
+cd tools/build/docker
 docker-compose build
 ```
 
 ### Docker Files Structure
-- `docker-compose.yml`: Main Docker Compose configuration
-- `docker/Dockerfile`: Container definition with PlatformIO and dependencies
+- `tools/build/docker/docker-compose.yml`: Main Docker Compose configuration
+- `tools/build/docker/Dockerfile`: Container definition with PlatformIO and dependencies
+- `tools/build/docker/get-docker.sh`: Docker installation helper script
 - `platformio-cache` volume: Persists PlatformIO libraries between runs
+
+**Note**: Makefile commands (`make setup-local-docker`, `make tests-*`) work from the repository root, but direct `docker-compose` commands must be run from the `tools/build/docker/` directory.
 
 ## Build Methods
 
@@ -121,6 +141,9 @@ docker-compose build
 
 #### Build Specific Configuration
 ```bash
+# Navigate to Docker directory
+cd tools/build/docker
+
 # Build CR6 SE v4.5.3 configuration
 docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
 
@@ -130,6 +153,9 @@ docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs conf
 
 #### Interactive Docker Session
 ```bash
+# Navigate to Docker directory
+cd tools/build/docker
+
 # Get shell inside container
 docker-compose run --rm marlin bash
 
@@ -447,15 +473,16 @@ pip install --user platformio
 #### Method 4: Docker User Mapping (Permanent Solution)
 The repository is configured to prevent permission issues by running Docker containers with your user ID instead of root. This is handled automatically via:
 
-- `.env` file with your UID/GID
-- Modified `docker-compose.yml` with user mapping
-- Updated `Dockerfile` that creates a matching user
+- `tools/build/docker/.env` file with your UID/GID
+- Modified `tools/build/docker/docker-compose.yml` with user mapping
+- Updated `tools/build/docker/Dockerfile` that creates a matching user
 
 If you encounter permission issues, first try Method 1 (fix ownership), then rebuild the Docker environment:
 
 ```bash
 # Fix ownership and rebuild Docker environment
 sudo chown -R $USER:$USER .
+cd tools/build/docker
 docker-compose down
 docker-compose build --no-cache
 ```
@@ -464,9 +491,9 @@ docker-compose build --no-cache
 
 The repository is configured to prevent permission issues by running Docker containers with your user ID. This is handled automatically via:
 
-- **User mapping**: `docker-compose.yml` includes `user: "${UID:-1000}:${GID:-1000}"`
-- **Environment variables**: `.env` file contains your user/group IDs  
-- **Container user**: Dockerfile creates a `user` account that matches your host user
+- **User mapping**: `tools/build/docker/docker-compose.yml` includes `user: "${UID:-1000}:${GID:-1000}"`
+- **Environment variables**: `tools/build/docker/.env` file contains your user/group IDs  
+- **Container user**: `tools/build/docker/Dockerfile` creates a `user` account that matches your host user
 
 For manual Docker builds, ensure proper user mapping:
 
@@ -474,7 +501,7 @@ For manual Docker builds, ensure proper user mapping:
 # Build with user mapping (if not using docker-compose)
 docker run --user $(id -u):$(id -g) marlin-dev
 
-# The docker-compose.yml already handles this automatically:
+# The tools/build/docker/docker-compose.yml already handles this automatically:
 services:
   marlin:
     user: "${UID:-1000}:${GID:-1000}"
@@ -484,6 +511,7 @@ If you need to rebuild the Docker environment after permission issues:
 
 ```bash
 # Complete Docker environment reset
+cd tools/build/docker
 docker-compose down
 docker volume rm cr6community-marlin_tb_platformio-cache
 docker-compose build --no-cache
@@ -734,6 +762,7 @@ make tests-single-local-docker TEST_TARGET=STM32F103RET6_creality
 make tests-single-local-docker TEST_TARGET=STM32F103RE_btt_USB
 
 # Build specific configurations
+cd tools/build/docker
 docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
 ```
 
@@ -792,6 +821,7 @@ Use the provided wrapper instead of direct execution:
 #### Memory Issues
 ```bash
 # If builds fail due to memory constraints
+cd tools/build/docker
 docker-compose run --rm marlin bash -c "ulimit -m 2097152 && platformio run -e STM32F103RET6_creality"
 ```
 
@@ -827,6 +857,7 @@ pip install --user platformio
 
 #### Check Available Platforms
 ```bash
+cd tools/build/docker
 docker-compose run --rm marlin platformio platform list
 ```
 
@@ -837,6 +868,7 @@ make tests-single-local-docker TEST_TARGET=STM32F103RET6_creality VERBOSE_PLATFO
 
 #### Container Shell Access
 ```bash
+cd tools/build/docker
 docker-compose run --rm marlin bash
 ```
 

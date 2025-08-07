@@ -6,11 +6,11 @@ services:
     image: marlin-dev
     build:
       dockerfile: Dockerfile
-      context: docker
+      context: .
     working_dir: /code
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
-    - .:/code
+    - ../../..:/code
     - platformio-cache:/home/user/.platformio
     environment:
     - HOME=/home/user
