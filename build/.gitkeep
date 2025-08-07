@@ -1,0 +1,2 @@
+# This file ensures the build/ directory is tracked by git even when empty
+# Build artifacts will be placed in this directory
