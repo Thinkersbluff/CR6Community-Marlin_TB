@@ -13,7 +13,7 @@ _To compile a unique version of this firmware tailored for your own customized C
 
 This repository comes complete with the original comprehensive automation suite and new [documentation on how to install and use that suite](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/extui/BUILD_AND_TEST.md), for anyone who decides to clone this repo and work with it locally.
 Note: The new documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
-      There are also Powershell scripts and documentation on how to use those on Windows and in the VSCode terminal window.
+      There are also Powershell [scripts](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/extui/scripts) and documentation on how to use those on Windows and in the VSCode terminal window.
 
 ## Downloads
 
