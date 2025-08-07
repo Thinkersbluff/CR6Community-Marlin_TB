@@ -2,8 +2,29 @@
 
 **Date:** August 7, 2025  
 **Repository:** CR6Community-Marlin_TB  
-**Current Branch:** extui  
-**Proposed for:** New restructuring branch  
+**Current Branch:*### 2. Platform-Based Development Tools (`tools/`)
+
+**Changes:**
+- Create platform-first organization: `tools/linux/` and `tools/windows/`
+- Group tools by platform, then by function (build, test, vscode)
+- Cross-platform analysis tools in `tools/analysis/`
+- Each platform has complete tool ecosystem
+
+**Benefits:**
+- **User-centric navigation** - "I'm on Linux" → go to `tools/linux/`
+- **Reduced cognitive load** - one navigation decision, then functional hierarchy
+- **Platform-specific optimization** - tools tailored for each platform's strengths
+- **Cross-platform tools** clearly separated in `analysis/` category
+- **Extensible structure** - easy to add new platforms or functions
+
+**Implemented Structure:**
+- `tools/linux/build/` - Native bash scripts and Docker configuration
+- `tools/linux/test/` - Linux testing utilities
+- `tools/linux/vscode/` - VS Code tools for Linux/macOS
+- `tools/windows/build/` - PowerShell scripts and Windows tools
+- `tools/windows/test/` - Windows testing utilities (future)
+- `tools/windows/vscode/` - Windows VS Code tools (future)
+- `tools/analysis/` - Python-based cross-platform analysis toolsProposed for:** New restructuring branch  
 
 ## Executive Summary
 
@@ -55,32 +76,39 @@ CR6Community-Marlin_TB/
 │   │   └── Serial.md                 # Move from docs/
 │   └── hardware/                     # New subdirectory for hardware docs
 │
-├── tools/                            # 📁 NEW - Development and build tools
-│   ├── build/                        # Build-related scripts
-│   │   ├── build-configs.sh          # Move from root
-│   │   ├── get_test_targets.py       # Move from root
-│   │   └── docker/                   # Docker-related files
-│   │       ├── get-docker.sh         # Move from root
-│   │       ├── docker-compose.yml    # Move from root
-│   │       ├── Dockerfile            # Move from docker/
-│   │       └── .env                  # Move from root
-│   ├── scripts/                      # Platform-specific scripts
-│   │   ├── powershell/               # Windows PowerShell scripts
-│   │   │   ├── Common.ps1            # Move from scripts/
-│   │   │   ├── Generate-ConfigExample.ps1
-│   │   │   ├── Invoke-PioBuild.ps1
-│   │   │   ├── Join-UpstreamChanges.ps1
-│   │   │   ├── Run-ExampleConfigBuilds.ps1
-│   │   │   ├── Update-ConfigExampleChanges.ps1
-│   │   │   ├── Update-ConfigExamples.ps1
-│   │   │   └── build-incl/           # Move from scripts/
-│   │   └── linux/                    # Linux-specific scripts
-│   │       └── run-powershell.sh     # Move from root
-│   ├── vscode/                       # VS Code specific tools
-│   │   ├── process-palette.json      # Move from root
-│   │   └── compile_commands.json     # Move from root
-│   └── analysis/                     # Cross-platform analysis tools
-│       └── temperature-monitoring/   # Python-based performance analysis tools
+├── tools/                            # 📁 NEW - Development and build tools (Platform-based organization)
+│   ├── linux/                        # Linux/macOS development tools
+│   │   ├── build/                     # Linux build scripts and configuration
+│   │   │   ├── build-configs.sh       # Move from root
+│   │   │   ├── run-powershell.sh      # Move from root (Docker wrapper)
+│   │   │   └── docker/                # Docker configuration for Linux builds
+│   │   │       ├── get-docker.sh      # Move from root
+│   │   │       ├── docker-compose.yml # Move from root
+│   │   │       ├── Dockerfile         # Move from docker/
+│   │   │       └── .env               # Move from root
+│   │   ├── test/                      # Linux testing utilities
+│   │   │   └── get_test_targets.py    # Move from root
+│   │   └── vscode/                    # VS Code tools for Linux
+│   │       ├── auto_build.py          # Move from buildroot/share/vscode/
+│   │       ├── avrdude.conf           # Move from buildroot/share/vscode/
+│   │       └── (other VS Code tools)  # Move from buildroot/share/vscode/
+│   ├── windows/                       # Windows development tools
+│   │   ├── build/                     # Windows PowerShell build scripts
+│   │   │   ├── Common.ps1             # Move from scripts/
+│   │   │   ├── Generate-ConfigExample.ps1  # Move from scripts/
+│   │   │   ├── Invoke-PioBuild.ps1    # Move from scripts/
+│   │   │   ├── Join-UpstreamChanges.ps1  # Move from scripts/
+│   │   │   ├── Run-ExampleConfigBuilds.ps1  # Move from scripts/
+│   │   │   ├── Update-ConfigExampleChanges.ps1  # Move from scripts/
+│   │   │   ├── Update-ConfigExamples.ps1  # Move from scripts/
+│   │   │   └── build-incl/            # Move from scripts/build-incl/
+│   │   ├── test/                      # Windows testing utilities (future)
+│   │   └── vscode/                    # VS Code tools for Windows (future)
+│   ├── analysis/                      # Cross-platform analysis tools
+│   │   └── temperature-monitoring/    # Python-based performance analysis tools
+│   └── vscode/                        # Legacy VS Code tools location
+│       ├── process-palette.json       # Move from root
+│       └── compile_commands.json      # Move from root
 │
 ├── .dev/                             # 📁 NEW - Development environment configs
 │   ├── vscode/                       # VS Code configuration
@@ -143,15 +171,17 @@ CR6Community-Marlin_TB/
 ### 4. Improved Cross-Platform Support
 
 **Changes:**
-- Dedicated directories for Windows (`tools/scripts/powershell/`) and Linux (`tools/scripts/linux/`)
-- Updated documentation to point to correct platform-specific tools
-- Clear separation of platform-specific concerns
+- **Platform-first hierarchy**: `tools/linux/` and `tools/windows/` as primary organization
+- **Function-based subdirectories**: Each platform has `build/`, `test/`, `vscode/` subdirectories
+- **Cross-platform utilities**: Shared tools in `tools/analysis/` for Python-based utilities
+- **Clear entry points**: Users navigate to their platform once, then find all related tools
 
 **Benefits:**
-- **Eliminates confusion** about which scripts to use on which platform
-- **Better onboarding** for developers on different operating systems
-- **Maintained compatibility** with existing workflows
-- **Future-ready** for additional platform support
+- **Intuitive navigation** - platform choice is primary decision
+- **Complete toolsets** - each platform directory contains everything needed
+- **Reduced confusion** - no mixing of platform-specific tools
+- **Future-ready** - easy to add new platforms (e.g., `tools/macos/` if needed)
+- **User experience focused** - structure serves user workflow, not technical details
 
 ### 5. Build Output Organization
 
