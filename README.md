@@ -59,7 +59,7 @@ Those examples remain in this repo, and may work for you, but they are not suppo
 ## A note about the original project
 
 The developers of the original CR6Community Firmware had hoped that the upstream Marlin3D team would merge their work back into the Marlin3D mainstream.
-Unfortunately, the upstream developers pulled an early version of the project, and by the time this code achieved its own feature enhancement goals, the GitHub Diff functionality could no longer support remerging the two streams.
+Unfortunately, the upstream developers pulled an early version of the project, just before the Community Firmware went therough a major refactoring.  By the time this code achieved its own feature enhancement goals, the GitHub Diff functionality could no longer support remerging the two streams.
 
 Version 6.1 thus has become a dead-ended fork of Marlin, based on Marlin release 2.0.8.1.
 Our development team had, however, also begun rebaselining to Marlin 2.9.0.1, when they stopped work back in 2021.
