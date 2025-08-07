@@ -11,7 +11,7 @@ This upgrade brings numerous upstream improvements, bug fixes, and new features 
 ## 🎯 CR6-Specific Enhancements
 
 ### Build System & Tooling
-- **✨ NEW: Linux Build Script** - Added `build-configs.sh` as native Linux equivalent to PowerShell scripts
+- **✨ NEW: Linux Build Script** - Added `tools/build/build-configs.sh` as native Linux equivalent to PowerShell scripts
 - **📚 Enhanced Documentation** - Comprehensive `BUILD_AND_TEST.md` covering Docker environment and build tools
 - **🐳 Docker Environment Improvements** - Better permission management and troubleshooting guides
 - **🔧 BTT SKR CR6 Support Fixed** - Resolved linking errors, added proper library dependencies

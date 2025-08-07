@@ -123,28 +123,43 @@ platformio run -e STM32F103RET6_creality
 
 For users running on Linux systems, we provide native shell scripts that offer equivalent functionality to the PowerShell scripts used in the Windows development environment.
 
-### build-configs.sh
+### tools/build/build-configs.sh
 
-A native Linux script that provides the same functionality as `Run-ExampleConfigBuilds.ps1`:
+The Linux build script (`tools/build/build-configs.sh`) is equivalent to the PowerShell `Run-ExampleConfigBuilds.ps1` script and can build all or specific configuration examples. The script automatically detects the repository root and can be run from any directory within the repository.
 
+**Basic usage (run from repository root):**
 ```bash
-# Build all configurations with default release name
-./build-configs.sh
+./tools/build/build-configs.sh
+```
 
-# Build all configurations with custom release name
-./build-configs.sh v2.1.3.2
+**Basic usage (run from tools/build directory):**
+```bash
+cd tools/build && ./build-configs.sh
+```
 
-# Build specific configuration
-./build-configs.sh test-build cr6-se-v4.5.3-mb
+**Build with custom release name:**
+```bash
+./tools/build/build-configs.sh v2.1.3.2
+```
 
-# Dry run - test without actually building
-./build-configs.sh test-build cr6-se-v4.5.3-mb true
+**Build single configuration:**
+```bash
+./tools/build/build-configs.sh test-build cr6-se-v4.5.3-mb
+```
 
-# Build with custom touchscreen repository path
-./build-configs.sh v2.1.3.2 "" "" ../path/to/CR-6-Touchscreen
+**Dry run (test without building):**
+```bash
+./tools/build/build-configs.sh test-build cr6-se-v4.5.3-mb true
+```
 
-# Build single config with touchscreen repo
-./build-configs.sh release-name cr6-se-v4.5.3-mb false ../CR-6-Touchscreen
+**Custom touchscreen path:**
+```bash
+./tools/build/build-configs.sh v2.1.3.2 "" "" ../path/to/CR-6-Touchscreen
+```
+
+**All parameters:**
+```bash
+./tools/build/build-configs.sh release-name cr6-se-v4.5.3-mb false ../CR-6-Touchscreen
 ```
 
 #### Parameters and Options
@@ -176,24 +191,24 @@ The script accepts up to four positional parameters:
 
 ```bash
 # Release build for all configurations
-./build-configs.sh v2.1.3.2
+./tools/build/build-configs.sh v2.1.3.2
 
 # Test specific configuration without building
-./build-configs.sh test-build cr6-max-stock-mb true
+./tools/build/build-configs.sh test-build cr6-max-stock-mb true
 
 # Build with custom touchscreen repository path (only if not at default location)
-./build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
+./tools/build/build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
 
 # Build only BTT configurations (using pattern matching)
 for config in $(ls config/ | grep btt); do
-    ./build-configs.sh release-candidate "$config"
+    ./tools/build/build-configs.sh release-candidate "$config"
 done
 
 # Quick test build of modified configuration
-./build-configs.sh debug-test cr6-se-v4.5.3-mb
+./tools/build/build-configs.sh debug-test cr6-se-v4.5.3-mb
 
 # Skip touchscreen firmware entirely (disable touchscreen)
-./build-configs.sh v2.1.3.2 "" "" /nonexistent/path
+./tools/build/build-configs.sh v2.1.3.2 "" "" /nonexistent/path
 ```
 
 #### Touchscreen Firmware Integration
@@ -212,10 +227,10 @@ git clone https://github.com/CR6Community/CR-6-touchscreen ../CR-6-Touchscreen
 ls ../CR-6-Touchscreen/src/DWIN/DWIN_SET/
 
 # Build will automatically find and package touchscreen firmware
-./build-configs.sh v2.1.3.2
+./tools/build/build-configs.sh v2.1.3.2
 
 # If your touchscreen repo is elsewhere, specify the path:
-./build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
+./tools/build/build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
 ```
 
 **How It Works:**
@@ -285,7 +300,7 @@ Optional files:
 
 #### No-Autobuild Flag
 
-To prevent a configuration from being built during batch builds (when running `./build-configs.sh` without specifying a single configuration), create a `no-autobuild.txt` file in the configuration directory:
+To prevent a configuration from being built during batch builds (when running `./tools/build/build-configs.sh` without specifying a single configuration), create a `no-autobuild.txt` file in the configuration directory:
 
 ```bash
 # Create the file with explanation text
@@ -301,7 +316,7 @@ The file should contain a brief explanation of why the configuration is excluded
 **Important**: The `no-autobuild.txt` flag only affects batch builds. You can still build the configuration explicitly:
 ```bash
 # This will build even with no-autobuild.txt present
-./build-configs.sh release-name my-excluded-config
+./tools/build/build-configs.sh release-name my-excluded-config
 ```
 
 ### run-powershell.sh

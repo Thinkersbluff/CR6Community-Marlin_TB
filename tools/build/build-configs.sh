@@ -2,12 +2,25 @@
 # Linux equivalent of Run-ExampleConfigBuilds.ps1
 # Builds multiple configuration examples and packages them for release
 
+# Auto-detect repository root directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR" && git rev-parse --show-toplevel 2>/dev/null)"
+
+if [ -z "$REPO_ROOT" ] || [ ! -f "$REPO_ROOT/platformio.ini" ]; then
+    echo "ERROR: Could not detect repository root or not in a Marlin repository"
+    echo "This script must be run from within the CR6Community-Marlin repository"
+    exit 1
+fi
+
+echo "Repository root detected: $REPO_ROOT"
+cd "$REPO_ROOT"
+
 RELEASE_NAME="${1:-test-build}"
 SINGLE_BUILD="${2:-}"
 DRY_RUN="${3:-}"
 TOUCHSCREEN_REPO_PATH="${4:-../CR-6-Touchscreen}"
 
-OUTPUT_DIR=".pio/build-output"
+OUTPUT_DIR="$REPO_ROOT/.pio/build-output"
 TIMESTAMP=$(date +%Y-%m-%d-%H-%M)
 
 echo "=== CR6 Community Firmware Build Script ==="
@@ -41,7 +54,7 @@ mkdir -p "$OUTPUT_DIR"
 # Get list of available configurations (only those with required files)
 echo "Scanning configurations..."
 CONFIGS=()
-for config_dir in config/*/; do
+for config_dir in "$REPO_ROOT/config/"*/; do
     config_name=$(basename "$config_dir")
     
     # Skip README.md and other non-config files
@@ -76,7 +89,7 @@ echo ""
 
 build_config() {
     local config_name="$1"
-    local config_dir="config/$config_name"
+    local config_dir="$REPO_ROOT/config/$config_name"
     
     echo "=== Building $config_name ==="
     
@@ -156,7 +169,7 @@ build_config() {
         fi
         
         # Copy firmware binary
-        local firmware_files=($(find .pio/build/$platform_env -name "firmware*.bin" 2>/dev/null))
+        local firmware_files=($(find "$REPO_ROOT/.pio/build/$platform_env" -name "firmware*.bin" 2>/dev/null))
         if [ ${#firmware_files[@]} -eq 0 ]; then
             echo "ERROR: No firmware binary found for $config_name"
             return 1
