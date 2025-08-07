@@ -5,6 +5,7 @@ This document describes the comprehensive build and test infrastructure availabl
 ## Table of Contents
 
 - [Quick Start](#quick-start)
+- [Script Usage Guidelines](#script-usage-guidelines)
 - [Docker Environment](#docker-environment)
 - [Build Methods](#build-methods)
 - [Linux Build Scripts](#linux-build-scripts)
@@ -19,6 +20,36 @@ This document describes the comprehensive build and test infrastructure availabl
 
 ### Prerequisites
 - Docker and docker-compose installed
+
+## Script Usage Guidelines
+
+**🎯 Golden Rule: Always run scripts from their current location in the repository structure.**
+
+All scripts in this repository are designed to work when you navigate to their directory and run them directly. This provides a consistent, predictable experience for all users.
+
+### Examples:
+```bash
+# Build scripts - navigate to tools/build/ and run
+cd tools/build
+./build-configs.sh
+
+# Future PowerShell scripts - navigate to tools/scripts/powershell/ and run  
+cd tools/scripts/powershell
+./Generate-ConfigExample.ps1
+
+# Future Linux scripts - navigate to tools/scripts/linux/ and run
+cd tools/scripts/linux
+./some-script.sh
+```
+
+### Why This Approach?
+- **🆕 Beginner-friendly**: Only one rule to remember
+- **🔍 Discoverable**: Find a script, navigate to it, run it
+- **📁 Self-documenting**: Location tells you how to use it
+- **🔄 Consistent**: Every script works the same way
+
+### Technical Details:
+Our scripts use automatic repository root detection, so they work correctly regardless of where you run them from. However, following the "run from script location" pattern creates consistency and helps build good habits for repository navigation.
 - Git repository cloned locally
 
 ### Basic Docker Build
