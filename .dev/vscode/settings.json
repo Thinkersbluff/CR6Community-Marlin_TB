@@ -1,0 +1,40 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.intelliSenseEngine": "Tag Parser",
+    "C_Cpp.default.intelliSenseMode": "gcc-arm",
+    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "python.analysis.extraPaths": [
+        "/usr/lib/python3/dist-packages"
+    ],
+    "python.analysis.autoSearchPaths": false,
+    "python.analysis.diagnosticMode": "openFilesOnly",
+    "python.analysis.exclude": [
+        "**/buildroot/**",
+        "**/Marlin/**",
+        "**/scripts/**",
+        "**/venv/**",
+        "**/.venv/**",
+        "**/env/**",
+        "**/.env/**",
+        "**/site-packages/**",
+        "**/dist-packages/**",
+        "**/__pycache__/**",
+        "**/*.pyc"
+    ],
+    "files.exclude": {
+        "**/buildroot/share/PlatformIO/scripts/*.py": true,
+        "**/__pycache__": true,
+        "**/*.pyc": true,
+        "**/venv": true,
+        "**/.venv": true
+    },
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": false,
+    "python.analysis.indexing": false,
+    "python.analysis.packageIndexDepths": [
+        {
+            "name": "",
+            "depth": 0
+        }
+    ]
+}
