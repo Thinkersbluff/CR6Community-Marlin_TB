@@ -79,7 +79,8 @@ CR6Community-Marlin_TB/
 │   ├── vscode/                       # VS Code specific tools
 │   │   ├── process-palette.json      # Move from root
 │   │   └── compile_commands.json     # Move from root
-│   └── temperature-monitoring/       # FUTURE: Integration point for new tools
+│   └── analysis/                     # Cross-platform analysis tools
+│       └── temperature-monitoring/   # Python-based performance analysis tools
 │
 ├── .dev/                             # 📁 NEW - Development environment configs
 │   ├── vscode/                       # VS Code configuration
@@ -271,19 +272,35 @@ Creating a dedicated branch for this restructuring is **excellent practice** bec
 5. **Controlled integration** - Can merge when ready without rushing
 
 ### Future Tool Integration
-The absence of `tools/temperature-monitoring` in the current branch is **not a problem** because:
+Integration of analysis tools from the `test-stm32-adc-fixes` branch:
 
-1. **Forward compatibility** - The new structure specifically accommodates this addition
-2. **Clean integration** - When ready, `temperature-monitoring` can be added to `tools/` easily
-3. **Independent timelines** - Restructuring and new tool development can proceed independently
-4. **Merge flexibility** - The temperature monitoring tool can be merged into the restructured branch later
+1. **New location** - Temperature monitoring tools will be placed in `tools/analysis/temperature-monitoring/`
+2. **Platform-agnostic** - Python-based tools work on all platforms without platform-specific directories
+3. **Purpose-focused** - Analysis tools are grouped by function rather than platform since they serve cross-platform users
+4. **Clean integration** - The new `tools/analysis/` category provides a logical home for performance evaluation tools
+
+### Integration Strategy for test-stm32-adc-fixes Branch
+
+**Target Location**: `tools/analysis/temperature-monitoring/`
+
+**Integration Steps**:
+1. **Merge destination prepared** - Placeholder directory already exists in restructured branch
+2. **Python tools placement** - Real-time monitoring scripts go directly into `temperature-monitoring/`
+3. **Documentation update** - Analysis tools README explains purpose and usage
+4. **Cross-platform access** - All users can access performance analysis regardless of platform
+
+**Rationale for analysis/ category**:
+- Temperature monitoring tools are **performance analysis utilities**, not platform-specific build tools
+- Python-based tools are **inherently cross-platform**
+- Users doing **before/after comparisons** need easy access regardless of development platform
+- **Bug reporting** and **upgrade evaluation** workflows benefit all users
 
 ### Recommended Next Steps
 1. **Complete restructuring** on the dedicated branch
 2. **Test all workflows** to ensure nothing breaks
 3. **Update documentation** to reflect new structure
 4. **Review and refine** the organization based on testing
-5. **Merge temperature-monitoring** tool when ready (fits perfectly in `tools/`)
+5. **Merge temperature-monitoring tools** from `test-stm32-adc-fixes` to `tools/analysis/temperature-monitoring/`
 6. **Merge to main** when restructuring is validated
 
 ## Success Metrics

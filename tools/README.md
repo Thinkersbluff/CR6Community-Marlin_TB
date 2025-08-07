@@ -10,10 +10,12 @@ tools/
 │   ├── build/       # Build scripts and configuration
 │   ├── test/        # Testing utilities
 │   └── vscode/      # VS Code integration tools
-└── windows/         # Tools for Windows users
-    ├── build/       # Build scripts and configuration
-    ├── test/        # Testing utilities
-    └── vscode/      # VS Code integration tools
+├── windows/         # Tools for Windows users
+│   ├── build/       # Build scripts and configuration
+│   ├── test/        # Testing utilities
+│   └── vscode/      # VS Code integration tools
+└── analysis/        # Cross-platform analysis and monitoring tools
+    └── temperature-monitoring/  # Performance analysis and data gathering
 ```
 
 ## Quick Start
@@ -44,6 +46,16 @@ cd build
 ./Invoke-PioBuild.ps1 -ConfigName cr6-se-v4.5.3-mb
 ```
 
+### Analysis Tools (All Platforms)
+```bash
+# Navigate to analysis tools
+cd tools/analysis
+
+# Temperature monitoring and performance analysis
+cd temperature-monitoring
+# (Python tools will be available after integration)
+```
+
 ## Philosophy
 
 The tools are organized by **platform** to provide the most intuitive user experience:
@@ -57,4 +69,8 @@ Within each platform directory, tools are organized by **function**:
 - **`test/`** → Everything related to testing
 - **`vscode/`** → Everything related to VS Code integration
 
-This structure follows the principle that users should be able to navigate to their platform once, then find all related functionality in a logical hierarchy.
+For **cross-platform analysis tools**:
+
+- **`analysis/`** → Performance monitoring, data gathering, and comparative analysis tools
+
+This structure follows the principle that users should be able to navigate to their platform once, then find all related functionality in a logical hierarchy. Analysis tools are kept platform-agnostic since they're typically Python-based and serve users on all platforms.

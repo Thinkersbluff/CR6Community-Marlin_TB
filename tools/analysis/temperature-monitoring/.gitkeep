@@ -1,0 +1,10 @@
+# This file ensures the tools/analysis/temperature-monitoring/ directory is tracked by git even when empty
+#
+# This directory is reserved for Python-based temperature monitoring and performance analysis tools
+# that support real-time data gathering and comparative evaluation of firmware changes.
+#
+# Future integration from test-stm32-adc-fixes branch will populate this directory with:
+# - Real-time temperature monitoring scripts
+# - Performance analysis tools  
+# - Data collection utilities for before/after comparisons
+# - Bug report data gathering tools
