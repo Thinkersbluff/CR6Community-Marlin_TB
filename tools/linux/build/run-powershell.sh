@@ -4,7 +4,7 @@
 
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <powershell-script.ps1> [arguments...]"
-    echo "Example: $0 scripts/Run-ExampleConfigBuilds.ps1 -ReleaseName test"
+    echo "Example: $0 tools/windows/build/Run-ExampleConfigBuilds.ps1 -ReleaseName test"
     exit 1
 fi
 

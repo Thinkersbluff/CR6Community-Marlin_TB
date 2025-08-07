@@ -29,17 +29,20 @@ All scripts in this repository are designed to work when you navigate to their d
 
 ### Examples:
 ```bash
-# Build scripts - navigate to tools/build/ and run
-cd tools/build
+# Build scripts - navigate to your platform's build directory
+# Linux/macOS users:
+cd tools/linux/build
 ./build-configs.sh
 
-# Future PowerShell scripts - navigate to tools/scripts/powershell/ and run  
-cd tools/scripts/powershell
-./Generate-ConfigExample.ps1
+# Windows users:
+cd tools/windows/build
+./Run-ExampleConfigBuilds.ps1 -ReleaseName "test-build"
 
-# Future Linux scripts - navigate to tools/scripts/linux/ and run
-cd tools/scripts/linux
-./some-script.sh
+# VS Code tools - navigate to your platform's vscode directory  
+# Linux/macOS users:
+cd tools/linux/vscode
+# Windows users:
+cd tools/windows/vscode
 ```
 
 ### Why This Approach?
@@ -53,8 +56,8 @@ Our scripts use automatic repository root detection, so they work correctly rega
 
 ### Docker Usage:
 ```bash
-# Docker files are located in tools/build/docker/
-cd tools/build/docker
+# Docker files are located in tools/linux/build/docker/
+cd tools/linux/build/docker
 
 # Build the container
 docker-compose build
@@ -128,12 +131,12 @@ docker-compose build
 ```
 
 ### Docker Files Structure
-- `tools/build/docker/docker-compose.yml`: Main Docker Compose configuration
-- `tools/build/docker/Dockerfile`: Container definition with PlatformIO and dependencies
-- `tools/build/docker/get-docker.sh`: Docker installation helper script
+- `tools/linux/build/docker/docker-compose.yml`: Main Docker Compose configuration
+- `tools/linux/build/docker/Dockerfile`: Container definition with PlatformIO and dependencies
+- `tools/linux/build/docker/get-docker.sh`: Docker installation helper script
 - `platformio-cache` volume: Persists PlatformIO libraries between runs
 
-**Note**: Makefile commands (`make setup-local-docker`, `make tests-*`) work from the repository root, but direct `docker-compose` commands must be run from the `tools/build/docker/` directory.
+**Note**: Makefile commands (`make setup-local-docker`, `make tests-*`) work from the repository root, but direct `docker-compose` commands must be run from the `tools/linux/build/docker/` directory.
 
 ## Build Methods
 
@@ -142,7 +145,7 @@ docker-compose build
 #### Build Specific Configuration
 ```bash
 # Navigate to Docker directory
-cd tools/build/docker
+cd tools/linux/build/docker
 
 # Build CR6 SE v4.5.3 configuration
 docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
@@ -154,7 +157,7 @@ docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs conf
 #### Interactive Docker Session
 ```bash
 # Navigate to Docker directory
-cd tools/build/docker
+cd tools/linux/build/docker
 
 # Get shell inside container
 docker-compose run --rm marlin bash
@@ -180,43 +183,43 @@ platformio run -e STM32F103RET6_creality
 
 For users running on Linux systems, we provide native shell scripts that offer equivalent functionality to the PowerShell scripts used in the Windows development environment.
 
-### tools/build/build-configs.sh
+### tools/linux/build/build-configs.sh
 
-The Linux build script (`tools/build/build-configs.sh`) is equivalent to the PowerShell `Run-ExampleConfigBuilds.ps1` script and can build all or specific configuration examples. The script automatically detects the repository root and can be run from any directory within the repository.
+The Linux build script (`tools/linux/build/build-configs.sh`) is equivalent to the PowerShell `Run-ExampleConfigBuilds.ps1` script and can build all or specific configuration examples. The script automatically detects the repository root and can be run from any directory within the repository.
 
 **Basic usage (run from repository root):**
 ```bash
-./tools/build/build-configs.sh
+./tools/linux/build/build-configs.sh
 ```
 
-**Basic usage (run from tools/build directory):**
+**Basic usage (run from tools/linux/build directory):**
 ```bash
-cd tools/build && ./build-configs.sh
+cd tools/linux/build && ./build-configs.sh
 ```
 
 **Build with custom release name:**
 ```bash
-./tools/build/build-configs.sh v2.1.3.2
+./tools/linux/build/build-configs.sh v2.1.3.2
 ```
 
 **Build single configuration:**
 ```bash
-./tools/build/build-configs.sh test-build cr6-se-v4.5.3-mb
+./tools/linux/build/build-configs.sh test-build cr6-se-v4.5.3-mb
 ```
 
 **Dry run (test without building):**
 ```bash
-./tools/build/build-configs.sh test-build cr6-se-v4.5.3-mb true
+./tools/linux/build/build-configs.sh test-build cr6-se-v4.5.3-mb true
 ```
 
 **Custom touchscreen path:**
 ```bash
-./tools/build/build-configs.sh v2.1.3.2 "" "" ../path/to/CR-6-Touchscreen
+./tools/linux/build/build-configs.sh v2.1.3.2 "" "" ../path/to/CR-6-Touchscreen
 ```
 
 **All parameters:**
 ```bash
-./tools/build/build-configs.sh release-name cr6-se-v4.5.3-mb false ../CR-6-Touchscreen
+./tools/linux/build/build-configs.sh release-name cr6-se-v4.5.3-mb false ../CR-6-Touchscreen
 ```
 
 #### Parameters and Options
@@ -248,24 +251,24 @@ The script accepts up to four positional parameters:
 
 ```bash
 # Release build for all configurations
-./tools/build/build-configs.sh v2.1.3.2
+./tools/linux/build/build-configs.sh v2.1.3.2
 
 # Test specific configuration without building
-./tools/build/build-configs.sh test-build cr6-max-stock-mb true
+./tools/linux/build/build-configs.sh test-build cr6-max-stock-mb true
 
 # Build with custom touchscreen repository path (only if not at default location)
-./tools/build/build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
+./tools/linux/build/build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
 
 # Build only BTT configurations (using pattern matching)
 for config in $(ls config/ | grep btt); do
-    ./tools/build/build-configs.sh release-candidate "$config"
+    ./tools/linux/build/build-configs.sh release-candidate "$config"
 done
 
 # Quick test build of modified configuration
-./tools/build/build-configs.sh debug-test cr6-se-v4.5.3-mb
+./tools/linux/build/build-configs.sh debug-test cr6-se-v4.5.3-mb
 
 # Skip touchscreen firmware entirely (disable touchscreen)
-./tools/build/build-configs.sh v2.1.3.2 "" "" /nonexistent/path
+./tools/linux/build/build-configs.sh v2.1.3.2 "" "" /nonexistent/path
 ```
 
 #### Touchscreen Firmware Integration
@@ -284,10 +287,10 @@ git clone https://github.com/CR6Community/CR-6-touchscreen ../CR-6-Touchscreen
 ls ../CR-6-Touchscreen/src/DWIN/DWIN_SET/
 
 # Build will automatically find and package touchscreen firmware
-./tools/build/build-configs.sh v2.1.3.2
+./tools/linux/build/build-configs.sh v2.1.3.2
 
 # If your touchscreen repo is elsewhere, specify the path:
-./tools/build/build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
+./tools/linux/build/build-configs.sh v2.1.3.2 "" "" /home/stephen/CR-6-Touchscreen
 ```
 
 **How It Works:**
@@ -382,10 +385,10 @@ For cases where PowerShell scripts must be executed on Linux systems:
 
 ```bash
 # Execute PowerShell script through Docker
-./run-powershell.sh scripts/Run-ExampleConfigBuilds.ps1 cr6-se-v4.5.3-mb
+./tools/linux/build/run-powershell.sh tools/windows/build/Run-ExampleConfigBuilds.ps1 -ReleaseName cr6-se-v4.5.3-mb
 
 # Run with additional parameters
-./run-powershell.sh scripts/Generate-ConfigExample.ps1 -ConfigName cr6-se-v4.5.3-mb
+./tools/linux/build/run-powershell.sh tools/windows/build/Generate-ConfigExample.ps1 -ConfigName cr6-se-v4.5.3-mb
 ```
 
 This wrapper provides:
@@ -511,7 +514,7 @@ If you need to rebuild the Docker environment after permission issues:
 
 ```bash
 # Complete Docker environment reset
-cd tools/build/docker
+cd tools/linux/build/docker
 docker-compose down
 docker volume rm cr6community-marlin_tb_platformio-cache
 docker-compose build --no-cache
@@ -736,8 +739,8 @@ opt_set               # Set configuration values
 ./buildroot/bin/restore_configs
 ```
 
-### PowerShell Scripts (Maintainers on Windows sysem)
-Located in `scripts/`:
+### PowerShell Scripts (Maintainers on Windows system)
+Located in `tools/windows/build/`:
 - `Generate-ConfigExample.ps1` - Create new configuration
 - `Update-ConfigExamples.ps1` - Update all configurations
 - `Run-ExampleConfigBuilds.ps1` - Build all examples
@@ -762,7 +765,7 @@ make tests-single-local-docker TEST_TARGET=STM32F103RET6_creality
 make tests-single-local-docker TEST_TARGET=STM32F103RE_btt_USB
 
 # Build specific configurations
-cd tools/build/docker
+cd tools/linux/build/docker
 docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
 ```
 
@@ -868,7 +871,7 @@ make tests-single-local-docker TEST_TARGET=STM32F103RET6_creality VERBOSE_PLATFO
 
 #### Container Shell Access
 ```bash
-cd tools/build/docker
+cd tools/linux/build/docker
 docker-compose run --rm marlin bash
 ```
 

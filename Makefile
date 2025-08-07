@@ -34,19 +34,19 @@ tests-single-local:
 
 tests-single-local-docker:
 	@if ! test -n "$(TEST_TARGET)" ; then echo "***ERROR*** Set TEST_TARGET=<your-module> or use make tests-all-local-docker" ; return 1; fi
-	docker-compose run --rm marlin $(MAKE) tests-single-local TEST_TARGET=$(TEST_TARGET) VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD) ONLY_TEST="$(ONLY_TEST)"
+	docker-compose -f tools/linux/build/docker/docker-compose.yml run --rm marlin $(MAKE) tests-single-local TEST_TARGET=$(TEST_TARGET) VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD) ONLY_TEST="$(ONLY_TEST)"
 .PHONY: tests-single-local-docker
 
 tests-all-local:
 	export PATH=./buildroot/bin/:./buildroot/tests/:${PATH} \
 	  && export VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) \
-	  && for TEST_TARGET in $$(./get_test_targets.py) ; do echo "Running tests for $$TEST_TARGET" ; run_tests . $$TEST_TARGET ; done
+	  && for TEST_TARGET in $$(./tools/linux/test/get_test_targets.py) ; do echo "Running tests for $$TEST_TARGET" ; run_tests . $$TEST_TARGET ; done
 .PHONY: tests-all-local
 
 tests-all-local-docker:
-	docker-compose run --rm marlin $(MAKE) tests-all-local VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD)
+	docker-compose -f tools/linux/build/docker/docker-compose.yml run --rm marlin $(MAKE) tests-all-local VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD)
 .PHONY: tests-all-local-docker
 
 setup-local-docker:
-	docker-compose build
+	docker-compose -f tools/linux/build/docker/docker-compose.yml build
 .PHONY: setup-local-docker

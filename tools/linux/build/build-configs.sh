@@ -137,7 +137,7 @@ build_config() {
         echo "Building firmware..."
         
         # Use Docker to build with proper environment
-        docker-compose run --rm -e PLATFORM_ENV="$platform_env" marlin bash -c "
+        docker-compose -f "$SCRIPT_DIR/docker/docker-compose.yml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash -c "
             set -e
             cd /code
             echo 'Applying configuration: $config_name'
@@ -268,7 +268,7 @@ fi
 
 # Restore original configuration
 echo "Restoring original configuration..."
-docker-compose run --rm marlin bash -c "cd /code && git checkout HEAD -- Marlin/Configuration*.h platformio.ini"
+docker-compose -f "$SCRIPT_DIR/docker/docker-compose.yml" run --rm marlin bash -c "cd /code && git checkout HEAD -- Marlin/Configuration*.h platformio.ini"
 
 echo ""
 echo "=== Build Summary ==="
