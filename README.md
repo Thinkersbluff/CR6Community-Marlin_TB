@@ -50,11 +50,16 @@ Validated configuration examples and pre-compiled flashable assets using those c
 - Creality stock TFT with:
    - Creality v4.5.2 motherboard (CR-6 SE)
    - Creality v4.5.3 or 1.1.0.3 ERA motherboard (CR-6 SE and CR-6 MAX)
-   - BigTreeTech SKR CR-6 (CR-6 SE)
+   - BigTreeTech SKR CR-6 (CR-6 SE and CR-6MAX)
 - BigTreeTech SKR CR-6 with BigTreeTech TFT v3.0
+
+In 2025, the only board still being sold for the CR6 is the 1.1.0.3 ERA board, but you might still own (or find a second-hand) one of the other boards, so we continue to support all four.
 
 The original project also experimented with examples for other printers with compatible display hardware, but that is more than Thinkersbluff has time to research.
 Those examples remain in this repo, and may work for you, but they are not supported here.
+
+_NOTE: If you have a BTT SKR CR6 motherboard and a BTT TFT display, you might find that you can flash the current version of Marlin to your printer, and use it with the Marlin UI.
+Please let us know what you achieve, if you try that._
 
 ## A note about the original project
 
@@ -72,7 +77,7 @@ It also continues to use and extend the original accompanying test and developme
 
 This fork of Marlin is meant for:
 
-- Providing a stable version of the CR6 Community Firmware at version 6.2 (which is based on Marlin 2.9.0.1) for the CR-6 SE and MAX printers with Creality 4.5.2, 4.5.3 or 1.1.0.3 ERA motherboards or the [BTT SKR CR6](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) motherboard
+- Providing a stable version of the CR6 Community Firmware at version 6.2 (which is based on Marlin 2.0.9.1) for the CR-6 SE and MAX printers with Creality 4.5.2, 4.5.3 or 1.1.0.3 ERA motherboards or the [BTT SKR CR6](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) motherboard
 - Updating and documenting the accompanying development and test environment, to make it easier for non-programmers like Thinkersbluff who wish to support other printer variants.
 - Taking advantage of the Marlin firmware change activities and online commitment/release history, to cherry-pick critical fixes for bugs in Marlin 2.0.9.1, which were only discovered and resolved in later releases.
 
