@@ -46,4 +46,4 @@ Common GPG-related issues:
 - **"signatures couldn't be verified"**: Key not in trusted keyring
 - **Permission issues**: Incorrect key file permissions
 
-See [BUILD_AND_TEST.md](./BUILD_AND_TEST.md) for setup instructions.
+See [BUILD_AND_TEST.md](BUILD_AND_TEST.md) for setup instructions.
