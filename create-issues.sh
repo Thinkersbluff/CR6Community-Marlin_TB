@@ -190,12 +190,12 @@ gh issue create \
   --body "Move all documentation files from root and docs/ to new organized structure.
 
 **Tasks:**
-- [ ] Move \`BUILD_AND_TEST.md\` from root to \`docs/BUILD_AND_TEST.md\`
-- [ ] Move \`CHANGELOG_6.1_to_6.2.md\` from root to \`docs/CHANGELOG_6.1_to_6.2.md\`
-- [ ] Move \`SECURITY.md\` from root to \`docs/SECURITY.md\`
-- [ ] Move \`docs/Bresenham.md\` → \`docs/development/Bresenham.md\`
-- [ ] Move \`docs/Queue.md\` → \`docs/development/Queue.md\`
-- [ ] Move \`docs/Serial.md\` → \`docs/development/Serial.md\`
+- [ ] Move \`BUILD_AND_TEST.md\` from root to \`docs/development/repo_guidelines/BUILD_AND_TEST.md\`
+- [ ] Move \`CHANGELOG_6.1_to_6.2.md\` from root to \`docs/project/release_6.2/CHANGELOG_6.1_to_6.2.md\`
+- [ ] Move \`SECURITY.md\` from root to \`docs/development/repo_guidelines/SECURITY.md\`
+- [ ] Move \`docs/Bresenham.md\` → \`docs/development/Marlin FAQ/Bresenham.md\`
+- [ ] Move \`docs/Queue.md\` → \`docs/development/Marlin FAQ/Queue.md\`
+- [ ] Move \`docs/Serial.md\` → \`docs/development/Marlin FAQ/Serial.md\`
 
 **Acceptance Criteria:**
 - All files moved to correct locations

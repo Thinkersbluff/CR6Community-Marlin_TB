@@ -180,4 +180,4 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 - Ensure you have write permissions to repository directory
 - Run PowerShell as Administrator if necessary
 
-For more detailed information, see the main [BUILD_AND_TEST.md](../../../docs/BUILD_AND_TEST.md) documentation.
+For more detailed information, see the main [BUILD_AND_TEST.md](../../../docs/development/repo_guidelines/BUILD_AND_TEST.md) documentation.

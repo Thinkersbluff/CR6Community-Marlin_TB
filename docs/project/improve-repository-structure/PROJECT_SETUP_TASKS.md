@@ -35,14 +35,13 @@
   - Update `.gitignore` to handle build artifacts
 
 ### 1.2 Move Documentation Files
-- [ ] **Move `BUILD_AND_TEST.md`** from root to `docs/BUILD_AND_TEST.md`
-- [ ] **Move `CHANGELOG_6.1_to_6.2.md`** from root to `docs/CHANGELOG_6.1_to_6.2.md`
-- [ ] **Move `SECURITY.md`** from root to `docs/SECURITY.md`
+- [ ] **Move `BUILD_AND_TEST.md`** from root to `docs/development/repo_guidelines/BUILD_AND_TEST.md`
+- [ ] **Move `CHANGELOG_6.1_to_6.2.md`** from root to `docs/project/release_6.2/CHANGELOG_6.1_to_6.2.md`
+- [ ] **Move `SECURITY.md`** from root to `docs/development/repo_guidelines/SECURITY.md`
 - [ ] **Move existing docs/** files to development subdirectory
-  - Move `docs/Bresenham.md` → `docs/development/Bresenham.md`
-  - Move `docs/Queue.md` → `docs/development/Queue.md`
-  - Move `docs/Serial.md` → `docs/development/Serial.md`
-- [ ] **Move `docs/README.md`** to `docs/README.md` (stays in docs root)
+  - Move `docs/Bresenham.md` → `docs/development/Marlin FAQ/Bresenham.md`
+  - Move `docs/Queue.md` → `docs/development/Marlin FAQ/Queue.md`
+  - Move `docs/Serial.md` → `docs/development/Marlin FAQ/Serial.md`
 
 ### 1.3 Move Build and Script Files
 - [ ] **Move build scripts to `tools/build/`**
@@ -153,7 +152,7 @@
     - Contribution guidelines
   - **TERTIARY SECTION**: Repository organization (for reference)
 
-- [ ] **Update `docs/BUILD_AND_TEST.md` for developer audience**
+- [ ] **Update `docs/development/repo_guidelines/BUILD_AND_TEST.md` for developer audience**
   - Update all script paths to new locations
   - Update Docker setup instructions with new paths
   - Update examples with new directory structure

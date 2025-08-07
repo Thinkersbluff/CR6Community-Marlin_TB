@@ -105,4 +105,4 @@ Built packages are organized in `.pio/build-output/`:
    ./build-configs.sh v2.1.3.2
    ```
 
-For more detailed information, see the main [BUILD_AND_TEST.md](../../../docs/BUILD_AND_TEST.md) documentation.
+For more detailed information, see the main [BUILD_AND_TEST.md](../../../docs/development/repo_guidelines/BUILD_AND_TEST.md) documentation.

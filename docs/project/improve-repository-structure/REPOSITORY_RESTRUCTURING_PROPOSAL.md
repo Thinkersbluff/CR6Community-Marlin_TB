@@ -66,15 +66,19 @@ CR6Community-Marlin_TB/
 ├── ini/                              # PlatformIO configs (unchanged)
 ├── 
 ├── docs/                             # 📁 ENHANCED - All documentation
-│   ├── README.md                     # Move from current docs/
-│   ├── BUILD_AND_TEST.md             # Move from root
-│   ├── CHANGELOG_6.1_to_6.2.md       # Move from root
-│   ├── SECURITY.md                   # Move from root
-│   ├── development/                  # New subdirectory
-│   │   ├── Bresenham.md              # Move from docs/
-│   │   ├── Queue.md                  # Move from docs/
-│   │   └── Serial.md                 # Move from docs/
-│   └── hardware/                     # New subdirectory for hardware docs
+│   ├── development/                  # Developer-focused documentation
+│   │   ├── Marlin FAQ/              # Technical Marlin firmware documentation
+│   │   │   ├── Bresenham.md         # Move from docs/
+│   │   │   ├── Queue.md             # Move from docs/
+│   │   │   └── Serial.md            # Move from docs/
+│   │   └── repo_guidelines/         # Repository development guidelines
+│   │       ├── BUILD_AND_TEST.md    # Move from root
+│   │       └── SECURITY.md          # Move from root
+│   ├── hardware/                    # New subdirectory for hardware docs
+│   └── project/                     # Project-specific documentation
+│       ├── improve-repository-structure/  # Current restructuring project
+│       └── release_6.2/            # Release-specific documentation
+│           └── CHANGELOG_6.1_to_6.2.md  # Move from root
 │
 ├── tools/                            # 📁 NEW - Development and build tools (Platform-based organization)
 │   ├── linux/                        # Linux/macOS development tools
@@ -254,12 +258,12 @@ This makes the repository structure **extensible** while maintaining **organizat
 ## File Movement Summary
 
 ### Files Moving to `docs/`:
-- `BUILD_AND_TEST.md` (from root)
-- `CHANGELOG_6.1_to_6.2.md` (from root)
-- `SECURITY.md` (from root)
-- `docs/Bresenham.md` → `docs/development/Bresenham.md`
-- `docs/Queue.md` → `docs/development/Queue.md`
-- `docs/Serial.md` → `docs/development/Serial.md`
+- `BUILD_AND_TEST.md` (from root) → `docs/development/repo_guidelines/BUILD_AND_TEST.md`
+- `SECURITY.md` (from root) → `docs/development/repo_guidelines/SECURITY.md`
+- `CHANGELOG_6.1_to_6.2.md` (from root) → `docs/project/release_6.2/CHANGELOG_6.1_to_6.2.md`
+- `docs/Bresenham.md` → `docs/development/Marlin FAQ/Bresenham.md`
+- `docs/Queue.md` → `docs/development/Marlin FAQ/Queue.md`
+- `docs/Serial.md` → `docs/development/Marlin FAQ/Serial.md`
 
 ### Files Moving to `tools/`:
 - `build-configs.sh` → `tools/build/build-configs.sh`
