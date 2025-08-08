@@ -15,13 +15,13 @@ The experimentation described herein was also not rigorously designed with full 
 
 Rather, the main purpose of this project was to complete quick case study to discover what might be involved in "cherry-picking" a specific set of bug-fixes and performance enhancements from later releases of the Marlin code (eg, improving ADC resolution) and bringing those back into this historical snapshot of the firmware from four years past. 
 
-We used this effort to help us design the repository structure to facilitate the later discovery and review of efforts such of this by users looking for reasons to upgrade (or not) to this release.We built a set of tools with which to analyze printer performance and we have archived and documented those tools for future use.  This report also establishes a form of templated standard model for similar future efforts.
+We used this activity to help us design the repository structure to facilitate the later discovery and review of efforts such of this by users looking for reasons to upgrade (or not) to this release.  We built a set of tools with which to analyze printer performance and we have archived and documented those tools for future use.  This report also establishes a form of templated standard model for similar future efforts.
 
 While future similar efforts may persuade us differently, at present we are convinced that it would be much simpler and a better investment of time to study how best to install and interact with the most recent version of Marlin (2.1.3 as of August 2025) than to invest significant effort in cherry-picking and retrofitting selected changes into the Marlin 2.0.9.1 core in this special release of CR6Community Firmware.
 
 ## Executive Summary
 
-Comparative performance analysis of 10-bit versus 12-bit ADC configurations on STM32F103RET6-based 3D printer firmware shows **no measurable advantage** for 12-bit ADC implementation in temperature stability or control precision. Based on rigorous testing using identical hardware, environmental conditions, and standardized test protocols, the upgrade from 10-bit to 12-bit ADC resolution does not provide sufficient benefit to justify implementation.
+Comparative performance analysis of 10-bit versus 12-bit ADC configurations on STM32F103RET6-based 3D printer firmware shows **no observed advantage** for 12-bit ADC implementation in temperature stability or control precision. Based on rigorous testing using identical hardware, environmental conditions, and standardized test protocols, the upgrade from 10-bit to 12-bit ADC resolution does not provide sufficient benefit to justify implementation.
 
 ## Test Methodology
 
