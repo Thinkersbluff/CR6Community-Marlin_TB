@@ -50,8 +50,8 @@ Comparative performance analysis of 10-bit versus 12-bit ADC configurations on S
 ### Visual Analysis
 The following comparison graphs demonstrate temperature stability over identical 5-minute monitoring periods:
 
-- **`ADC-10bits_200C_60C.png`** - 10-bit ADC performance baseline
-- **`ADC-12bits_200C60C.png`** - 12-bit ADC performance comparison
+- [**`ADC-10bits_200C_60C.png`**](./Sample Plots/ADC-10bits_200C_60C.png) - 10-bit ADC performance baseline
+- [**`ADC-12bits_200C_60C.png`**](./Sample Plots/ADC-12bits_200C_60C.png) - 12-bit ADC performance comparison
 
 ### Performance Metrics
 
