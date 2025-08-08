@@ -10,10 +10,10 @@ import sys
 import time
 from collections import deque
 from datetime import datetime
-from typing import Optional, List, Tuple, Deque
+from typing import Optional, List, Tuple, Deque, Any
 
 try:
-    import serial
+    import serial  # type: ignore
 except ImportError:
     print("Error: pyserial not installed.")
     print("On Ubuntu/Debian, run: sudo apt install python3-serial")
@@ -45,7 +45,7 @@ class TemperatureMonitor:
         # Setup signal handler
         signal.signal(signal.SIGINT, self._signal_handler)
 
-    def _signal_handler(self, _sig: int, _frame) -> None:
+    def _signal_handler(self, _sig: int, _frame: Any) -> None:
         """Handle Ctrl+C signal gracefully."""
         print('\nStopping temperature monitor...')
         self.print_final_stats()
@@ -174,7 +174,7 @@ class TemperatureMonitor:
         excellent_threshold = thresholds.get('excellent_std_dev', 0.15)
         good_threshold = thresholds.get('good_std_dev', 0.25)
         fair_threshold = thresholds.get('fair_std_dev', 0.5)
-        
+
         stability = "EXCELLENT" if stdev < excellent_threshold else \
                    "GOOD" if stdev < good_threshold else \
                    "FAIR" if stdev < fair_threshold else "POOR"
@@ -189,18 +189,24 @@ class TemperatureMonitor:
         if self.temps_hotend:
             self.print_stats(list(self.temps_hotend), "HOTEND")
             final_graph_width = config.get('display', 'graph_width', 60)
-            print(self.create_text_graph(list(self.temps_hotend), width=final_graph_width, label="Hotend Graph"))
+            hotend_graph = self.create_text_graph(
+                list(self.temps_hotend), width=final_graph_width, label="Hotend Graph"
+            )
+            print(hotend_graph)
 
         if self.temps_bed:
             self.print_stats(list(self.temps_bed), "BED")
             final_graph_width = config.get('display', 'graph_width', 60)
-            print(self.create_text_graph(list(self.temps_bed), width=final_graph_width, label="Bed Graph"))
+            bed_graph = self.create_text_graph(
+                list(self.temps_bed), width=final_graph_width, label="Bed Graph"
+            )
+            print(bed_graph)
 
         # Get thresholds from config
         thresholds = config.get('analysis', 'stability_thresholds', {})
         good_std_threshold = thresholds.get('good_std_dev', 0.25)
         good_range_threshold = thresholds.get('good_range', 1.0)
-        
+
         print("\nWith 12-bit ADC, you should expect:")
         print(f"  - Standard deviation < {good_std_threshold}°C for good stability")
         print(f"  - Range < {good_range_threshold}°C over time")
@@ -253,7 +259,8 @@ class TemperatureMonitor:
                         if len(self.temps_hotend) >= 10:
                             rolling_window = config.get('display', 'rolling_window_size', 30)
                             hotend_data = list(self.temps_hotend)[-rolling_window:]
-                            self.print_stats(hotend_data, f"Hotend (last {rolling_window} readings)")
+                            label = f"Hotend (last {rolling_window} readings)"
+                            self.print_stats(hotend_data, label)
 
                         if len(self.temps_bed) >= 10:
                             rolling_window = config.get('display', 'rolling_window_size', 30)
