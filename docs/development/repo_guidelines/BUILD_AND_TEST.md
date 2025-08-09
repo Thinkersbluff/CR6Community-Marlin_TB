@@ -9,6 +9,3 @@ This repository provides platform-specific build and test instructions:
 
 Refer to the appropriate guide for your operating system. For dual-boot setups, follow the dedicated guidelines to avoid permission and configuration issues.
 
-echo "Checking PlatformIO permissions..."
-pip install --user platformio
-
