@@ -54,7 +54,9 @@ cd tools/windows/vscode
 ### Technical Details:
 Our scripts use automatic repository root detection, so they work correctly regardless of where you run them from. However, following the "run from script location" pattern creates consistency and helps build good habits for repository navigation.
 
-### Docker Usage:
+### Docker Usage (Linux & Windows):
+
+#### Linux
 ```bash
 # Docker files are located in tools/linux/build/docker/
 cd tools/linux/build/docker
@@ -68,9 +70,30 @@ docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs conf
 # Get an interactive shell
 docker-compose run --rm marlin bash
 ```
-- Git repository cloned locally
 
-### Basic Docker Build
+#### Windows
+```powershell
+# Docker files are located in tools/windows/build/docker/
+cd tools\windows\build\docker
+
+# Build the container
+docker-compose build
+
+# Run a build
+docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
+
+# Get an interactive shell
+docker-compose run --rm marlin bash
+```
+
+> **Windows Notes:**
+> - Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and start it before running these commands.
+> - Use PowerShell or Command Prompt.
+> - Make sure your repository is in a shared drive (e.g., C:\Users\YourName\CR6Community-Marlin_TB).
+> - Use the configuration files in `tools/windows/build/docker/`.
+> - If you see permission errors, comment out the `user:` line in `docker-compose.yml`.
+
+#### Basic Docker Build (Both Platforms)
 ```bash
 # Setup Docker environment (one-time)
 make setup-local-docker
@@ -83,9 +106,60 @@ make tests-all-local-docker
 ```
 
 ## Docker Environment
+[note]
+## Docker Usage: Linux and Windows
+
+### Linux
+- Install Docker and Docker Compose using your package manager:
+    ```bash
+    sudo apt update && sudo apt install -y docker.io docker-compose
+    ```
+- Add your user to the docker group:
+    ```bash
+    sudo usermod -aG docker $USER
+    # Logout/login or run:
+    newgrp docker
+    ```
+- Use the configuration files in `tools/linux/build/docker/`.
+
+### Windows
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+- Why Docker Desktop? Windows does not natively support the Linux container runtime. Docker Desktop provides a VM-based backend and integrates with Windows networking and filesystems.
+- After installation:
+    - Start Docker Desktop from the Start menu.
+    - Use PowerShell or Command Prompt for Docker commands.
+    - Ensure your project directory is within a shared drive (e.g., C:\Users\YourName\CR6Community-Marlin_TB).
+- Use the configuration files in `tools/windows/build/docker/`.
+- If you encounter permission errors, comment out the `user:` line in `docker-compose.yml`.
+
+### Platform-Specific Configuration Files
+- If Windows users need to comment out or modify lines (e.g., `user: "${UID:-1000}:${GID:-1000}"` in `docker-compose.yml`), a Windows-friendly version is provided in `tools/windows/build/docker/`.
+- The Linux version is in `tools/linux/build/docker/`.
+- Documented here and in the README:
+    - "Windows users should use the configuration files in `tools/windows/build/docker/`."
+    - "Linux users should use the configuration files in `tools/linux/build/docker/`."
+
+### Example Docker Compose Usage
+```bash
+# Linux
+cd tools/linux/build/docker
+docker-compose build
+docker-compose run --rm marlin bash
+
+# Windows
+cd tools/windows/build/docker
+docker-compose build
+docker-compose run --rm marlin bash
+```
+
+### Why Different Files?
+- Linux supports user mapping for file permissions; Windows does not.
+- Docker Desktop is required on Windows for container support.
+- Providing platform-specific configuration files ensures a smooth experience for all users.
 
 ### Overview
-The repository includes a complete Docker-based development environment that provides:
+
+The repository includes a complete Docker-based development environment for both Linux and Windows:
 - Consistent build environment across different systems
 - All required dependencies (PlatformIO, Python, build tools)
 - Isolated testing environment
@@ -94,19 +168,29 @@ The repository includes a complete Docker-based development environment that pro
 ### Docker Setup
 
 #### Initial Setup
+
+**Linux:**
 ```bash
 # Install Docker (Ubuntu/Debian)
 sudo apt update && sudo apt install -y docker.io docker-compose
 
 # Add user to docker group (requires logout/login to take effect)
 sudo usermod -aG docker $USER
+# Logout/login or run:
+newgrp docker
 
 # Start Docker service
 sudo systemctl start docker && sudo systemctl enable docker
 ```
 
+**Windows:**
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and start it before running any Docker commands.
+- Use PowerShell or Command Prompt.
+- Ensure your repository is in a shared drive (e.g., `C:\Users\YourName\CR6Community-Marlin_TB`).
+
 #### GPG Key Management
-The development environment requires GPG keys for package verification:
+
+The development environment requires GPG keys for package verification (Linux only):
 - **Docker keys**: Automatically installed with Docker packages
 - **Microsoft keys**: Required for VS Code repository (if using VS Code)
 
@@ -121,22 +205,62 @@ rm packages.microsoft.gpg
 ```
 
 #### Build Docker Container
+
 ```bash
-# Build the development container (from repository root)
+# Build the development container (from repository root, both platforms)
 make setup-local-docker
 
-# Or manually from Docker directory:
-cd tools/build/docker
+# Or manually from your platform's Docker directory:
+# Linux:
+cd tools/linux/build/docker
+docker-compose build
+# Windows:
+cd tools\windows\build\docker
 docker-compose build
 ```
 
 ### Docker Files Structure
-- `tools/linux/build/docker/docker-compose.yml`: Main Docker Compose configuration
-- `tools/linux/build/docker/Dockerfile`: Container definition with PlatformIO and dependencies
-- `tools/linux/build/docker/get-docker.sh`: Docker installation helper script
+
+#### Docker Files Structure
+- **Linux:**
+    - `tools/linux/build/docker/docker-compose.yml`: Main Docker Compose configuration
+    - `tools/linux/build/docker/Dockerfile`: Container definition with PlatformIO and dependencies
+    - `tools/linux/build/docker/get-docker.sh`: Docker installation helper script
+- **Windows:**
+    - `tools/windows/build/docker/docker-compose.yml`: Windows-friendly Docker Compose configuration
+    - `tools/windows/build/docker/Dockerfile`: Container definition for Windows Docker Desktop
+    - `tools/windows/build/docker/get-docker.sh`: Docker Desktop helper script
 - `platformio-cache` volume: Persists PlatformIO libraries between runs
 
-**Note**: Makefile commands (`make setup-local-docker`, `make tests-*`) work from the repository root, but direct `docker-compose` commands must be run from the `tools/linux/build/docker/` directory.
+
+**Note:**
+- Makefile commands (`make setup-local-docker`, `make tests-*`) work from the repository root for both platforms.
+- Direct `docker-compose` commands must be run from your platform's Docker directory (`tools/linux/build/docker/` for Linux, `tools/windows/build/docker/` for Windows).
+- **Windows users:** If you see permission errors, comment out the `user:` line in `docker-compose.yml`.
+
+### Dual-Boot System Guidelines
+
+If you use both Linux and Windows on the same computer (dual-boot):
+
+- **Keep separate clones:**
+    - Clone the repository to a Windows-accessible drive for Windows development.
+    - Clone the repository to a Linux partition for Linux development.
+    - Do not use the same physical folder or partition for both OSes.
+
+- **Avoid shared working directories:**
+    - Do not point both OSes to the same folder, even if it is on a shared or network drive.
+    - This prevents file permission conflicts and Docker-related issues.
+
+- **Sync changes via Git:**
+    - Make changes on one OS, push to GitHub, and pull those changes into your other OS.
+    - This keeps your work in sync and avoids cross-platform permission problems.
+
+- **Docker builds:**
+    - Run Docker builds only in the environment matching your clone (Linux or Windows).
+    - Each OS will handle file permissions and user mapping correctly in its own clone.
+
+**Summary:**
+Always use separate clones for Linux and Windows, and sync via Git. Never share the same working directory between OSes for Docker-based builds.
 
 ## Build Methods
 

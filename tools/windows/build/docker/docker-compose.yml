@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  marlin:
+    image: marlin-dev
+    build:
+      dockerfile: Dockerfile
+      context: .
+    working_dir: /code
+    # user: "${UID:-1000}:${GID:-1000}"  # Commented out for Windows compatibility
+    volumes:
+    - ../../..:/code
+    - platformio-cache:/home/user/.platformio
+    environment:
+    - HOME=/home/user
+
+volumes:
+  platformio-cache:
