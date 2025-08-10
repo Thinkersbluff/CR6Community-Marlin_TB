@@ -17,6 +17,7 @@ A web-based tool for viewing and editing Marlin configuration files (`Configurat
 
 ## How to Use
 
+
 1. **Start the App**
    - Run:
      ```bash
@@ -34,7 +35,13 @@ A web-based tool for viewing and editing Marlin configuration files (`Configurat
    - Make changes directly in the editor.
 
 4. **Download Modified File**
-   - Click **Download Modified Config** to save your changes.
+   - Click **Download Modified Config** to save your changes. The downloaded file will have a date-time tag in its name.
+
+5. **Rename and Copy to Marlin Folder**
+   - After downloading, rename the tagged file you want to use to remove the date-time tag (e.g., `Configuration_20250810-153000.h` → `Configuration.h`).
+   - Copy the renamed file from your Downloads folder to overwrite the corresponding file in the `./Marlin` folder of your firmware source tree.
+   - Repeat for both `Configuration.h` and `Configuration_adv.h` as needed.
+   - When you are satisfied that both files are correctly configured, proceed to build your customized `firmware.bin`.
 
 ## Customizing Filters
 
