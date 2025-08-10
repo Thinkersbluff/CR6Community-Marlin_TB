@@ -1,0 +1,1 @@
+#define HEATER_0_MAXTEMP 375
