@@ -3,6 +3,14 @@
 #
 # Marlin 3D Printer Firmware
 # Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+from __future__ import print_function
+from __future__ import division
+
+import os
+import sys
+
+
+
 #
 # Based on Sprinter and grbl.
 # Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -69,12 +77,7 @@
 #
 #######################################
 
-from __future__ import print_function
-from __future__ import division
-
 pwd = os.getcwd()  # make sure we're executing from the correct directory level
-
-import sys, os
 
 # Auto-detect repository root directory (look for platformio.ini)
 def find_repo_root():
@@ -632,7 +635,7 @@ def get_env(board_name, ver_Marlin):
     else:
       invalid_board()
 
-  if build_type == 'traceback' and target_env != 'LPC1768_debug_and_upload' and target_env != 'DUE_debug' and Marlin_ver == 2:
+  if build_type == 'traceback' and target_env != 'LPC1768_debug_and_upload' and target_env != 'DUE_debug' and ver_Marlin == 2:
     print("ERROR - this board isn't setup for traceback")
     print('board_name: ', board_name)
     print('target_env: ', target_env)
