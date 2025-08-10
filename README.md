@@ -26,7 +26,7 @@ If your printer is a CR6-SE or CR-6-MAX in stock condition, you will see a .zip 
 Download and extract that file, read any included notes and flash the included firmware to your printer. 
 
 ### About the display firmware
-Version 6.2 of the motherboard firmware still works with the refactored v1.1.x display firmware.
+Version 6.2 of the motherboard firmware still works with [the refactored v1.1.x display firmware.](https://github.com/CR6Community/CR-6-touchscreen)
 If you are upgrading your CR6Community motherboard firmware from v6.1 to v6.2, you have no display firmware changes to make.
 If you are upgrading from Creality stock firmware to CR6Community v6.2, you should install the display firmware first for the most seamless experience.
 If you need it, there is a copy of the DWIN_SET folder in the .zip file you download.  If you encounter problems installing it, try looking for help [here in the documentation:](https://github.com/CR6Community/CR-6-touchscreen)
