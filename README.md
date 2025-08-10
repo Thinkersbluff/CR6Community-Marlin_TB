@@ -61,18 +61,24 @@ The original project also experimented with examples for other printers with com
 Those examples remain in this repo, and may work for you, but they are not supported here.
 
 ## Can I Run The Latest Marlin on a CR6 Printer?
-Yes, you can.
-You can use Octoprint as your display/control firmware and flash the latest Marlin to your printer motherboard.
-You will not be able to use the stock firmware or Community Firmware to activate the stock TFT any more, but that might not matter to you.
+Yes, you can.  
 
+### Option 1: Octoprint
+You can use Octoprint as your display/control firmware and flash the latest Marlin to your printer motherboard.
+You will not be able to use the stock firmware or Community Firmware to activate the t TFT any more, but that might not matter to you.
+
+### Option 2: BTT TFT in LCD Mode
 If you have a BTT SKR CR6 motherboard and a BTT TFT display, you might find that you can flash the current version of Marlin to your printer, and use it with the Marlin UI.
 
+### Option 3: Use one of the Integrated Extui Interface Firmwares 
 There are several 3rd party (external UI) options named in the code, but this Community Firmware is not one of them.
 
-_Please visit us on the Discord, to let us know what you achieve, if you try any of the above options._
+### Option 4: "Roll Your Own"
+It looks like the DGUS-Reloaded display firmware for Marlin - one of the third-party firmwares for which an extui interface is still defined and maintained in the latest Marlin - was archived in 2022.
+A bold "developer type" may be able to exploit that interface to integrate the CR6Community firmware with Marlin, just like the original project imagined...
 
-NOTE: It looks like the DGUS-Reloaded display firmware for Marlin - one of the third-party firmwares for which an extui interface is still defined in the latest Marlin - was archived in 2022.
-A bold "developer type" may be able to exploit that interface to integrate the community firmware with Marlin, just like the original project imagined...
+
+_Please visit us on the Discord, or in the Discussions forum here, to let us know what you achieve, if you try any of the above options._
 
 ## A note about the original project
 
