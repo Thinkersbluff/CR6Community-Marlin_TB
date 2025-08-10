@@ -72,14 +72,30 @@
 from __future__ import print_function
 from __future__ import division
 
-import sys,os
-
 pwd = os.getcwd()  # make sure we're executing from the correct directory level
-pwd = pwd.replace('\\', '/')
-if 0 <= pwd.find('buildroot/share/vscode'):
-  pwd = pwd[:pwd.find('buildroot/share/vscode')]
-  os.chdir(pwd)
-print('pwd: ', pwd)
+
+import sys, os
+
+# Auto-detect repository root directory (look for platformio.ini)
+def find_repo_root():
+  cur_dir = os.path.abspath(os.getcwd())
+  while True:
+    if os.path.isfile(os.path.join(cur_dir, 'platformio.ini')):
+      return cur_dir
+    parent = os.path.dirname(cur_dir)
+    if parent == cur_dir:
+      return None
+    cur_dir = parent
+
+REPO_ROOT = find_repo_root()
+if not REPO_ROOT:
+  print("ERROR: Could not detect repository root or not in a Marlin repository")
+  sys.exit(1)
+os.chdir(REPO_ROOT)
+print('Repository root detected:', REPO_ROOT)
+
+def repo_path(rel_path):
+  return os.path.join(REPO_ROOT, rel_path)
 
 num_args = len(sys.argv)
 if num_args > 1:
@@ -93,6 +109,9 @@ print('build_type:  ', build_type)
 print('\nWorking\n')
 
 python_ver = sys.version_info[0]  # major version - 2 or 3
+if python_ver != 3:
+    print('ERROR: This script requires Python 3.')
+    sys.exit(1)
 
 print("python version " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]))
 
@@ -125,10 +144,7 @@ from datetime import datetime, date, time
 
 def get_answer(board_name, cpu_label_txt, cpu_a_txt, cpu_b_txt):
 
-  if python_ver == 2:
-    import Tkinter as tk
-  else:
-    import tkinter as tk
+  import tkinter as tk
 
   def CPU_exit_3():  # forward declare functions
     CPU_exit_3_()
@@ -417,57 +433,59 @@ def open_file(path):
 
 # Get the last build environment
 def get_build_last():
-  env_last = ''
-  DIR_PWD = os.listdir('.')
-  if '.pio' in DIR_PWD:
-    date_last = 0.0
-    DIR__pioenvs = os.listdir('.pio')
-    for name in DIR__pioenvs:
-      if 0 <= name.find('.') or 0 <= name.find('-'):  # skip files in listing
-        continue
-      DIR_temp = os.listdir('.pio/build/' + name)
-      for names_temp in DIR_temp:
-
-        if 0 == names_temp.find('firmware.'):
-          date_temp = os.path.getmtime('.pio/build/' + name + '/' + names_temp)
-          if date_temp > date_last:
-            date_last = date_temp
-            env_last = name
-  return env_last
+    env_last = ''
+    DIR_PWD = os.listdir('.')
+    if '.pio' in DIR_PWD:
+        date_last = 0.0
+        DIR__pioenvs = os.listdir('.pio')
+        for name in DIR__pioenvs:
+            if 0 <= name.find('.') or 0 <= name.find('-'):  # skip files in listing
+                continue
+            build_dir = repo_path('.pio/build/' + name)
+            if not os.path.isdir(build_dir):
+                continue
+            DIR_temp = os.listdir(build_dir)
+            for names_temp in DIR_temp:
+                if 0 == names_temp.find('firmware.'):
+                    date_temp = os.path.getmtime(os.path.join(build_dir, names_temp))
+                    if date_temp > date_last:
+                        date_last = date_temp
+                        env_last = name
+    return env_last
 
 
 # Get the board being built from the Configuration.h file
 #   return: board name, major version of Marlin being used (1 or 2)
 def get_board_name():
-  board_name = ''
-  # get board name
+    board_name = ''
+    # get board name
+    config_path = repo_path('Marlin/Configuration.h')
+    with open(config_path, 'r') as myfile:
+        Configuration_h = myfile.read()
 
-  with open('Marlin/Configuration.h', 'r') as myfile:
-    Configuration_h = myfile.read()
+    Configuration_h = Configuration_h.split('\n')
+    Marlin_ver = 0  # set version to invalid number
+    for lines in Configuration_h:
+        if 0 == lines.find('#define CONFIGURATION_H_VERSION 01'):
+            Marlin_ver = 1
+        if 0 == lines.find('#define CONFIGURATION_H_VERSION 02'):
+            Marlin_ver = 2
+        board = lines.find(' BOARD_') + 1
+        motherboard = lines.find(' MOTHERBOARD ') + 1
+        define = lines.find('#define ')
+        comment = lines.find('//')
+        if (comment == -1 or comment > board) and \
+                board > motherboard and \
+                motherboard > define and \
+                define >= 0:
+            spaces = lines.find(' ', board)  # find the end of the board substring
+            if spaces == -1:
+                board_name = lines[board:]
+            else:
+                board_name = lines[board:spaces]
+            break
 
-  Configuration_h = Configuration_h.split('\n')
-  Marlin_ver = 0  # set version to invalid number
-  for lines in Configuration_h:
-    if 0 == lines.find('#define CONFIGURATION_H_VERSION 01'):
-      Marlin_ver = 1
-    if 0 == lines.find('#define CONFIGURATION_H_VERSION 02'):
-      Marlin_ver = 2
-    board = lines.find(' BOARD_') + 1
-    motherboard = lines.find(' MOTHERBOARD ') + 1
-    define = lines.find('#define ')
-    comment = lines.find('//')
-    if (comment == -1 or comment > board) and \
-      board > motherboard and \
-      motherboard > define and \
-      define >= 0 :
-      spaces = lines.find(' ', board)  # find the end of the board substring
-      if spaces == -1:
-        board_name = lines[board:]
-      else:
-        board_name = lines[board:spaces]
-      break
-
-  return board_name, Marlin_ver
+    return board_name, Marlin_ver
 
 
 # extract first environment name found after the start position
@@ -487,47 +505,46 @@ def get_env_from_line(line, start_position):
 
 # scan pins.h for board name and return the environment(s) found
 def get_starting_env(board_name_full, version):
-  # get environment starting point
+    # get environment starting point
+    if version == 1:
+        path = repo_path('Marlin/pins.h')
+    if version == 2:
+        path = repo_path('Marlin/src/pins/pins.h')
+    with open(path, 'r') as myfile:
+        pins_h = myfile.read()
 
-  if version == 1:
-    path = 'Marlin/pins.h'
-  if version == 2:
-    path = 'Marlin/src/pins/pins.h'
-  with open(path, 'r') as myfile:
-    pins_h = myfile.read()
+    env_A = ''
+    env_B = ''
+    env_C = ''
 
-  env_A = ''
-  env_B = ''
-  env_C = ''
-
-  board_name = board_name_full[6:]  # only use the part after "BOARD_" since we're searching the pins.h file
-  pins_h = pins_h.split('\n')
-  environment = ''
-  board_line = ''
-  cpu_A = ''
-  cpu_B = ''
-  i = 0
-  list_start_found = False
-  for lines in pins_h:
-    i = i + 1  # i is always one ahead of the index into pins_h
-    if 0 < lines.find("Unknown MOTHERBOARD value set in Configuration.h"):
-      break  #  no more
-    if 0 < lines.find('1280'):
-      list_start_found = True
-    if list_start_found == False:  # skip lines until find start of CPU list
-      continue
-    board = lines.find(board_name)
-    comment_start = lines.find('// ')
-    cpu_A_loc = comment_start
-    cpu_B_loc = 0
-    if board > 0:  # need to look at the next line for environment info
-      cpu_line = pins_h[i]
-      comment_start = cpu_line.find('// ')
-      env_A, next_position = get_env_from_line(cpu_line, comment_start)  # get name of environment & start of search for next
-      env_B, next_position = get_env_from_line(cpu_line, next_position)  # get next environment, if it exists
-      env_C, next_position = get_env_from_line(cpu_line, next_position)  # get next environment, if it exists
-      break
-  return env_A, env_B, env_C
+    board_name = board_name_full[6:]  # only use the part after "BOARD_" since we're searching the pins.h file
+    pins_h = pins_h.split('\n')
+    environment = ''
+    board_line = ''
+    cpu_A = ''
+    cpu_B = ''
+    i = 0
+    list_start_found = False
+    for lines in pins_h:
+      i = i + 1  # i is always one ahead of the index into pins_h
+      if 0 < lines.find("Unknown MOTHERBOARD value set in Configuration.h"):
+        break  #  no more
+      if 0 < lines.find('1280'):
+        list_start_found = True
+      if list_start_found == False:  # skip lines until find start of CPU list
+        continue
+      board = lines.find(board_name)
+      comment_start = lines.find('// ')
+      cpu_A_loc = comment_start
+      cpu_B_loc = 0
+      if board > 0:  # need to look at the next line for environment info
+        cpu_line = pins_h[i]
+        comment_start = cpu_line.find('// ')
+        env_A, next_position = get_env_from_line(cpu_line, comment_start)  # get name of environment & start of search for next
+        env_B, next_position = get_env_from_line(cpu_line, next_position)  # get next environment, if it exists
+        env_C, next_position = get_env_from_line(cpu_line, next_position)  # get next environment, if it exists
+        break
+    return env_A, env_B, env_C
 
 
 # Scan input string for CPUs that users may need to select from
@@ -627,10 +644,7 @@ def get_env(board_name, ver_Marlin):
 
 
 # puts screen text into queue so that the parent thread can fetch the data from this thread
-if python_ver == 2:
-  import Queue as queue
-else:
-  import queue as queue
+import queue as queue
 IO_queue = queue.Queue()
 
 
@@ -982,17 +996,8 @@ def run_PIO(dummy):
 
 import time
 import threading
-if python_ver == 2:
-  import Tkinter as tk
-  import Queue as queue
-  import ttk
-  from Tkinter import Tk, Frame, Text, Scrollbar, Menu
-  #from tkMessageBox import askokcancel      this is not used: removed
-  import tkFileDialog as fileDialog
-else:
-  import tkinter as tk
-  import queue as queue
-  from tkinter import ttk, Tk, Frame, Text, Menu
+import tkinter as tk
+from tkinter import ttk, Tk, Frame, Text, Menu, filedialog as fileDialog
 import subprocess
 import sys
 que = queue.Queue()
