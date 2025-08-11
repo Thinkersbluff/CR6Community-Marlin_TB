@@ -8,6 +8,14 @@
 </head>
 <body>
     <div class="container mt-5">
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link" href="/start-here">Start Here</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/configurator">Configurator</a>
+            </li>
+        </ul>
         <h1>Marlin Configurator</h1>
         <div class="mb-3">
             <label for="configExampleSelect" class="form-label fw-bold">Select the configuration example to edit:</label>
@@ -30,15 +38,13 @@
             </select>
             <div id="fileListArea" class="mt-2"></div>
         </div>
-        <form method="POST" enctype="multipart/form-data" class="d-flex flex-wrap align-items-center gap-2 mb-2">
+        <form id="configForm" method="POST" enctype="multipart/form-data" class="d-flex flex-wrap align-items-center gap-2 mb-2" action="/edit">
             <input class="form-control form-control-sm w-auto" type="file" id="configFile" name="configFile" accept=".h,.ini,.txt" style="max-width:220px; display:none;">
             <input class="form-control form-control-sm w-auto" type="url" id="configUrl" name="configUrl" placeholder="Paste config URL" style="max-width:220px; display:none;">
             {% if config_content %}
-                <form method="POST" action="/edit" class="d-inline">
-                    <input type="hidden" name="filename" value="{{ config_source.split('/')[-1] if config_source else 'configuration.h' }}">
-                    <input type="hidden" name="editedConfig" id="editedConfigHidden">
-                    <button type="submit" class="btn btn-success btn-sm ms-2" onclick="copyEditorContent()">Download Modified Config</button>
-                </form>
+                <input type="hidden" name="filename" value="{{ config_source.split('/')[-1] if config_source else 'configuration.h' }}">
+                <input type="hidden" name="editedConfig" id="editedConfigHidden">
+                <button type="button" class="btn btn-success btn-sm ms-2" id="saveDownloadBtn">Save and Download</button>
             {% endif %}
         </form>
         {% if config_content %}
@@ -49,10 +55,10 @@
             <div id="configEditor">
                 <h2 class="mt-4">Edit {{ config_source|replace('https://','')|replace('github.com/','')|replace('raw.githubusercontent.com/','')|replace('blob/','')|replace('/','_') if config_source else 'Configuration' }}</h2>
                 <div class="mb-2 d-flex flex-wrap align-items-center gap-2">
-                    <input type="checkbox" id="hideComments" onclick="toggleComments()">
+                    <input type="checkbox" id="hideComments" onclick="refreshFilters()">
                     <label for="hideComments" class="me-2 mb-0">Hide Comments</label>
                     <label for="topicFilter" class="me-2 mb-0">Show:</label>
-                    <select id="topicFilter" onchange="filterTopic()" class="form-select form-select-sm w-auto">
+                    <select id="topicFilter" onchange="refreshFilters()" class="form-select form-select-sm w-auto">
                         <option value="all">All Settings</option>
                         <option value="nozzle">Nozzle Temperature</option>
                         <option value="bed">Bed Temperature</option>
@@ -64,6 +70,7 @@
                     <label for="searchTerm" class="me-2 mb-0">Keyword Filter:</label>
                     <input type="text" id="searchTerm" class="form-control form-control-sm w-auto" placeholder="Type to filter..." oninput="refreshFilters()" style="max-width:140px;">
                     <button type="button" class="btn btn-outline-secondary btn-sm ms-2" onclick="viewInContext()">View in Context</button>
+                    <button type="button" class="btn btn-primary btn-sm ms-2" onclick="saveEditorContent()">Save</button>
                 </div>
                 <div style="position:relative; width:100%; height:400px;">
                     <textarea class="form-control" name="editedConfig" id="configTextarea" rows="20" style="font-family:monospace; resize:vertical; height:100%; min-height:100%; box-sizing:border-box;">{{ config_content }}</textarea>
@@ -72,19 +79,27 @@
         {% endif %}
     </div>
     <script>
-        function onConfigExampleChange() {
-            const select = document.getElementById('configExampleSelect');
-            window.selectedConfigFolder = select.value;
-            const fileListArea = document.getElementById('fileListArea');
+    let originalConfig = null;
+    let editedConfig = null;
+    let filteredConfig = null;
+    let lastFilteredLine = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // File list logic
+        let select = document.getElementById('configExampleSelect');
+        let fileListArea = document.getElementById('fileListArea');
+        function fetchAndRenderFileList() {
+            let folder = select.value;
             fileListArea.innerHTML = '';
-            if (select.value) {
-                fetch(`/list-config-files?folder=${encodeURIComponent(select.value)}`)
+            if (folder) {
+                fetch(`/list-config-files?folder=${encodeURIComponent(folder)}`)
                     .then(response => response.json())
                     .then(data => {
-                        if (data.files.length > 0) {
+                        console.log('File list response:', data);
+                        if (data.files && data.files.length > 0) {
                             let html = '<div class="fw-bold">Files in selected folder:</div><ul class="list-group">';
                             for (let f of data.files) {
-                                html += `<li class="list-group-item list-group-item-action" style="cursor:pointer;" onclick="loadConfigFile('${select.value}','${f}')">${f}</li>`;
+                                html += `<li class="list-group-item list-group-item-action" style="cursor:pointer;" onclick="window.location.href='/configurator?folder=${encodeURIComponent(folder)}&filename=${encodeURIComponent(f)}'">${f}</li>`;
                             }
                             html += '</ul>';
                             fileListArea.innerHTML = html;
@@ -93,158 +108,165 @@
                         }
                     })
                     .catch(err => {
+                        fileListArea.innerHTML = '<div class="text-danger">Error fetching file list.</div>';
                         console.error('Error fetching file list:', err);
                     });
             }
         }
-        function loadConfigFile(folder, filename) {
-            window.location.href = `/?folder=${encodeURIComponent(folder)}&filename=${encodeURIComponent(filename)}`;
+        if (select) {
+            select.addEventListener('change', fetchAndRenderFileList);
+            // On page load, if a folder is already selected, fetch its file list
+            if (select.value) {
+                fetchAndRenderFileList();
+            }
         }
-        document.addEventListener('DOMContentLoaded', function() {
-            var select = document.getElementById('configExampleSelect');
-            if (select) {
-                select.onchange = function() {
-                    onConfigExampleChange();
-                    var fileInput = document.getElementById('configFile');
-                    var urlInput = document.getElementById('configUrl');
-                    if (select.value) {
-                        fileInput.style.display = 'none';
-                        urlInput.style.display = 'none';
-                    } else {
-                        fileInput.style.display = '';
-                        urlInput.style.display = '';
-                    }
-                };
-            }
-            var fileInput = document.getElementById('configFile');
-            if (fileInput) {
-                fileInput.addEventListener('change', function(e) {
-                    if (fileInput.files.length > 0 && window.selectedConfigFolder) {
-                        const fileName = fileInput.files[0].name;
-                        const loadedFileDiv = document.querySelector('.small.text-muted.mb-2');
-                        if (loadedFileDiv) {
-                            loadedFileDiv.innerHTML = `<strong>Loaded file:</strong> ./config/${window.selectedConfigFolder}/${fileName}`;
-                        }
-                        fileInput.form.submit();
-                    }
-                });
-            }
-        });
-        let originalConfig = null;
-        let filteredConfig = null;
-        let lastFilteredLine = null;
-        window.addEventListener('DOMContentLoaded', function() {
-            if (document.getElementById('hideComments')) {
-                document.getElementById('hideComments').checked = false;
-            }
-            if (document.getElementById('topicFilter')) {
-                document.getElementById('topicFilter').value = 'all';
-            }
-            if (document.getElementById('searchTerm')) {
-                document.getElementById('searchTerm').value = '';
-            }
-            if (document.getElementById('configTextarea')) {
-                originalConfig = document.getElementById('configTextarea').value;
-                document.getElementById('configTextarea').value = originalConfig;
-                filteredConfig = originalConfig;
-            }
-        });
-        function toggleComments() {
-            const textarea = document.getElementById('configTextarea');
-            let lines = originalConfig.split('\n');
-            let filtered = [];
+
+        // Initialize config variables
+        const textarea = document.getElementById('configTextarea');
+        if (textarea) {
+            originalConfig = textarea.value;
+            editedConfig = textarea.value;
+            filteredConfig = textarea.value;
+            textarea.addEventListener('input', function() {
+                editedConfig = this.value;
+            });
+        }
+        // Restore full edited text when filter changes to 'all'
+        const topicFilter = document.getElementById('topicFilter');
+        if (topicFilter) {
+            topicFilter.addEventListener('change', function() {
+                if (this.value === 'all' && textarea) {
+                    textarea.value = editedConfig;
+                    filteredConfig = editedConfig;
+                }
+            });
+        }
+        // Save and Download button logic
+        const saveDownloadBtn = document.getElementById('saveDownloadBtn');
+        if (saveDownloadBtn) {
+            saveDownloadBtn.onclick = function() {
+                // Always restore full edited config before download
+                if (textarea) {
+                    textarea.value = editedConfig;
+                }
+                const hidden = document.getElementById('editedConfigHidden');
+                if (hidden) {
+                    hidden.value = editedConfig;
+                }
+                // Submit the form
+                document.getElementById('configForm').submit();
+            };
+        }
+        // Initial Save button visibility
+        updateSaveButtonVisibility();
+        // Update Save button visibility on filter changes
+        if (topicFilter) topicFilter.addEventListener('change', updateSaveButtonVisibility);
+        if (searchTerm) searchTerm.addEventListener('input', updateSaveButtonVisibility);
+        if (hideComments) hideComments.addEventListener('change', updateSaveButtonVisibility);
+    });
+    function refreshFilters() {
+        const textarea = document.getElementById('configTextarea');
+        let lines = editedConfig ? editedConfig.split('\n') : originalConfig.split('\n');
+        let filtered = lines;
+        // Hide comments
+        if (hideComments && hideComments.checked) {
+            let temp = [];
             let inBlock = false;
-            for (let line of lines) {
+            for (let line of filtered) {
                 let trimmed = line.trim();
                 if (trimmed.startsWith('/*')) inBlock = true;
-                if (!inBlock && !trimmed.startsWith('//')) filtered.push(line);
+                if (!inBlock && !trimmed.startsWith('//')) temp.push(line);
                 if (inBlock && trimmed.endsWith('*/')) inBlock = false;
             }
-            if (document.getElementById('hideComments').checked) {
-                filteredConfig = filtered.join('\n');
-            } else {
-                filteredConfig = originalConfig;
-            }
-            filterTopic();
+            filtered = temp;
         }
-        function filterTopic() {
-            const textarea = document.getElementById('configTextarea');
-            let lines = filteredConfig.split('\n');
-            let topic = document.getElementById('topicFilter').value;
-            if (topic === 'all') {
-                textarea.value = lines.join('\n');
-                filterSearch();
-                return;
-            }
-            let keywords = {
+        // Topic filter
+        if (topicFilter && topicFilter.value !== 'all') {
+            const keywords = {
                 nozzle: ['NOZZLE', 'TEMP_SENSOR', 'HEATER', 'HOTEND'],
                 bed: ['BED', 'TEMP_SENSOR_BED', 'HEATER_BED'],
                 motors: ['MOTOR', 'STEPPER', 'AXIS'],
                 enable: ['ENABLE '],
                 setting: ['#define']
             };
-            let filtered;
-            if (topic === 'setting') {
-                filtered = lines.filter(line => line.trim().startsWith('#define'));
-            } else if (topic === 'commented_define') {
-                if (document.getElementById('hideComments').checked) {
-                    filtered = [];
+            if (topicFilter.value === 'setting') {
+                filtered = filtered.filter(line => line.trim().startsWith('#define'));
+            } else if (topicFilter.value === 'commented_define') {
+                if (!hideComments || !hideComments.checked) {
+                    filtered = filtered.filter(line => line.trim().startsWith('//') && line.includes('#define'));
                 } else {
-                    filtered = lines.filter(line => line.trim().startsWith('//') && line.includes('#define'));
+                    filtered = [];
                 }
             } else {
-                filtered = lines.filter(line => {
-                    for (let key of keywords[topic]) {
+                filtered = filtered.filter(line => {
+                    for (let key of keywords[topicFilter.value]) {
                         if (line.toUpperCase().includes(key)) return true;
                     }
                     return false;
                 });
             }
+        }
+        // Keyword filter
+        let searchTermValue = searchTerm ? searchTerm.value.trim().toLowerCase() : '';
+        if (searchTermValue) {
+            filtered = filtered.filter(line => line.toLowerCase().includes(searchTermValue));
+        }
+        // Update textarea
+        if (textarea) {
             textarea.value = filtered.join('\n');
-            lastFilteredLine = filtered.length > 0 ? filtered[filtered.length - 1] : null;
-            filterSearch();
         }
-        function filterSearch() {
-            const textarea = document.getElementById('configTextarea');
-            let searchTerm = document.getElementById('searchTerm').value.trim().toLowerCase();
-            if (!searchTerm) return;
-            let lines = textarea.value.split('\n');
-            let filtered = lines.filter(line => line.toLowerCase().includes(searchTerm));
-            textarea.value = filtered.join('\n');
-            lastFilteredLine = filtered.length > 0 ? filtered[filtered.length - 1] : null;
+        updateSaveButtonVisibility();
+    }
+    function saveEditorContent() {
+        const textarea = document.getElementById('configTextarea');
+        if (textarea) {
+            editedConfig = textarea.value;
+            alert('Changes saved.');
         }
-        function refreshFilters() {
-            toggleComments();
-            filterTopic();
-            filterSearch();
-        }
-        function viewInContext() {
-            const textarea = document.getElementById('configTextarea');
-            if (!textarea) return;
-            const pos = textarea.selectionStart;
-            const filteredLines = textarea.value.split('\n');
-            const filteredLineNum = textarea.value.substr(0, pos).split('\n').length - 1;
-            const selectedLineContent = filteredLines[filteredLineNum]?.trim();
-            textarea.value = originalConfig;
-            const originalLines = originalConfig.split('\n');
-            let idx = originalLines.findIndex(line => line.trim() === selectedLineContent);
-            if (idx >= 0) {
-                let start = 0;
-                for (let i = 0; i < idx; i++) start += originalLines[i].length + 1;
-                let end = start + originalLines[idx].length;
-                textarea.focus();
-                textarea.setSelectionRange(start, end);
-                const lineHeight = textarea.scrollHeight / originalLines.length;
-                textarea.scrollTop = lineHeight * (idx - 5);
+    }
+    function updateSaveButtonVisibility() {
+        const saveBtn = document.querySelector('button.btn-primary');
+        if (saveBtn) {
+            if (
+                topicFilter && topicFilter.value === 'all' &&
+                searchTerm && searchTerm.value.trim() === '' &&
+                hideComments && !hideComments.checked
+            ) {
+                saveBtn.style.display = '';
+            } else {
+                saveBtn.style.display = 'none';
             }
         }
-        function copyEditorContent() {
-            var editor = document.getElementById('configTextarea');
-            var hidden = document.getElementById('editedConfigHidden');
-            if (editor && hidden) {
-                hidden.value = editor.value;
-            }
+    }
+    function viewInContext() {
+        const textarea = document.getElementById('configTextarea');
+        if (!textarea) return;
+        // Get selected filtered line
+        const pos = textarea.selectionStart;
+        const filteredLines = textarea.value.split('\n');
+        const filteredLineNum = textarea.value.substr(0, pos).split('\n').length - 1;
+        const selectedLineContent = filteredLines[filteredLineNum]?.trim();
+        // Clear all filters
+        if (topicFilter) topicFilter.value = 'all';
+        if (searchTerm) searchTerm.value = '';
+        if (hideComments) hideComments.checked = false;
+        // Restore full config
+        textarea.value = originalConfig;
+        // Find and select the line in the full config
+        const originalLines = originalConfig.split('\n');
+        let idx = originalLines.findIndex(line => line.trim() === selectedLineContent);
+        if (idx >= 0) {
+            let start = 0;
+            for (let i = 0; i < idx; i++) start += originalLines[i].length + 1;
+            let end = start + originalLines[idx].length;
+            textarea.focus();
+            textarea.setSelectionRange(start, end);
+            const lineHeight = textarea.scrollHeight / originalLines.length;
+            textarea.scrollTop = lineHeight * (idx - 5);
         }
+        updateSaveButtonVisibility();
+    }
     </script>
+    <script src="/static/popup.js"></script>
 </body>
 </html>

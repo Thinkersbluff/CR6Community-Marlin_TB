@@ -1,8 +1,11 @@
 
+
+
 import os
 import requests
-from flask import Flask, render_template, request, send_file, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, Response
 from werkzeug.utils import secure_filename
+from flash_cards import FLASH_CARDS
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), 'uploads')
@@ -11,6 +14,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 
 @app.route('/list-config-files', methods=['GET'])
 def list_config_files():
+    '''List the files in the selected configurationfolder.'''
     folder = request.args.get('folder')
     config_dir = os.path.join('config', folder) if folder else None
     files = []
@@ -20,14 +24,28 @@ def list_config_files():
                 files.append(f)
     return jsonify({'files': files})
 
+# Download edited config file
+@app.route('/edit', methods=['POST'])
+def download_edited_config():
+    edited_config = request.form.get('editedConfig')
+    filename = request.form.get('filename', 'configuration.h')
+    if not edited_config:
+        return "No config data provided.", 400
+    response = Response(edited_config, mimetype='text/plain')
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+    return response
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
+# Redirect root to Start Here tab
+@app.route('/')
+def root():
+    return redirect(url_for('start_here_tab'))
+
+# Configurator tab route (was previously at /)
+@app.route('/configurator', methods=['GET', 'POST'])
+def configurator():
     config_content = None
     config_source = None
-    # Only load config if POST, otherwise reset everything
     if request.method == 'POST':
-        # Handle file upload
         file = request.files.get('configFile')
         if file and file.filename:
             filename = secure_filename(file.filename)
@@ -36,11 +54,9 @@ def index():
             with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                 config_content = f.read()
             config_source = filename
-        # Handle URL input
         elif request.form.get('configUrl'):
             url = request.form.get('configUrl')
             orig_url = url
-            # Auto-convert GitHub page URL to raw URL
             if url.startswith('https://github.com/') and '/blob/' in url:
                 url = url.replace('https://github.com/', 'https://raw.githubusercontent.com/')
                 url = url.replace('/blob/', '/')
@@ -55,8 +71,6 @@ def index():
             except Exception:
                 config_content = "Could not fetch config from URL."
                 config_source = orig_url
-    # On GET, always reset (no config loaded)
-    # Support loading file by folder and filename from query params
     folder = request.args.get('folder')
     filename = request.args.get('filename')
     if folder and filename:
@@ -67,48 +81,9 @@ def index():
             config_source = config_path
     return render_template('index.html', config_content=config_content, config_source=config_source)
 
-
-@app.route('/edit', methods=['POST'])
-def edit():
-    import datetime
-    edited_config = request.form.get('editedConfig')
-    # Try to get filename from previous session or fallback
-    filename = None
-    # Try to get filename from hidden input (add this in the form)
-    if 'filename' in request.form:
-        filename = request.form['filename']
-    # Fallback to referrer parsing if needed
-    if not filename:
-        ref = request.referrer
-        if ref and 'config_source=' in ref:
-            filename = ref.split('config_source=')[-1]
-        elif ref and ref.startswith('http'):
-            filename = ref.split('/')[-1]
-    # Clean up filename if it's a URL
-    if filename and filename.startswith('http'):
-        filename = filename.split('/')[-1]
-    # Default to configuration.h if not found
-    if not filename or filename == '':
-        filename = 'configuration.h'
-    # Ensure .h extension for Marlin config files
-    if 'adv' in filename.lower():
-        base = 'configuration_adv'
-    else:
-        base = 'configuration'
-    ext = '.h'
-    # Add date-time tag
-    dt_tag = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
-    tagged_filename = f"{base}_{dt_tag}{ext}"
-    if edited_config:
-        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], tagged_filename)
-        with open(temp_path, 'w', encoding='utf-8') as f:
-            f.write(edited_config)
-        return send_file(temp_path, as_attachment=True, download_name=tagged_filename)
-    return redirect(url_for('index'))
-
-
-# Download handled by /edit route after modification
-
+@app.route('/start-here')
+def start_here_tab():
+    return render_template('start_here.html', flash_cards=FLASH_CARDS)
 
 if __name__ == '__main__':
     app.run(debug=True)

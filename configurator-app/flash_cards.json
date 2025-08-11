@@ -1,0 +1,34 @@
+[
+    {
+        "id": "max_print_temp",
+        "objective": "Increase max print temperature limit",
+        "description": "Raise the maximum allowed hotend temperature for your printer. Useful for high-temp filaments or upgraded hotends.",
+        "files to edit": "Configuration.h",
+        "keywords": ["HEATER_0_MAXTEMP"],
+        "instructions": [
+            "Search for HEATER_0_MAXTEMP in Configuration.h.",
+            "Increase the value, but do not exceed your hardware's safe limit.",
+            "Marlin will not allow nozzle temperature settings higher than the value of HEATER_0_MAXTEMP minus HOTEND_OVERSHOOT.",
+            " e.g. if HEATER_0_MAXTEMP = 375 and HOTEND_OVERSHOOT = 15 the maximum nozzle temperature is 360.",
+            "Save and upload the new configuration."
+        ],
+        "related_settings": ["HOTEND_OVERSHOOT"],
+        "docs_link": "https://marlinfw.org/docs/configuration/configuration.html#temperature-limits",
+        "warnings": "Default of 275 is to protect users against PTFE tube off-gassing. Only increase if you have an all-metal hotend."
+    },
+    {
+        "id": "change_nozzle_thermistor",
+        "objective": "Change nozzle thermistor type",
+        "description": "Set the correct thermistor type for your hotend to ensure accurate temperature readings.",
+        "files to edit": "Configuration.h",
+        "keywords": ["TEMP_SENSOR_0"],
+        "instructions": [
+            "Search for TEMP_SENSOR_0 in Configuration.h.",
+            "Set the value to match your thermistor type (see Marlin's thermistor table in the comments above this setting).",
+            "Save and upload the new configuration."
+        ],
+        "related_settings": [],
+        "docs_link": "https://marlinfw.org/docs/configuration/configuration.html#temperature-sensors",
+        "warnings": "Incorrect thermistor type value will cause inaccurate readings and Marlin may shut down the printer."
+    }
+]
