@@ -261,6 +261,10 @@ class ConfiguratorApp(tk.Tk):
         logging.info('keyword_apply_button created')
         self.keyword_apply_button.pack(side='left', padx=5)
         logging.info('keyword_apply_button packed')
+        self.view_in_context_button = tk.Button(self.filter_frame, text='View in Context', command=self.view_in_context)
+        logging.info('view_in_context_button created')
+        self.view_in_context_button.pack(side='left', padx=5)
+        logging.info('view_in_context_button packed')
 
         # Canvas and scrollbar
         self.canvas = tk.Canvas(self.editor_frame)
@@ -320,8 +324,8 @@ class ConfiguratorApp(tk.Tk):
         self.update_default_envs_label()
         logging.info('update_default_envs_label called')
 
-    def show_lines(self):
-        '''Display lines in the editor area, filtered by match attribute if present.'''
+    def show_lines(self, highlight_line_num=None, scroll_to_index=None):
+        '''Display lines in the editor area, filtered by match attribute if present. Optionally highlight a line and scroll to a given index.'''
         logging.info('show_lines called')
         if self.lines_frame is None:
             return
@@ -346,11 +350,26 @@ class ConfiguratorApp(tk.Tk):
             entry.pack(fill='x', padx=2, pady=1)
             self.modified_entries.append(entry)
             self.displayed_indices.append(line.get('line_num', idx))
+            # Highlight if needed
+            if highlight_line_num is not None and line.get('line_num', idx) == highlight_line_num:
+                entry.config(bg='yellow')
         self.lines_frame.update_idletasks()
         self.canvas.config(scrollregion=self.canvas.bbox(self.lines_frame_id))
         self.update_idletasks()
-        # Use a short delay to ensure the canvas view resets to the top
-        self.after(10, lambda: self.canvas.yview_moveto(0))
+        # Scroll so that the highlighted line is in the desired position
+        if highlight_line_num is not None:
+            try:
+                idx = [line.get('line_num', i) for i, line in enumerate(lines_to_display[:max_lines])].index(highlight_line_num)
+                if scroll_to_index is not None:
+                    total = len(lines_to_display[:max_lines])
+                    frac = max(0, min(1, (idx - scroll_to_index) / max(1, total)))
+                    self.after(10, lambda: self.canvas.yview_moveto(frac))
+                else:
+                    self.after(10, lambda: self.canvas.yview_moveto(0))
+            except Exception as e:
+                logging.warning(f'Could not scroll to highlighted line: {e}')
+        else:
+            self.after(10, lambda: self.canvas.yview_moveto(0))
 
     def apply_keyword_filter(self):
         '''Filter displayed lines by selected keywords and entry.'''
@@ -369,6 +388,33 @@ class ConfiguratorApp(tk.Tk):
                 match = match and (filter_text in line["content"].lower())
             line['match'] = match
         self.show_lines()
+
+    def view_in_context(self):
+        '''Show +/- 99 lines around the selected line, scroll to selected line, and highlight it.'''
+        logging.info('view_in_context called')
+        # Find which entry has focus
+        selected_idx = None
+        for i, entry in enumerate(self.modified_entries):
+            if entry == self.focus_get():
+                selected_idx = i
+                break
+        if selected_idx is None:
+            messagebox.showinfo('No Selection', 'Please click on a line to select it before using View in Context.')
+            return
+        # Get the line number in the full file
+        if selected_idx >= len(self.displayed_indices):
+            messagebox.showerror('Error', 'Selected line index out of range.')
+            return
+        line_num = self.displayed_indices[selected_idx]
+        logging.info(f'view_in_context: selected line_num={line_num}')
+        # Set all lines to display False, then set +/- 99 to True
+        for line in self.base_lines:
+            line['match'] = False
+        start = max(0, line_num - 99)
+        end = min(len(self.base_lines), line_num + 100)
+        for i in range(start, end):
+            self.base_lines[i]['match'] = True
+        self.show_lines(highlight_line_num=line_num, scroll_to_index=10)
 
     def load_other_file(self):
         '''Load a different configuration file.'''
