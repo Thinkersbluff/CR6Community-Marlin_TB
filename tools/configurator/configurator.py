@@ -48,7 +48,6 @@ MARLIN_CONFIG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..
 example_folders = [f for f in os.listdir(CONFIG_DIR) if os.path.isdir(os.path.join(CONFIG_DIR, f)) and 'cr6' in f]
 
 class ConfiguratorApp(tk.Tk):
-    # ...existing code...
     '''Main application class for the Marlin Configurator GUI.'''
     def __init__(self):
         logging.info('ConfiguratorApp __init__ started')
@@ -160,7 +159,7 @@ class ConfiguratorApp(tk.Tk):
         self.flash_card_display_frame = tk.Frame(self.flash_frame, bd=1, relief='ridge', width=500)
         logging.info('flash_card_display_frame created')
         self.flash_card_display_frame.pack(fill='x', padx=10, pady=(8,0))
-        self.flash_card_display_frame.pack_propagate(False)
+        self.flash_card_display_frame.pack_propagate(True)
         logging.info('flash_card_display_frame packed')
         self.flash_card_text_label = tk.Label(self.flash_card_display_frame, textvariable=self.flash_card_text, font=('Arial', 12, 'bold'), fg='blue', anchor='w', justify='left')
         logging.info('flash_card_text_label created')
@@ -170,30 +169,34 @@ class ConfiguratorApp(tk.Tk):
         logging.info('flash_card_details_label created')
         self.flash_card_details_label.pack(fill='x')
         logging.info('flash_card_details_label packed')
-        self.flash_card_desc_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        self.flash_card_desc_label = tk.Label(self.flash_card_display_frame, text='Description:', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
         logging.info('flash_card_desc_label created')
         self.flash_card_desc_label.pack(fill='x')
         logging.info('flash_card_desc_label packed')
-        self.flash_card_files_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        self.flash_card_files_label = tk.Label(self.flash_card_display_frame, text='Files to Edit:', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
         logging.info('flash_card_files_label created')
         self.flash_card_files_label.pack(fill='x')
         logging.info('flash_card_files_label packed')
-        self.flash_card_instructions_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        self.flash_card_instructions_label = tk.Label(self.flash_card_display_frame, text='Instructions:', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
         logging.info('flash_card_instructions_label created')
         self.flash_card_instructions_label.pack(fill='x')
         logging.info('flash_card_instructions_label packed')
-        self.flash_card_related_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        self.flash_card_related_label = tk.Label(self.flash_card_display_frame, text='Related Topics:', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
         logging.info('flash_card_related_label created')
         self.flash_card_related_label.pack(fill='x')
         logging.info('flash_card_related_label packed')
-        self.flash_card_docs_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='blue', justify='left', wraplength=600, anchor='w', cursor='hand2')
+        self.flash_card_docs_label = tk.Label(self.flash_card_display_frame, text='More Info:', font=('Arial', 10), fg='blue', justify='left', wraplength=600, anchor='w', cursor='hand2')
         logging.info('flash_card_docs_label created')
         self.flash_card_docs_label.pack(fill='x')
         logging.info('flash_card_docs_label packed')
-        self.flash_card_warnings_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='red', justify='left', wraplength=600, anchor='w')
+        self.flash_card_warnings_label = tk.Label(self.flash_card_display_frame, text='Warnings:', font=('Arial', 10), fg='red', justify='left', wraplength=600, anchor='w')
         logging.info('flash_card_warnings_label created')
         self.flash_card_warnings_label.pack(fill='x')
         logging.info('flash_card_warnings_label packed')
+
+        # Load flash cards using the shared function
+        self.flash_cards = load_flash_cards()
+        logging.info('flash_cards loaded')
 
         # Objective Keywords subframe
         self.keywords_frame = tk.Frame(self.flash_frame)
@@ -547,6 +550,7 @@ class ConfiguratorApp(tk.Tk):
         logging.info('update_flash_card_display called')
         selected = self.selected_objective.get()
         card = next((c for c in self.flash_cards if c['objective'] == selected), None)
+        logging.debug(f'Flash card selected: {selected}, card data: {card}')
         if card:
             self.flash_card_text.set(card.get('objective', ''))
             self.flash_card_details.set(card.get('details', ''))
