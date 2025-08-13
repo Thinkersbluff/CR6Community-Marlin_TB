@@ -35,6 +35,30 @@ def download_edited_config():
     response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     return response
 
+# Support AJAX GET for file content
+@app.route('/edit', methods=['GET'])
+def edit_get():
+    folder = request.args.get('folder')
+    filename = request.args.get('filename')
+    if not folder or not filename:
+        return jsonify({'error': 'Missing folder or filename'}), 400
+    # Use the actual workspace root
+    workspace_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../CR6Community-Marlin_TB'))
+    base_dir = os.path.join(workspace_root, 'config', folder)
+    file_path = os.path.join(base_dir, filename)
+    file_path = os.path.realpath(file_path)
+    print(f"DEBUG: Trying to open file: {file_path}")
+    if not os.path.isfile(file_path):
+        print(f"DEBUG: File not found: {file_path}")
+        return jsonify({'error': 'File not found', 'path': file_path}), 404
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        print(f"DEBUG: File loaded successfully: {file_path}")
+        return jsonify({'content': content})
+    except Exception as e:
+        print(f"DEBUG: Exception reading file: {file_path} - {e}")
+        return jsonify({'error': str(e), 'path': file_path}), 500
 # Redirect root to Start Here tab
 @app.route('/')
 def root():

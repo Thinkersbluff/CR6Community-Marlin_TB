@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+    #popupModal { display: none !important; }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marlin Configurator</title>
@@ -41,85 +44,305 @@
         <form id="configForm" method="POST" enctype="multipart/form-data" class="d-flex flex-wrap align-items-center gap-2 mb-2" action="/edit">
             <input class="form-control form-control-sm w-auto" type="file" id="configFile" name="configFile" accept=".h,.ini,.txt" style="max-width:220px; display:none;">
             <input class="form-control form-control-sm w-auto" type="url" id="configUrl" name="configUrl" placeholder="Paste config URL" style="max-width:220px; display:none;">
-            {% if config_content %}
-                <input type="hidden" name="filename" value="{{ config_source.split('/')[-1] if config_source else 'configuration.h' }}">
-                <input type="hidden" name="editedConfig" id="editedConfigHidden">
-                <button type="button" class="btn btn-success btn-sm ms-2" id="saveDownloadBtn">Save and Download</button>
-            {% endif %}
+            <input type="hidden" name="filename" value="{{ config_source.split('/')[-1] if config_source else 'configuration.h' }}">
+            <input type="hidden" name="editedConfig" id="editedConfigHidden">
+            <button type="button" class="btn btn-success btn-sm ms-2" id="saveDownloadBtn">Save and Download</button>
         </form>
-        {% if config_content %}
-            <hr>
-            {% if config_source %}
-                <div class="small text-muted mb-2"><strong>Loaded file:</strong> {{ config_source }}</div>
-            {% endif %}
-            <div id="configEditor">
-                <h2 class="mt-4">Edit {{ config_source|replace('https://','')|replace('github.com/','')|replace('raw.githubusercontent.com/','')|replace('blob/','')|replace('/','_') if config_source else 'Configuration' }}</h2>
-                <div class="mb-2 d-flex flex-wrap align-items-center gap-2">
-                    <input type="checkbox" id="hideComments" onclick="refreshFilters()">
-                    <label for="hideComments" class="me-2 mb-0">Hide Comments</label>
-                    <label for="topicFilter" class="me-2 mb-0">Show:</label>
-                    <select id="topicFilter" onchange="refreshFilters()" class="form-select form-select-sm w-auto">
-                        <option value="all">All Settings</option>
-                        <option value="nozzle">Nozzle Temperature</option>
-                        <option value="bed">Bed Temperature</option>
-                        <option value="motors">Motors</option>
-                        <option value="enable">Enable Settings</option>
-                        <option value="setting">#define Sttings</option>
-                        <option value="commented_define">Commented #define</option>
-                    </select>
-                    <label for="searchTerm" class="me-2 mb-0">Keyword Filter:</label>
-                    <input type="text" id="searchTerm" class="form-control form-control-sm w-auto" placeholder="Type to filter..." oninput="refreshFilters()" style="max-width:140px;">
-                    <button type="button" class="btn btn-outline-secondary btn-sm ms-2" onclick="viewInContext()">View in Context</button>
-                    <button type="button" class="btn btn-primary btn-sm ms-2" onclick="saveEditorContent()">Save</button>
-                </div>
-                <div style="position:relative; width:100%; height:400px;">
-                    <textarea class="form-control" name="editedConfig" id="configTextarea" rows="20" style="font-family:monospace; resize:vertical; height:100%; min-height:100%; box-sizing:border-box;">{{ config_content }}</textarea>
-                </div>
+        <hr>
+        <div class="small text-muted mb-2"><strong>Loaded file:</strong> {% if config_source %}{{ config_source }}{% else %}None{% endif %}</div>
+        <div id="configEditor">
+            <h2 class="mt-4">Edit {% if config_source %}{{ config_source|replace('https://','')|replace('github.com/','')|replace('raw.githubusercontent.com/','')|replace('blob/','')|replace('/','_') }}{% else %}Configuration{% endif %}</h2>
+            <div class="mb-2 d-flex flex-wrap align-items-center gap-2">
+                <input type="checkbox" id="hideComments" onclick="refreshFilters()">
+                <label for="hideComments" class="me-2 mb-0">Hide Comments</label>
+                <label for="topicFilter" class="me-2 mb-0">Show:</label>
+                <select id="topicFilter" onchange="refreshFilters()" class="form-select form-select-sm w-auto">
+                    <option value="all">All Settings</option>
+                    <option value="nozzle">Nozzle Temperature</option>
+                    <option value="bed">Bed Temperature</option>
+                    <option value="motors">Motors</option>
+                    <option value="enable">Enable Settings</option>
+                    <option value="setting">#define Sttings</option>
+                    <option value="commented_define">Commented #define</option>
+                </select>
+                <label for="searchTerm" class="me-2 mb-0">Keyword Filter:</label>
+                <input type="text" id="searchTerm" class="form-control form-control-sm w-auto" placeholder="Type to filter..." oninput="refreshFilters()" style="max-width:140px;">
+                <button type="button" class="btn btn-outline-secondary btn-sm ms-2" onclick="viewInContext()">View in Context</button>
+                <button type="button" class="btn btn-primary btn-sm ms-2" onclick="saveEditorContent()">Save</button>
             </div>
-        {% endif %}
+            <div style="position:relative; width:100%; height:400px;">
+                <textarea class="form-control" name="editedConfig" id="configTextarea" rows="20" style="font-family:monospace; resize:vertical; height:100%; min-height:100%; box-sizing:border-box;">{{ config_content if config_content else '' }}</textarea>
+            </div>
+        </div>
     </div>
     <script>
+    // Robust file list display logic
+    function restoreEditorState() {
+        const filename = localStorage.getItem('lastConfigFilename');
+        const folder = localStorage.getItem('lastConfigFolder');
+        const content = localStorage.getItem('lastConfigContent');
+        if (filename && folder && content) {
+            let textarea = document.getElementById('configTextarea');
+            if (textarea) {
+                textarea.value = content;
+                originalConfig = content;
+                editedConfig = content;
+                filteredConfig = content;
+            }
+            let hiddenFilename = document.querySelector('input[name="filename"]');
+            if (hiddenFilename) hiddenFilename.value = filename;
+            let loadedFileDiv = document.querySelector('.small.text-muted.mb-2');
+            if (loadedFileDiv) loadedFileDiv.innerHTML = `<strong>Loaded file:</strong> ${folder}/${filename}`;
+        }
+    }
+    function fetchAndRenderFileList() {
+        let select = document.getElementById('configExampleSelect');
+        let fileListArea = document.getElementById('fileListArea');
+        if (!select || !fileListArea || !select.value) {
+            fileListArea.innerHTML = '';
+            return;
+        }
+        fileListArea.innerHTML = '<span class="text-muted">Loading files...</span>';
+        fetch(`/list-config-files?folder=${encodeURIComponent(select.value)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data.files) && data.files.length > 0) {
+                    let html = '<ul class="list-group list-group-flush">';
+                    for (let file of data.files) {
+                        html += `<li class="list-group-item file-list-item" style="cursor:pointer;" data-filename="${file}">${file}</li>`;
+                    }
+                    html += '</ul>';
+                    fileListArea.innerHTML = html;
+                    // Use event delegation for robust click handling
+                    fileListArea.onclick = function(e) {
+                        let item = e.target.closest('.file-list-item');
+                        if (!item) return;
+                        let filename = item.getAttribute('data-filename');
+                        let folder = select.value;
+                        // Fetch file content via AJAX
+                        fetch(`/edit?folder=${encodeURIComponent(folder)}&filename=${encodeURIComponent(filename)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && typeof data.content === 'string') {
+                                    // Update editor with new file content
+                                    let textarea = document.getElementById('configTextarea');
+                                    if (textarea) {
+                                        textarea.value = data.content;
+                                        originalConfig = data.content;
+                                        editedConfig = data.content;
+                                        filteredConfig = data.content;
+                                        // Optionally update filename hidden input
+                                        let hiddenFilename = document.querySelector('input[name="filename"]');
+                                        if (hiddenFilename) hiddenFilename.value = filename;
+                                    }
+                                    // Optionally update loaded file display
+                                    let loadedFileDiv = document.querySelector('.small.text-muted.mb-2');
+                                    if (loadedFileDiv) loadedFileDiv.innerHTML = `<strong>Loaded file:</strong> ${folder}/${filename}`;
+                                    // Persist state for workflow continuity
+                                    persistEditorState(filename, folder, data.content);
+                                    // Reset filters
+                                    if (topicFilter) topicFilter.value = 'all';
+                                    if (searchTerm) searchTerm.value = '';
+                                    if (hideComments) hideComments.checked = false;
+                                    updateSaveButtonVisibility();
+                                } else {
+                                    alert('Error loading file content.');
+                                }
+                            })
+                            .catch(() => {
+                                alert('Error loading file content.');
+                            });
+                    };
+                } else {
+                    fileListArea.innerHTML = '<span class="text-muted">No files found in this folder.</span>';
+                }
+                // Ensure popup is removed after file list updates
+                setTimeout(function() {
+                    let popup = document.getElementById('popupModal');
+                    if (popup) popup.parentNode.removeChild(popup);
+                    let backdrops = document.getElementsByClassName('modal-backdrop');
+                    while (backdrops.length > 0) {
+                        backdrops[0].parentNode.removeChild(backdrops[0]);
+                    }
+                    document.body.style.overflow = '';
+                }, 50);
+            })
+            .catch(() => {
+                fileListArea.innerHTML = '<span class="text-danger">Error loading file list.</span>';
+            });
+    // FIX: Remove stray closing brace here
+    function persistEditorState(filename, folder, content) {
+        localStorage.setItem('lastConfigFilename', filename || '');
+        localStorage.setItem('lastConfigFolder', folder || '');
+        localStorage.setItem('lastConfigContent', content || '');
+    }
+    function restoreEditorState() {
+        const filename = localStorage.getItem('lastConfigFilename');
+        const folder = localStorage.getItem('lastConfigFolder');
+        const content = localStorage.getItem('lastConfigContent');
+        if (filename && folder && content) {
+            let textarea = document.getElementById('configTextarea');
+            if (textarea) {
+                textarea.value = content;
+                originalConfig = content;
+                editedConfig = content;
+                filteredConfig = content;
+            }
+            let hiddenFilename = document.querySelector('input[name="filename"]');
+            if (hiddenFilename) hiddenFilename.value = filename;
+            let loadedFileDiv = document.querySelector('.small.text-muted.mb-2');
+            if (loadedFileDiv) loadedFileDiv.innerHTML = `<strong>Loaded file:</strong> ${folder}/${filename}`;
+        }
+    }
+    function fetchAndRenderFileList() {
+        let select = document.getElementById('configExampleSelect');
+        let fileListArea = document.getElementById('fileListArea');
+        if (!select || !fileListArea || !select.value) {
+            fileListArea.innerHTML = '';
+            return;
+        }
+        fileListArea.innerHTML = '<span class="text-muted">Loading files...</span>';
+        fetch(`/list-config-files?folder=${encodeURIComponent(select.value)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (Array.isArray(data.files) && data.files.length > 0) {
+                    let html = '<ul class="list-group list-group-flush">';
+                    for (let file of data.files) {
+                        html += `<li class="list-group-item file-list-item" style="cursor:pointer;" data-filename="${file}">${file}</li>`;
+                    }
+                    html += '</ul>';
+                    fileListArea.innerHTML = html;
+                    // Use event delegation for robust click handling
+                    fileListArea.onclick = function(e) {
+                        let item = e.target.closest('.file-list-item');
+                        if (!item) return;
+                        let filename = item.getAttribute('data-filename');
+                        let folder = select.value;
+                        // Fetch file content via AJAX
+                        fetch(`/edit?folder=${encodeURIComponent(folder)}&filename=${encodeURIComponent(filename)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && typeof data.content === 'string') {
+                                    // Update editor with new file content
+                                    let textarea = document.getElementById('configTextarea');
+                                    if (textarea) {
+                                        textarea.value = data.content;
+                                        originalConfig = data.content;
+                                        editedConfig = data.content;
+                                        filteredConfig = data.content;
+                                        // Optionally update filename hidden input
+                                        let hiddenFilename = document.querySelector('input[name="filename"]');
+                                        if (hiddenFilename) hiddenFilename.value = filename;
+                                    }
+                                    // Optionally update loaded file display
+                                    let loadedFileDiv = document.querySelector('.small.text-muted.mb-2');
+                                    if (loadedFileDiv) loadedFileDiv.innerHTML = `<strong>Loaded file:</strong> ${folder}/${filename}`;
+                                    // Persist state for workflow continuity
+                                    persistEditorState(filename, folder, data.content);
+                                    // Reset filters
+                                    if (topicFilter) topicFilter.value = 'all';
+                                    if (searchTerm) searchTerm.value = '';
+                                    if (hideComments) hideComments.checked = false;
+                                    updateSaveButtonVisibility();
+                                } else {
+                                    alert('Error loading file content.');
+                                }
+                            })
+                            .catch(() => {
+                                alert('Error loading file content.');
+                            });
+                    };
+                } else {
+                    fileListArea.innerHTML = '<span class="text-muted">No files found in this folder.</span>';
+                }
+                // Ensure popup is removed after file list updates
+                setTimeout(function() {
+                    let popup = document.getElementById('popupModal');
+                    if (popup) popup.parentNode.removeChild(popup);
+                    let backdrops = document.getElementsByClassName('modal-backdrop');
+                    while (backdrops.length > 0) {
+                        backdrops[0].parentNode.removeChild(backdrops[0]);
+                    }
+                    document.body.style.overflow = '';
+                }, 50);
+            })
+            .catch(() => {
+                fileListArea.innerHTML = '<span class="text-danger">Error loading file list.</span>';
+            });
+    }
+    }
     let originalConfig = null;
     let editedConfig = null;
     let filteredConfig = null;
     let lastFilteredLine = null;
+    // Always define filter controls at top for global use
+    let searchTerm = null;
+    let topicFilter = null;
+    let hideComments = null;
+
+    // Force popup to be hidden and removed repeatedly after page load
+    (function forceRemovePopupAndBackdrop() {
+        function hideAndRemovePopupAndBackdrop() {
+            let popup = document.getElementById('popupModal');
+            if (popup) {
+                popup.style.display = 'none';
+                if (popup.parentNode) popup.parentNode.removeChild(popup);
+            }
+            // Remove any modal-backdrop overlays
+            let backdrops = document.getElementsByClassName('modal-backdrop');
+            while (backdrops.length > 0) {
+                backdrops[0].parentNode.removeChild(backdrops[0]);
+            }
+            // Reset body overflow if locked
+            document.body.style.overflow = '';
+        }
+        // Try repeatedly for 2 seconds after page load
+        let tries = 0;
+        let maxTries = 20;
+        let interval = setInterval(function() {
+            hideAndRemovePopupAndBackdrop();
+            tries++;
+            if (tries >= maxTries) clearInterval(interval);
+        }, 100);
+    })();
 
     document.addEventListener('DOMContentLoaded', function() {
-        // File list logic
-        let select = document.getElementById('configExampleSelect');
-        let fileListArea = document.getElementById('fileListArea');
-        function fetchAndRenderFileList() {
-            let folder = select.value;
+    // Restore last editor state if present
+    restoreEditorState();
+    // Always refresh file list after restoring state
+    fetchAndRenderFileList();
+    // File list logic
+    let select = document.getElementById('configExampleSelect');
+    let fileListArea = document.getElementById('fileListArea');
+    // Assign filter controls globally
+    searchTerm = document.getElementById('searchTerm');
+    topicFilter = document.getElementById('topicFilter');
+    hideComments = document.getElementById('hideComments');
+    // Remove popup and backdrop overlays robustly
+    function removePopupCompletely() {
+        let popup = document.getElementById('popupModal');
+        if (popup) popup.parentNode.removeChild(popup);
+        let backdrops = document.getElementsByClassName('modal-backdrop');
+        while (backdrops.length > 0) {
+            backdrops[0].parentNode.removeChild(backdrops[0]);
+        }
+        document.body.style.overflow = '';
+    }
+    // Always fetch file list on folder change and page load
+    function handleFolderChange() {
+        fetchAndRenderFileList();
+        setTimeout(removePopupCompletely, 100);
+    }
+    if (select) {
+        select.addEventListener('change', handleFolderChange);
+        // On page load, fetch file list if a folder is already selected
+        if (select.value) {
+            handleFolderChange();
+        } else {
             fileListArea.innerHTML = '';
-            if (folder) {
-                fetch(`/list-config-files?folder=${encodeURIComponent(folder)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('File list response:', data);
-                        if (data.files && data.files.length > 0) {
-                            let html = '<div class="fw-bold">Files in selected folder:</div><ul class="list-group">';
-                            for (let f of data.files) {
-                                html += `<li class="list-group-item list-group-item-action" style="cursor:pointer;" onclick="window.location.href='/configurator?folder=${encodeURIComponent(folder)}&filename=${encodeURIComponent(f)}'">${f}</li>`;
-                            }
-                            html += '</ul>';
-                            fileListArea.innerHTML = html;
-                        } else {
-                            fileListArea.innerHTML = '<div class="text-muted">No config files found in this folder.</div>';
-                        }
-                    })
-                    .catch(err => {
-                        fileListArea.innerHTML = '<div class="text-danger">Error fetching file list.</div>';
-                        console.error('Error fetching file list:', err);
-                    });
-            }
+            removePopupCompletely();
         }
-        if (select) {
-            select.addEventListener('change', fetchAndRenderFileList);
-            // On page load, if a folder is already selected, fetch its file list
-            if (select.value) {
-                fetchAndRenderFileList();
-            }
-        }
+    }
 
         // Initialize config variables
         const textarea = document.getElementById('configTextarea');
@@ -129,10 +352,14 @@
             filteredConfig = textarea.value;
             textarea.addEventListener('input', function() {
                 editedConfig = this.value;
+                originalConfig = this.value;
+                // Autosave to localStorage after every edit
+                let filename = document.querySelector('input[name="filename"]')?.value || '';
+                let folder = document.getElementById('configExampleSelect')?.value || '';
+                persistEditorState(filename, folder, this.value);
             });
         }
         // Restore full edited text when filter changes to 'all'
-        const topicFilter = document.getElementById('topicFilter');
         if (topicFilter) {
             topicFilter.addEventListener('change', function() {
                 if (this.value === 'all' && textarea) {
@@ -145,13 +372,11 @@
         const saveDownloadBtn = document.getElementById('saveDownloadBtn');
         if (saveDownloadBtn) {
             saveDownloadBtn.onclick = function() {
-                // Always restore full edited config before download
-                if (textarea) {
-                    textarea.value = editedConfig;
-                }
+                // Always update hidden input with current textarea value before download
+                const textarea = document.getElementById('configTextarea');
                 const hidden = document.getElementById('editedConfigHidden');
-                if (hidden) {
-                    hidden.value = editedConfig;
+                if (textarea && hidden) {
+                    hidden.value = textarea.value;
                 }
                 // Submit the form
                 document.getElementById('configForm').submit();
@@ -218,9 +443,11 @@
         updateSaveButtonVisibility();
     }
     function saveEditorContent() {
-        const textarea = document.getElementById('configTextarea');
+        const hidden = document.getElementById('editedConfigHidden');
         if (textarea) {
             editedConfig = textarea.value;
+            originalConfig = textarea.value;
+            if (hidden) hidden.value = textarea.value;
             alert('Changes saved.');
         }
     }
@@ -252,6 +479,12 @@
         if (hideComments) hideComments.checked = false;
         // Restore full config
         textarea.value = originalConfig;
+        // Restore full config
+        textarea.value = originalConfig;
+        // Sync hidden input and editedConfig with full config
+        const hidden = document.getElementById('editedConfigHidden');
+        if (hidden) hidden.value = originalConfig;
+        editedConfig = originalConfig;
         // Find and select the line in the full config
         const originalLines = originalConfig.split('\n');
         let idx = originalLines.findIndex(line => line.trim() === selectedLineContent);
@@ -268,5 +501,8 @@
     }
     </script>
     <script src="/static/popup.js"></script>
+    <script>
+    // No-op: popup removal now handled by forceRemovePopup above
+    </script>
 </body>
 </html>

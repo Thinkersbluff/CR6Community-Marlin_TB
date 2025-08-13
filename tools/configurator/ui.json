@@ -1,0 +1,36 @@
+{
+  "workflow": [
+    {
+      "step": "1. Plan your session.",
+      "description": "Review the workflow. Research/review the relevant Marlin Configuration guidelines."
+    },
+    {
+      "step": "2. Select target printer from picklist",
+      "description": "Choose the applicable printer configuration from the dropdown menu"
+    },
+    {
+      "step": "3. Select and review objectives",
+      "description": "Select one objective at a time and review the flash card for keywords and background info."
+    },
+    {
+      "step": "Load the file you need to edit",
+      "description": "Choose whether to load the base configuration file, a configuration example file, or browse and select another file."
+    },
+    {
+      "step": "Filter and modify settings",
+      "description": "Find and edit the configuration settings as needed. Start with Keywords from flash card"
+    },
+    {
+      "step": "Save your changes",
+      "description": "Either Overwrite the Base file directly, or Browse and SaveAs, elsewhere."
+    },
+    {
+      "step": "Copy platformio.txt field",
+      "description": "Copy the platformio.txt field, from your chosen target platform folder,to Platformio.ini."
+    },
+    {
+      "step": "Build your customized firmware",
+      "description": "Build your customized firmware as described in BUILD_AND_TEST.md."
+    }
+  ]
+}

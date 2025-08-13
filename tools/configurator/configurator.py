@@ -1,0 +1,621 @@
+# Marlin Configuration Tool (C) Thinkersbluff, 2025
+#
+# Use this python3 tool to edit the baseline configuration files in ./Marlin
+# prior to building your customized firmware
+#
+# Prerequisites:
+#   Install Python 3 (See BUILD_AND_TEST.md for guideance)
+#     If you get an ImportError for tkinter when launching the app, install it via your package manager
+#      (e.g., sudo apt install python3-tk).
+#
+# Recommended workflow:
+# 
+# 1. Plan your edits, according to:
+#  - Which printer configuration you wish to target with your build
+#  - Whether you plan to modify an existing configuration or start from one of the examples in ./config
+#  - Whether you need to create multiple variants of configuration file or just one 
+#        (e,g, how many CR6 printer configurations you wish to target and where will you store those files)
+#
+# 2. Launch the tool, from the .tools/configurator directory:
+#       python3 configurator_gui.py
+# Then, using this tool:
+# 1. Select the applicable printer configuration example from the dropdown menu.
+# 2. Select one objective at a time and review the flash card
+# 3. Filter the display by selecting the recommended keywords
+# 4. Modify the configuration settings as needed.
+# 5. Save your changes 
+# 6. Copy the platformio.txt field to Platformio.ini
+# 7. Build your customized firmware. (See BUILD_AND_TEST.md for guideance)
+#
+#
+
+import os
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox, simpledialog
+import json
+import logging
+
+# Setup logging to file
+logging.basicConfig(filename='configurator_debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
+
+# Import flash card logic
+from flash_cards import load_flash_cards
+
+CONFIG_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../config'))
+MARLIN_CONFIG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration.h'))
+
+# Find all example folders containing 'cr6' in their name
+example_folders = [f for f in os.listdir(CONFIG_DIR) if os.path.isdir(os.path.join(CONFIG_DIR, f)) and 'cr6' in f]
+
+class ConfiguratorApp(tk.Tk):
+    # ...existing code...
+    '''Main application class for the Marlin Configurator GUI.'''
+    def __init__(self):
+        logging.info('ConfiguratorApp __init__ started')
+        super().__init__()
+        logging.info('Tkinter __init__ started')
+        self.title('Marlin Configurator')
+        self.geometry('1280x1024')
+        
+        # Picklist frame
+        self.picklist_frame = tk.Frame(self, bd=1, relief='groove')
+        logging.info('picklist_frame created')
+        self.picklist_frame.pack(side='top', fill='x', padx=10, pady=(10,0))
+        logging.info('picklist_frame packed')
+        self.picklist_label = tk.Label(self.picklist_frame, text='Select printer configuration example:', font=('Arial', 10), anchor='w', justify='left')
+        logging.info('picklist_label created')
+        self.picklist_label.pack(side='left', anchor='w')
+        logging.info('picklist_label packed')
+        self.selected_example = tk.StringVar()
+        self.example_menu = ttk.Combobox(self.picklist_frame, textvariable=self.selected_example, values=example_folders, state='readonly')
+        logging.info('example_menu created')
+        self.example_menu.pack(side='left', padx=(10,0), anchor='w')
+        logging.info('example_menu packed')
+        self.example_menu.bind('<<ComboboxSelected>>', lambda e: self.on_example_select(self.selected_example.get()))
+        logging.info('example_menu bind complete')
+
+        # Main content frame
+        self.content_frame = tk.Frame(self)
+        logging.info('content_frame created')
+        self.content_frame.pack(side='top', fill='both', expand=True)
+        logging.info('content_frame packed')
+
+        # Default envs frame
+        self.default_envs_frame = tk.Frame(self.content_frame, bd=1, relief='ridge')
+        logging.info('default_envs_frame created')
+        self.default_envs_frame.pack(fill='x', padx=10, pady=2)
+        logging.info('default_envs_frame packed')
+        self.default_envs_label = tk.Label(self.default_envs_frame, text='Current default_envs:', font=('Arial', 10, 'bold'), fg='purple', anchor='w', justify='left')
+        logging.info('default_envs_label created')
+        self.default_envs_label.pack(side='left', padx=(0,10))
+        logging.info('default_envs_label packed')
+        self.default_envs_value = tk.StringVar()
+        self.default_envs_entry = tk.Entry(self.default_envs_frame, textvariable=self.default_envs_value, width=40, state='readonly', font=('Arial', 10))
+        logging.info('default_envs_entry created')
+        self.default_envs_entry.pack(side='left', padx=(0,10))
+        logging.info('default_envs_entry packed')
+        self.example_env_value = tk.StringVar()
+        self.example_env_label = tk.Label(self.default_envs_frame, textvariable=self.example_env_value, font=('Arial', 10), fg='gray', anchor='w', justify='left')
+        logging.info('example_env_label created')
+        self.example_env_label.pack(side='left', padx=(0,10))
+        logging.info('example_env_label packed')
+        self.copy_env_button = tk.Button(self.default_envs_frame, text='Copy env to platformio.ini', command=self.copy_env_to_platformio)
+        logging.info('copy_env_button created')
+        self.copy_env_button.pack(side='left', padx=(0,10))
+        logging.info('copy_env_button packed')
+
+        # Main row frame
+        self.main_row_frame = tk.Frame(self.content_frame)
+        logging.info('main_row_frame created')
+        self.main_row_frame.pack(fill='both', expand=True)
+        logging.info('main_row_frame packed')
+        self.workflow_frame = tk.Frame(self.main_row_frame)
+        logging.info('workflow_frame created')
+        self.workflow_frame.pack(side='left', fill='y', padx=10, pady=10)
+        logging.info('workflow_frame packed')
+        self.workflow_checkboxes = []
+        self.workflow_desc_labels = []
+
+        # Load workflow steps from ui.json
+        self.selected_objective = tk.StringVar()
+        self.flash_card_text = tk.StringVar()
+        self.flash_card_details = tk.StringVar()
+        self.flash_cards = load_flash_cards()
+        logging.info('flash_cards loaded')
+        ui_json_path = os.path.join(os.path.dirname(__file__), 'ui.json')
+        with open(ui_json_path, 'r', encoding='utf-8') as f:
+            self.workflow_data = json.load(f)["workflow"]
+        logging.info('workflow_data loaded')
+        self.workflow_step = 0
+        self.workflow_completed = [False] * len(self.workflow_data)
+        for i, step in enumerate(self.workflow_data):
+            cb = tk.Checkbutton(self.workflow_frame, text=step['step'], variable=tk.BooleanVar(value=False), font=('Arial', 12), anchor='w', justify='left')
+            logging.info(f'workflow checkbox created for step: {step["step"]}')
+            cb.pack(fill='x', pady=(2,0), anchor='w')
+            logging.info(f'workflow checkbox packed for step: {step["step"]}')
+            self.workflow_checkboxes.append(cb)
+            desc_label = tk.Label(self.workflow_frame, text=step.get('description', ''), font=('Arial', 9), anchor='w', justify='left', wraplength=260, fg='gray')
+            logging.info(f'workflow desc_label created for step: {step["step"]}')
+            desc_label.pack(fill='x', pady=(0,8), anchor='w')
+            logging.info(f'workflow desc_label packed for step: {step["step"]}')
+            self.workflow_desc_labels.append(desc_label)
+
+    # Flash card frame
+        self.flash_frame = tk.Frame(self.main_row_frame, bd=1, relief='groove', width=500)
+        logging.info('flash_frame created')
+        self.flash_frame.pack(side='left', fill='y', padx=10, pady=5)
+        self.flash_frame.pack_propagate(False)
+        logging.info('flash_frame packed')
+        objectives = [card['objective'] for card in self.flash_cards]
+        if objectives:
+            self.selected_objective.set(objectives[0])
+        self.objective_menu = ttk.Combobox(self.flash_frame, textvariable=self.selected_objective, values=objectives, state='readonly')
+        logging.info('objective_menu created')
+        self.objective_menu.pack(side='top', fill='x', padx=10, pady=(0,4))
+        logging.info('objective_menu packed')
+        self.objective_menu.bind('<<ComboboxSelected>>', lambda e: self.on_objective_select(self.selected_objective.get()))
+        logging.info('objective_menu bind complete')
+
+        # Flash card display area
+        self.flash_card_display_frame = tk.Frame(self.flash_frame, bd=1, relief='ridge', width=500)
+        logging.info('flash_card_display_frame created')
+        self.flash_card_display_frame.pack(fill='x', padx=10, pady=(8,0))
+        self.flash_card_display_frame.pack_propagate(False)
+        logging.info('flash_card_display_frame packed')
+        self.flash_card_text_label = tk.Label(self.flash_card_display_frame, textvariable=self.flash_card_text, font=('Arial', 12, 'bold'), fg='blue', anchor='w', justify='left')
+        logging.info('flash_card_text_label created')
+        self.flash_card_text_label.pack(fill='x')
+        logging.info('flash_card_text_label packed')
+        self.flash_card_details_label = tk.Label(self.flash_card_display_frame, textvariable=self.flash_card_details, font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        logging.info('flash_card_details_label created')
+        self.flash_card_details_label.pack(fill='x')
+        logging.info('flash_card_details_label packed')
+        self.flash_card_desc_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        logging.info('flash_card_desc_label created')
+        self.flash_card_desc_label.pack(fill='x')
+        logging.info('flash_card_desc_label packed')
+        self.flash_card_files_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        logging.info('flash_card_files_label created')
+        self.flash_card_files_label.pack(fill='x')
+        logging.info('flash_card_files_label packed')
+        self.flash_card_instructions_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        logging.info('flash_card_instructions_label created')
+        self.flash_card_instructions_label.pack(fill='x')
+        logging.info('flash_card_instructions_label packed')
+        self.flash_card_related_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        logging.info('flash_card_related_label created')
+        self.flash_card_related_label.pack(fill='x')
+        logging.info('flash_card_related_label packed')
+        self.flash_card_docs_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='blue', justify='left', wraplength=600, anchor='w', cursor='hand2')
+        logging.info('flash_card_docs_label created')
+        self.flash_card_docs_label.pack(fill='x')
+        logging.info('flash_card_docs_label packed')
+        self.flash_card_warnings_label = tk.Label(self.flash_card_display_frame, text='', font=('Arial', 10), fg='red', justify='left', wraplength=600, anchor='w')
+        logging.info('flash_card_warnings_label created')
+        self.flash_card_warnings_label.pack(fill='x')
+        logging.info('flash_card_warnings_label packed')
+
+        # Objective Keywords subframe
+        self.keywords_frame = tk.Frame(self.flash_frame)
+        logging.info('keywords_frame created')
+        self.keywords_frame.pack(fill='x', padx=10, pady=2)
+        logging.info('keywords_frame packed')
+        self.update_flash_card_display()
+        logging.info('update_flash_card_display called after all flash card widgets created')
+
+    # Editor frame
+        self.editor_frame = tk.Frame(self.main_row_frame, bd=1, relief='groove')
+        logging.info('editor_frame created')
+        self.editor_frame.pack(side='left', fill='both', expand=True, padx=10, pady=5)
+        logging.info('editor_frame packed')
+        self.current_file_label = tk.Label(self.editor_frame, text='', font=('Arial', 10, 'bold'), fg='darkgreen', anchor='w', justify='left')
+        logging.info('current_file_label created')
+        self.current_file_label.pack(fill='x', padx=2, pady=2)
+        logging.info('current_file_label packed')
+        self.edit_label = tk.Label(self.editor_frame, text='Edit Marlin/Configuration.h (filtered by keyword):', font=('Arial', 10))
+        logging.info('edit_label created')
+        self.edit_label.pack(anchor='w')
+        logging.info('edit_label packed')
+
+        # Controls subframe
+        self.controls_frame = tk.Frame(self.editor_frame)
+        logging.info('controls_frame created')
+        self.controls_frame.pack(fill='x', padx=2, pady=2)
+        logging.info('controls_frame packed')
+        self.load_base_button = tk.Button(self.controls_frame, text='Load Base', command=self.load_base_config)
+        logging.info('load_base_button created')
+        self.load_base_button.pack(side='left', padx=5)
+        logging.info('load_base_button packed')
+        self.load_example_button = tk.Button(self.controls_frame, text='Load Example', command=self.load_example_dialog)
+        logging.info('load_example_button created')
+        self.load_example_button.pack(side='left', padx=5)
+        logging.info('load_example_button packed')
+        self.load_selected_button = tk.Button(self.controls_frame, text='Browse...', command=self.load_other_file)
+        logging.info('load_selected_button created')
+        self.load_selected_button.pack(side='left', padx=5)
+        logging.info('load_selected_button packed')
+        self.save_edit_button = tk.Button(self.controls_frame, text='Save Edit', command=self.save_edit)
+        logging.info('save_edit_button created')
+        self.save_edit_button.pack(side='left', padx=5)
+        logging.info('save_edit_button packed')
+        self.save_file_button = tk.Button(self.controls_frame, text='Save File', command=self.save_with_prompt)
+        logging.info('save_file_button created')
+        self.save_file_button.pack(side='left', fill='x', padx=5)
+        logging.info('save_file_button packed')
+
+        # Keyword filter subframe
+        self.filter_frame = tk.Frame(self.editor_frame)
+        logging.info('filter_frame created')
+        self.filter_frame.pack(side='top', anchor='w', fill='x', pady=(10, 0))
+        logging.info('filter_frame packed')
+        self.keyword_label = tk.Label(self.filter_frame, text='Keyword filter:')
+        logging.info('keyword_label created')
+        self.keyword_label.pack(side='left')
+        logging.info('keyword_label packed')
+        self.keyword_var = tk.StringVar()
+        self.keyword_entry = tk.Entry(self.filter_frame, textvariable=self.keyword_var)
+        logging.info('keyword_entry created')
+        self.keyword_entry.pack(side='left', padx=5)
+        logging.info('keyword_entry packed')
+        self.keyword_apply_button = tk.Button(self.filter_frame, text='Apply', command=self.apply_keyword_filter)
+        logging.info('keyword_apply_button created')
+        self.keyword_apply_button.pack(side='left', padx=5)
+        logging.info('keyword_apply_button packed')
+
+        # Canvas and scrollbar
+        self.canvas = tk.Canvas(self.editor_frame)
+        logging.info('canvas created')
+        self.scrollbar = tk.Scrollbar(self.editor_frame, orient='vertical', command=self.canvas.yview)
+        logging.info('scrollbar created')
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.pack(side='right', fill='y')
+        logging.info('scrollbar packed')
+        self.canvas.pack(side='left', fill='both', expand=True)
+        logging.info('canvas packed')
+        self.lines_frame = tk.Frame(self.canvas)
+        logging.info('lines_frame created')
+        self.lines_frame_id = self.canvas.create_window((0, 0), window=self.lines_frame, anchor='nw')
+        logging.info('lines_frame_id created')
+        
+        # Editor/scrolling/filter variables
+        self.modified_entries = []
+        self.displayed_indices = []
+        self.modified_lines = []
+        self.base_lines = []
+        self.file_lines = []
+        self.keyword_vars = []
+        self.last_example_env_value = None
+
+    def copy_env_to_platformio(self):
+        '''Copy the example environment value to platformio.ini.'''
+        logging.info('copy_env_to_platformio called')
+        folder = self.selected_example.get()
+        env_file = os.path.join(CONFIG_DIR, folder, 'platformio-environment.txt') if folder else None
+        ini_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../platformio.ini'))
+        if not folder or not os.path.isfile(env_file):
+            messagebox.showerror('Error', 'No example environment value found.')
+            return
+        try:
+            with open(env_file, 'r', encoding='utf-8') as f:
+                env_value = f.readline().strip()
+            # Read all lines, replace default_envs line
+            with open(ini_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+            new_lines = []
+            replaced = False
+            for line in lines:
+                if line.strip().startswith('default_envs'):
+                    new_lines.append(f'default_envs = {env_value}\n')
+                    replaced = True
+                else:
+                    new_lines.append(line)
+            if not replaced:
+                new_lines.append(f'default_envs = {env_value}\n')
+            with open(ini_path, 'w', encoding='utf-8') as f:
+                f.writelines(new_lines)
+            messagebox.showinfo('Copied', f'platformio.ini updated with env: {env_value}')
+            self.update_default_envs_label()
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to copy env: {e}')
+        self.update_default_envs_label()
+        logging.info('update_default_envs_label called')
+
+    def show_lines(self):
+        '''Display lines in the editor area, filtered by match attribute if present.'''
+        logging.info('show_lines called')
+        if self.lines_frame is None:
+            return
+        # Clear previous widgets
+        for widget in self.lines_frame.winfo_children():
+            if widget != self.filter_frame:
+                widget.destroy()
+        self.modified_entries = []
+        self.displayed_indices = []
+        # Always use self.base_lines for filtering and editing
+        if self.base_lines and any('match' in line for line in self.base_lines):
+            lines_to_display = [line for line in self.base_lines if line.get('match', True)]
+        elif self.base_lines:
+            lines_to_display = self.base_lines
+        else:
+            lines_to_display = self.lines
+        logging.info(f"Displaying {len(lines_to_display)} lines, first line_num: {lines_to_display[0]['line_num'] if lines_to_display else 'None'}")
+        max_lines = 200  # Limit for testing large files
+        for idx, line in enumerate(lines_to_display[:max_lines]):
+            entry = tk.Entry(self.lines_frame, width=120)
+            entry.insert(0, line["content"])
+            entry.pack(fill='x', padx=2, pady=1)
+            self.modified_entries.append(entry)
+            self.displayed_indices.append(line.get('line_num', idx))
+        self.lines_frame.update_idletasks()
+        self.canvas.config(scrollregion=self.canvas.bbox(self.lines_frame_id))
+        self.update_idletasks()
+        # Use a short delay to ensure the canvas view resets to the top
+        self.after(10, lambda: self.canvas.yview_moveto(0))
+
+    def apply_keyword_filter(self):
+        '''Filter displayed lines by selected keywords and entry.'''
+        logging.info('apply_keyword_filter called')
+        # If no file is loaded, do not try to filter it
+        if not self.base_lines:
+            return
+        keywords = [kw for kw, var in getattr(self, 'keyword_vars', []) if var.get()]
+        filter_text = self.keyword_var.get().strip().lower()
+
+        for line in self.base_lines:
+            match = True
+            if keywords:
+                match = any(kw.lower() in line["content"].lower() for kw in keywords)
+            if filter_text:
+                match = match and (filter_text in line["content"].lower())
+            line['match'] = match
+        self.show_lines()
+
+    def load_other_file(self):
+        '''Load a different configuration file.'''
+        logging.info('load_other_file called')
+        file_path = filedialog.askopenfilename(
+            title='Load Configuration File',
+            filetypes=[('Header Files', '*.h'), ('All Files', '*.*')],
+            initialdir=os.path.dirname(MARLIN_CONFIG_PATH)
+        )
+        if file_path:
+            self.load_config_file(file_path)
+
+    def load_config_file(self, file_path, error_message = None):
+        '''Load the specified configuration file.'''
+        logging.info(f'load_config_file called with file_path: {file_path}')
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                file_lines = f.readlines()
+            self.lines = [
+                {"line_num": i, "content": line.rstrip('\n'), "display": True, "edited": False}
+                for i, line in enumerate(file_lines)
+            ]
+            self.base_lines = self.lines.copy()
+            self.show_lines()
+            self.current_file_label.config(text=file_path)
+        except Exception as e:
+            msg = error_message if error_message else f'Failed to load: {e}'
+            messagebox.showerror('Error', msg)
+
+    def load_base_config(self):
+        '''Load the base Marlin configuration file into the editor, only if a config example is selected.'''
+        logging.info('load_base_config called')
+        selected = self.selected_example.get()
+        if not selected:
+            messagebox.showwarning('Select Example', 'Please select a printer configuration example before loading the base config.')
+            return
+        self.load_config_file(MARLIN_CONFIG_PATH, error_message='Failed to load base Marlin configuration file.')
+
+    def load_example_dialog(self):
+        '''Load an example configuration file.'''
+        current_example = self.selected_example.get()
+        if not current_example or current_example not in example_folders:
+            messagebox.showwarning('Select Example', 'Please select a printer configuration example before loading an example config.')
+            return
+        folder = simpledialog.askstring('Load Example', 'Enter example folder name:', initialvalue=current_example)
+        if folder and folder in example_folders:
+            example_path = os.path.join(CONFIG_DIR, folder, 'Configuration.h')
+            self.load_config_file(example_path)
+        elif folder:
+            messagebox.showerror('Error', f'Example folder not found: {folder}')
+
+    def save_edit(self):
+        """
+        Save edits from displayed lines into self.base_lines and self.lines, marking edited lines.
+        Only lines currently displayed and changed will be updated and marked as edited.
+        """
+        logging.info('save_edit called')
+        if not self.base_lines or not self.modified_entries or not self.displayed_indices:
+            messagebox.showwarning('No file loaded', 'No file is loaded or no lines are displayed.')
+            return
+        for i, idx in enumerate(self.displayed_indices):
+            entry_val = self.modified_entries[i].get()
+            # Update base_lines
+            for line in self.base_lines:
+                if line.get('line_num', None) == idx:
+                    if line['content'] != entry_val:
+                        line['content'] = entry_val
+                        line['edited'] = True
+            # Update lines (full file)
+            if idx < len(self.lines):
+                if self.lines[idx]['content'] != entry_val:
+                    self.lines[idx]['content'] = entry_val
+                    self.lines[idx]['edited'] = True
+        messagebox.showinfo('Edits Saved', 'Your edits have been saved to the full file. Use Save to write the complete file.')
+        logging.info('Edits saved to lines')
+
+    def save_with_prompt(self):
+        '''Prompt user to save changes to base config or as a new file.'''
+        logging.info('save_with_prompt called')
+        result = messagebox.askquestion('Save', 'Update base file (Marlin/Configuration.h)?\nChoose No to Save As elsewhere.', icon='question')
+        if result == 'yes':
+            self.save_base_config()
+        else:
+            self.save_as_config()
+
+    def save_base_config(self):
+        '''Save changes to the base Marlin configuration file.'''
+        logging.info('save_base_config called')
+        try:
+            content = '\n'.join(line['content'] for line in self.lines)
+            with open(MARLIN_CONFIG_PATH, 'w', encoding='utf-8') as f:
+                f.write(content)
+            messagebox.showinfo('Saved', f'Base configuration updated: {MARLIN_CONFIG_PATH}')
+        except Exception as e:
+            messagebox.showerror('Error', f'Failed to save: {e}')
+
+    def save_as_config(self):
+        '''Save changes to a new configuration file/location.'''
+        logging.info('save_as_config called')
+        file_path = filedialog.asksaveasfilename(
+            title='Save Configuration As...',
+            defaultextension='.h',
+            filetypes=[('Header Files', '*.h'), ('All Files', '*.*')],
+            initialdir=os.path.dirname(MARLIN_CONFIG_PATH),
+            initialfile='Configuration.h'
+        )
+        if file_path:
+            config_dir_abs = os.path.abspath(CONFIG_DIR)
+            file_path_abs = os.path.abspath(file_path)
+            if file_path_abs.startswith(config_dir_abs):
+                messagebox.showerror('Error', 'Cannot overwrite example config files.')
+                return
+            try:
+                content = '\n'.join(line['content'] for line in self.lines)
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                messagebox.showinfo('Saved', f'Configuration saved as {file_path}')
+            except Exception as e:
+                messagebox.showerror('Error', f'Failed to save: {e}')
+
+    def on_objective_select(self, value):
+        '''Handle selection of an objective flash card.'''
+        logging.info(f'on_objective_select called with value: {value}')
+        self.selected_objective.set(value)
+        # Only update widget contents, never recreate frames/widgets
+        self.update_flash_card_display()
+
+    def update_flash_card_display(self):
+        '''Update the display of the selected flash card.'''
+        logging.info('update_flash_card_display called')
+        selected = self.selected_objective.get()
+        card = next((c for c in self.flash_cards if c['objective'] == selected), None)
+        if card:
+            self.flash_card_text.set(card.get('objective', ''))
+            self.flash_card_details.set(card.get('details', ''))
+            self.flash_card_desc_label.config(text=f"Description: {card.get('description', '')}")
+            self.flash_card_files_label.config(text=f"Files to edit: {card.get('files to edit', '')}")
+            instructions = card.get('instructions', [])
+            if instructions:
+                instr_text = '\n'.join(f"- {line}" for line in instructions)
+                self.flash_card_instructions_label.config(text=f"Instructions:\n{instr_text}")
+            else:
+                self.flash_card_instructions_label.config(text="Instructions: (none)")
+            related = card.get('related_settings', [])
+            if related:
+                self.flash_card_related_label.config(text=f"Related settings: {', '.join(related)}")
+            else:
+                self.flash_card_related_label.config(text="Related settings: (none)")
+            docs_link = card.get('docs_link', '')
+            if docs_link:
+                self.flash_card_docs_label.config(text=f"Docs: {docs_link}")
+                self.flash_card_docs_label.bind('<Button-1>', lambda e: self.open_docs_link(docs_link))
+            else:
+                self.flash_card_docs_label.config(text="Docs: (none)")
+                self.flash_card_docs_label.unbind('<Button-1>')
+            warnings = card.get('warnings', '')
+            if warnings:
+                self.flash_card_warnings_label.config(text=f"Warnings: {warnings}")
+            else:
+                self.flash_card_warnings_label.config(text="Warnings: (none)")
+        else:
+            self.flash_card_text.set('')
+            self.flash_card_details.set('')
+            self.flash_card_desc_label.config(text="Description: ")
+            self.flash_card_files_label.config(text="Files to edit: ")
+            self.flash_card_instructions_label.config(text="Instructions: ")
+            self.flash_card_related_label.config(text="Related settings: ")
+            self.flash_card_docs_label.config(text="Docs: ")
+            self.flash_card_docs_label.unbind('<Button-1>')
+            self.flash_card_warnings_label.config(text="Warnings: ")
+        # Only update widget contents, never create frames/widgets
+        self.update_flash_card_keywords()
+
+    def open_docs_link(self, url):
+        logging.info(f'open_docs_link called with url: {url}')
+        import webbrowser
+        webbrowser.open(url)
+        
+    def update_default_envs_label(self):
+        '''Update the default_envs label and example_env label based on selected example.'''
+        logging.info('update_default_envs_label called')
+        ini_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../platformio.ini'))
+        env_value = ""
+        try:
+            with open(ini_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.strip().startswith('default_envs'):
+                        env_value = line.strip().split('=',1)[-1].strip()
+                        break
+        except Exception:
+            env_value = '(Could not read platformio.ini)'
+        self.default_envs_value.set(env_value)
+
+        # Get example env value if a folder is selected
+        folder = self.selected_example.get()
+        example_env_value = ''
+        env_file = os.path.join(CONFIG_DIR, folder, 'platformio-environment.txt') if folder else None
+        if folder and os.path.isfile(env_file):
+            try:
+                with open(env_file, 'r', encoding='utf-8') as f:
+                    example_env_value = f.readline().strip()
+            except Exception:
+                example_env_value = '(Could not read platformio-environment.txt)'
+        else:
+            example_env_value = '(not set)'
+        self.example_env_value.set(f'Example env: {example_env_value}')
+
+        # Color logic for default_envs_label
+        if not folder or example_env_value == '(not set)':
+            self.default_envs_label.config(fg='purple')
+            self.example_env_label.config(fg='gray')
+        elif env_value == example_env_value:
+            self.default_envs_label.config(fg='green')
+            self.example_env_label.config(fg='green')
+        else:
+            self.default_envs_label.config(fg='red')
+            self.example_env_label.config(fg='red')
+
+    def update_flash_card_keywords(self):
+        '''Update flash card keywords UI with checkboxes for selection.'''
+        logging.info('update_flash_card_keywords called')
+        # Only update widgets inside keywords_frame, never create frames
+        for widget in self.keywords_frame.winfo_children():
+            widget.destroy()
+        self.keyword_vars = []  # Reset keyword_vars for new objective
+        selected = self.selected_objective.get()
+        card = next((c for c in self.flash_cards if c['objective'] == selected), None)
+        keywords = card.get('keywords', []) if card else []
+        if keywords:
+            tk.Label(self.keywords_frame, text='Recommended keywords:', font=('Arial', 10, 'bold'), fg='navy').pack(anchor='w')
+            for kw in keywords:
+                var = tk.BooleanVar(value=False)
+                cb = tk.Checkbutton(self.keywords_frame, text=kw, variable=var, font=('Arial', 10), anchor='w', command=self.apply_keyword_filter)
+                cb.pack(anchor='w')
+                self.keyword_vars.append((kw, var))
+        else:
+            tk.Label(self.keywords_frame, text='No keywords for this objective.', font=('Arial', 10), fg='gray').pack(anchor='w')
+
+    def on_example_select(self, value):
+        '''Handle selection of a printer configuration example.'''
+        self.selected_example.set(value)
+        self.update_default_envs_label()
+		# Optionally refresh UI or load config file here
+		# ...existing code...
+
+	# ...existing code...
+
+if __name__ == "__main__":
+    app = ConfiguratorApp()
+    app.mainloop()
