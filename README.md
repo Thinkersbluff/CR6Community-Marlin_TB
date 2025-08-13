@@ -1,13 +1,13 @@
 # Community firmware for the Creality CR-6 3D printer
 
-**The extui branch is pre-configured for Thinkersbluff's own Creality CR-6 SE with:
+To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.
+
+Platformio.ini and the Marlin/Configuration.h and Configuration_adv.h files in this repository are pre-configured for Thinkersbluff's own Creality CR-6 SE with:
 - stock v1.1.0.3 ERA motherboard
 - PT1000 hotend thermistor (sensor_0 = 1047)
 - Orbiter v1.5 extruder (690 steps/mm)
 - All-metal hotend (HEATER_0_MAXTEMP 375)
 - stock TFT display.
-
-To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.
 
 _To compile a unique version of this firmware tailored for your own customized CR6-SE or MAX, clone the repo or download Sources.zip from the latest Release and follow the instructions in the [Development and compile-it-yourself](#development-and-compile-it-yourself) section below._
 
