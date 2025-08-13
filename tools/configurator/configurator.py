@@ -34,12 +34,12 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, simpledialog
 import json
 import logging
+import subprocess
+# Import flash card logic
+from flash_cards import load_flash_cards
 
 # Setup logging to file
 logging.basicConfig(filename='configurator_debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
-
-# Import flash card logic
-from flash_cards import load_flash_cards
 
 CONFIG_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../config'))
 MARLIN_CONFIG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration.h'))
@@ -245,6 +245,10 @@ class ConfiguratorApp(tk.Tk):
         logging.info('save_file_button created')
         self.save_file_button.pack(side='left', fill='x', padx=5)
         logging.info('save_file_button packed')
+        self.build_firmware_button = tk.Button(self.controls_frame, text='Build Firmware', command=self.build_firmware)
+        logging.info('build_firmware_button created')
+        self.build_firmware_button.pack(side='left', fill='x', padx=5)
+        logging.info('build_firmware_button packed')
 
         # Keyword filter subframe
         self.filter_frame = tk.Frame(self.editor_frame)
@@ -662,9 +666,66 @@ class ConfiguratorApp(tk.Tk):
         self.selected_example.set(value)
         self.update_default_envs_label()
 		# Optionally refresh UI or load config file here
-		# ...existing code...
 
-	# ...existing code...
+    def build_firmware(self):
+        '''Verify readiness and prompt user before running firmware build.'''
+        logging.info('build_firmware called')
+        # 1. Check that base config file is ready (file exists and has content)
+        try:
+            with open(MARLIN_CONFIG_PATH, 'r', encoding='utf-8') as f:
+                config_content = f.read().strip()
+            if not config_content:
+                messagebox.showerror('Error', 'Base configuration file is empty!')
+                return
+        except Exception as e:
+            messagebox.showerror('Error', f'Base configuration file not found or unreadable: {e}')
+            return
+
+        # 2. Check that selected configuration matches target printer
+        selected = self.selected_example.get()
+        if not selected:
+            messagebox.showerror('Error', 'No printer configuration example selected!')
+            return
+
+        # 3. Check that platformio default_env matches example env
+        ini_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../platformio.ini'))
+        env_value = ''
+        try:
+            with open(ini_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.strip().startswith('default_envs'):
+                        env_value = line.strip().split('=',1)[-1].strip()
+                        break
+        except Exception:
+            env_value = ''
+        folder = selected
+        example_env_value = ''
+        env_file = os.path.join(CONFIG_DIR, folder, 'platformio-environment.txt') if folder else None
+        if folder and os.path.isfile(env_file):
+            try:
+                with open(env_file, 'r', encoding='utf-8') as f:
+                    example_env_value = f.readline().strip()
+            except Exception:
+                example_env_value = ''
+
+        # Compose summary for user
+        summary = f"Base config: {MARLIN_CONFIG_PATH}\nPrinter config: {selected}\nPlatformIO default_envs: {env_value}\nTarget env: {example_env_value}\n\nProceed with build?"
+        result = messagebox.askquestion('Build Firmware', summary, icon='question')
+        if result != 'yes':
+            logging.info('User aborted firmware build')
+            return
+
+        # Run build command
+        try:
+            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+            build_script = os.path.join(repo_root, 'tools', 'build', 'auto_build.py')
+            build_cmd = ['python3', build_script, 'build']
+            logging.info(f'Running build command: {build_cmd} in {repo_root}')
+            subprocess.Popen(build_cmd, cwd=repo_root)
+            messagebox.showinfo('Build Started', 'Firmware build started in background. Check terminal or logs for output.')
+        except Exception as e:
+            logging.error(f'Build failed: {e}')
+            messagebox.showerror('Error', f'Failed to start build: {e}')
 
 if __name__ == "__main__":
     app = ConfiguratorApp()
