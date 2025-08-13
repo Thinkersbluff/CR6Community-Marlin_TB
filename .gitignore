@@ -187,3 +187,4 @@ compile_commands.json
 # Build artifacts in build/ directory
 build/*
 !build/.gitkeep
+tools/configurator/configurator_debug.log
