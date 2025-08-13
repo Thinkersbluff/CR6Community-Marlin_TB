@@ -161,35 +161,35 @@ class ConfiguratorApp(tk.Tk):
         self.flash_card_display_frame.pack(fill='x', padx=10, pady=(8,0))
         self.flash_card_display_frame.pack_propagate(True)
         logging.info('flash_card_display_frame packed')
-        self.flash_card_text_label = tk.Label(self.flash_card_display_frame, textvariable=self.flash_card_text, font=('Arial', 12, 'bold'), fg='blue', anchor='w', justify='left')
+        self.flash_card_text_label = tk.Label(self.flash_card_display_frame, textvariable=self.flash_card_text, font=('Arial', 12, 'bold'), fg='blue', anchor='w', justify='left', wraplength=480)
         logging.info('flash_card_text_label created')
         self.flash_card_text_label.pack(fill='x')
         logging.info('flash_card_text_label packed')
-        self.flash_card_details_label = tk.Label(self.flash_card_display_frame, textvariable=self.flash_card_details, font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        self.flash_card_details_label = tk.Label(self.flash_card_display_frame, textvariable=self.flash_card_details, font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
         logging.info('flash_card_details_label created')
         self.flash_card_details_label.pack(fill='x')
         logging.info('flash_card_details_label packed')
-        self.flash_card_desc_label = tk.Label(self.flash_card_display_frame, text='Description:', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        self.flash_card_desc_label = tk.Label(self.flash_card_display_frame, text='Description:', font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
         logging.info('flash_card_desc_label created')
         self.flash_card_desc_label.pack(fill='x')
         logging.info('flash_card_desc_label packed')
-        self.flash_card_files_label = tk.Label(self.flash_card_display_frame, text='Files to Edit:', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        self.flash_card_files_label = tk.Label(self.flash_card_display_frame, text='Files to Edit:', font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
         logging.info('flash_card_files_label created')
         self.flash_card_files_label.pack(fill='x')
         logging.info('flash_card_files_label packed')
-        self.flash_card_instructions_label = tk.Label(self.flash_card_display_frame, text='Instructions:', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        self.flash_card_instructions_label = tk.Label(self.flash_card_display_frame, text='Instructions:', font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
         logging.info('flash_card_instructions_label created')
         self.flash_card_instructions_label.pack(fill='x')
         logging.info('flash_card_instructions_label packed')
-        self.flash_card_related_label = tk.Label(self.flash_card_display_frame, text='Related Topics:', font=('Arial', 10), fg='black', justify='left', wraplength=600, anchor='w')
+        self.flash_card_related_label = tk.Label(self.flash_card_display_frame, text='Related Topics:', font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
         logging.info('flash_card_related_label created')
         self.flash_card_related_label.pack(fill='x')
         logging.info('flash_card_related_label packed')
-        self.flash_card_docs_label = tk.Label(self.flash_card_display_frame, text='More Info:', font=('Arial', 10), fg='blue', justify='left', wraplength=600, anchor='w', cursor='hand2')
+        self.flash_card_docs_label = tk.Label(self.flash_card_display_frame, text='More Info:', font=('Arial', 10), fg='blue', justify='left', wraplength=480, anchor='w', cursor='hand2')
         logging.info('flash_card_docs_label created')
         self.flash_card_docs_label.pack(fill='x')
         logging.info('flash_card_docs_label packed')
-        self.flash_card_warnings_label = tk.Label(self.flash_card_display_frame, text='Warnings:', font=('Arial', 10), fg='red', justify='left', wraplength=600, anchor='w')
+        self.flash_card_warnings_label = tk.Label(self.flash_card_display_frame, text='Warnings:', font=('Arial', 10), fg='red', justify='left', wraplength=480, anchor='w')
         logging.info('flash_card_warnings_label created')
         self.flash_card_warnings_label.pack(fill='x')
         logging.info('flash_card_warnings_label packed')
@@ -268,6 +268,11 @@ class ConfiguratorApp(tk.Tk):
         logging.info('keyword_apply_button created')
         self.keyword_apply_button.pack(side='left', padx=5)
         logging.info('keyword_apply_button packed')
+        # Hide Comments checkbox
+        self.hide_comments_var = tk.BooleanVar(value=False)
+        self.hide_comments_checkbox = tk.Checkbutton(self.filter_frame, text='Hide Comments', variable=self.hide_comments_var, command=self.apply_keyword_filter)
+        self.hide_comments_checkbox.pack(side='left', padx=10)
+        logging.info('hide_comments_checkbox created and packed')
         self.view_in_context_button = tk.Button(self.filter_frame, text='View in Context', command=self.view_in_context)
         logging.info('view_in_context_button created')
         self.view_in_context_button.pack(side='left', padx=5)
@@ -379,20 +384,27 @@ class ConfiguratorApp(tk.Tk):
             self.after(10, lambda: self.canvas.yview_moveto(0))
 
     def apply_keyword_filter(self):
-        '''Filter displayed lines by selected keywords and entry.'''
+        '''Filter displayed lines by selected keywords, entry, and hide comments if checked.'''
         logging.info('apply_keyword_filter called')
         # If no file is loaded, do not try to filter it
         if not self.base_lines:
             return
         keywords = [kw for kw, var in getattr(self, 'keyword_vars', []) if var.get()]
         filter_text = self.keyword_var.get().strip().lower()
+        hide_comments = getattr(self, 'hide_comments_var', None)
+        hide_comments = hide_comments.get() if hide_comments else False
 
         for line in self.base_lines:
             match = True
-            if keywords:
-                match = any(kw.lower() in line["content"].lower() for kw in keywords)
-            if filter_text:
-                match = match and (filter_text in line["content"].lower())
+            content = line["content"].strip()
+            # Hide comments and blank lines logic
+            if hide_comments:
+                if (not content or content.startswith('//') or content.startswith('/*') or content.startswith('*') or content.endswith('*/')):
+                    match = False
+            if keywords and match:
+                match = any(kw.lower() in content.lower() for kw in keywords)
+            if filter_text and match:
+                match = filter_text in content.lower()
             line['match'] = match
         self.show_lines()
 
