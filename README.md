@@ -1,3 +1,6 @@
+# **NOTE: As of 14 August 2025, this exui branch is no longer the active default branch for this repository.**
+Switch instead to: main (default) for the latest.
+
 # Community firmware for the Creality CR-6 3D printer
 
 To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.
