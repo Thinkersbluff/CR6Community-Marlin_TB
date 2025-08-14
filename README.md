@@ -1,19 +1,21 @@
 # Community firmware for the Creality CR-6 3D printer
 
-**The extui branch is pre-configured for Thinkersbluff's own Creality CR-6 SE with:
+To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.
+
+Platformio.ini and the Marlin/Configuration.h and Configuration_adv.h files in this repository are pre-configured for Thinkersbluff's own Creality CR-6 SE with:
 - stock v1.1.0.3 ERA motherboard
 - PT1000 hotend thermistor (sensor_0 = 1047)
 - Orbiter v1.5 extruder (690 steps/mm)
 - All-metal hotend (HEATER_0_MAXTEMP 375)
 - stock TFT display.
 
-To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.
-
 _To compile a unique version of this firmware tailored for your own customized CR6-SE or MAX, clone the repo or download Sources.zip from the latest Release and follow the instructions in the [Development and compile-it-yourself](#development-and-compile-it-yourself) section below._
 
-This repository comes complete with the original comprehensive automation suite and new [documentation on how to install and use that suite](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/extui/docs/development/repo_guidelines/BUILD_AND_TEST.md), for anyone who decides to clone this repo and work with it locally.
+This repository comes complete with the original comprehensive automation suite and new [documentation on how to install and use that suite](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/extui/BUILD_AND_TEST.md), for anyone who decides to clone this repo and work with it locally.
+
 Note: The new documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
-      There are also Powershell [scripts](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/extui/scripts) and documentation on how to use those on Windows and in the VSCode terminal window.
+
+There are also Powershell [scripts](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/extui/scripts) and documentation on how to use those on Windows and in the VSCode terminal window.
 
 ## Downloads
 
@@ -24,7 +26,7 @@ If your printer is a CR6-SE or CR-6-MAX in stock condition, you will see a .zip 
 Download and extract that file, read any included notes and flash the included firmware to your printer. 
 
 ### About the display firmware
-Version 6.2 of the motherboard firmware still works with the refactored v1.1.x display firmware.
+Version 6.2 of the motherboard firmware still works with [the refactored v1.1.x display firmware.](https://github.com/CR6Community/CR-6-touchscreen)
 If you are upgrading your CR6Community motherboard firmware from v6.1 to v6.2, you have no display firmware changes to make.
 If you are upgrading from Creality stock firmware to CR6Community v6.2, you should install the display firmware first for the most seamless experience.
 If you need it, there is a copy of the DWIN_SET folder in the .zip file you download.  If you encounter problems installing it, try looking for help [here in the documentation:](https://github.com/CR6Community/CR-6-touchscreen)
@@ -58,8 +60,25 @@ In 2025, the only board still being sold for the CR6 is the 1.1.0.3 ERA board, b
 The original project also experimented with examples for other printers with compatible display hardware, but that is more than Thinkersbluff has time to research.
 Those examples remain in this repo, and may work for you, but they are not supported here.
 
-_NOTE: If you have a BTT SKR CR6 motherboard and a BTT TFT display, you might find that you can flash the current version of Marlin to your printer, and use it with the Marlin UI.
-Please let us know what you achieve, if you try that._
+## Can I Run The Latest Marlin on a CR6 Printer?
+Yes, you can.  
+
+### Option 1: Octoprint
+You can use Octoprint as your display/control firmware and flash the latest Marlin to your printer motherboard.
+You will not be able to use the stock firmware or Community Firmware to activate the t TFT any more, but that might not matter to you.
+
+### Option 2: BTT TFT in LCD Mode
+If you have a BTT SKR CR6 motherboard and a BTT TFT display, you might find that you can flash the current version of Marlin to your printer, and use it with the Marlin UI.
+
+### Option 3: Use one of the Integrated Extui Interface Firmwares 
+There are several 3rd party (external UI) options named in the code, but this Community Firmware is not one of them.
+
+### Option 4: "Roll Your Own"
+It looks like the DGUS-Reloaded display firmware for Marlin - one of the third-party firmwares for which an extui interface is still defined and maintained in the latest Marlin - was archived in 2022.
+A bold "developer type" may be able to exploit that interface to integrate the CR6Community firmware with Marlin, just like the original project imagined...
+
+
+_Please visit us on the Discord, or in the Discussions forum here, to let us know what you achieve, if you try any of the above options._
 
 ## A note about the original project
 
