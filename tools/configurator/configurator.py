@@ -66,7 +66,7 @@ class ConfiguratorApp(tk.Tk):
         self.picklist_label.pack(side='left', anchor='w')
         logging.info('picklist_label packed')
         self.selected_example = tk.StringVar()
-        self.example_menu = ttk.Combobox(self.picklist_frame, textvariable=self.selected_example, values=example_folders, state='readonly')
+        self.example_menu = ttk.Combobox(self.picklist_frame, textvariable=self.selected_example, values=example_folders, state='readonly', width=35 )
         logging.info('example_menu created')
         self.example_menu.pack(side='left', padx=(10,0), anchor='w')
         logging.info('example_menu packed')
@@ -115,12 +115,72 @@ class ConfiguratorApp(tk.Tk):
         self.workflow_checkboxes = []
         self.workflow_desc_labels = []
 
-        # Load workflow steps from ui.json
         self.selected_objective = tk.StringVar()
-        self.flash_card_text = tk.StringVar()
-        self.flash_card_details = tk.StringVar()
+
         self.flash_cards = load_flash_cards()
         logging.info('flash_cards loaded')
+
+     # Flash card frame
+        self.flash_frame = tk.Frame(self.main_row_frame, bd=1, relief='groove', width=500)
+        logging.info('flash_frame created')
+        self.flash_frame.pack(side='left', fill='y', padx=10, pady=5)
+        self.flash_frame.pack_propagate(False)
+        logging.info('flash_frame packed')
+        objectives = [card['objective'] for card in self.flash_cards]
+        if objectives:
+            self.selected_objective.set(objectives[0])
+        self.objective_menu = ttk.Combobox(self.flash_frame, textvariable=self.selected_objective, values=objectives, state='readonly', width=28)
+        logging.info('objective_menu created')
+        self.objective_menu.pack(side='top', fill='x', padx=10, pady=(0,4))
+        logging.info('objective_menu packed')
+        self.objective_menu.bind('<<ComboboxSelected>>', lambda e: self.on_objective_select(self.selected_objective.get()))
+        logging.info('objective_menu bind complete')
+
+        # Flash card display area
+        self.flash_card_display_frame = tk.Frame(self.flash_frame, bd=1, relief='ridge', width=500)
+        logging.info('flash_card_display_frame created')
+        self.flash_card_display_frame.pack(fill='x', padx=10, pady=(8,0))
+        self.flash_card_display_frame.pack_propagate(True)
+        logging.info('flash_card_display_frame packed')
+
+
+        self.flash_card_desc_label = tk.Label(self.flash_card_display_frame, text='Description:', font=('Arial', 10), fg='black', justify='left', wraplength=460, anchor='w')
+        logging.info('flash_card_desc_label created')
+        self.flash_card_desc_label.pack(fill='x')
+        logging.info('flash_card_desc_label packed')
+        self.flash_card_files_label = tk.Label(self.flash_card_display_frame, text='Files to Edit:', font=('Arial', 10), fg='black', justify='left', wraplength=460, anchor='w')
+        logging.info('flash_card_files_label created')
+        self.flash_card_files_label.pack(fill='x')
+        logging.info('flash_card_files_label packed')
+        self.flash_card_instructions_label = tk.Label(self.flash_card_display_frame, text='Instructions:', font=('Arial', 10), fg='black', justify='left', wraplength=460, anchor='w')
+        logging.info('flash_card_instructions_label created')
+        self.flash_card_instructions_label.pack(fill='x')
+        logging.info('flash_card_instructions_label packed')
+        self.flash_card_related_label = tk.Label(self.flash_card_display_frame, text='Related Topics:', font=('Arial', 10), fg='black', justify='left', wraplength=460, anchor='w')
+        logging.info('flash_card_related_label created')
+        self.flash_card_related_label.pack(fill='x')
+        logging.info('flash_card_related_label packed')
+        self.flash_card_docs_label = tk.Label(self.flash_card_display_frame, text='More Info:', font=('Arial', 10), fg='blue', justify='left', wraplength=460, anchor='w', cursor='hand2')
+        logging.info('flash_card_docs_label created')
+        self.flash_card_docs_label.pack(fill='x')
+        logging.info('flash_card_docs_label packed')
+        self.flash_card_warnings_label = tk.Label(self.flash_card_display_frame, text='Warnings:', font=('Arial', 10), fg='red', justify='left', wraplength=460, anchor='w')
+        logging.info('flash_card_warnings_label created')
+        self.flash_card_warnings_label.pack(fill='x')
+        logging.info('flash_card_warnings_label packed')
+
+        # Load flash cards using the shared function
+        self.flash_cards = load_flash_cards()
+        logging.info('flash_cards loaded')
+
+        # Objective Keywords subframe
+        self.keywords_frame = tk.Frame(self.flash_frame)
+        logging.info('keywords_frame created')
+        self.keywords_frame.pack(fill='x', padx=10, pady=2)
+        logging.info('keywords_frame packed')
+        self.update_flash_card_display()
+        logging.info('update_flash_card_display called after all flash card widgets created')
+
         ui_json_path = os.path.join(os.path.dirname(__file__), 'ui.json')
         with open(ui_json_path, 'r', encoding='utf-8') as f:
             self.workflow_data = json.load(f)["workflow"]
@@ -138,79 +198,23 @@ class ConfiguratorApp(tk.Tk):
             desc_label.pack(fill='x', pady=(0,8), anchor='w')
             logging.info(f'workflow desc_label packed for step: {step["step"]}')
             self.workflow_desc_labels.append(desc_label)
-
-    # Flash card frame
-        self.flash_frame = tk.Frame(self.main_row_frame, bd=1, relief='groove', width=500)
-        logging.info('flash_frame created')
-        self.flash_frame.pack(side='left', fill='y', padx=10, pady=5)
-        self.flash_frame.pack_propagate(False)
-        logging.info('flash_frame packed')
-        objectives = [card['objective'] for card in self.flash_cards]
-        if objectives:
-            self.selected_objective.set(objectives[0])
-        self.objective_menu = ttk.Combobox(self.flash_frame, textvariable=self.selected_objective, values=objectives, state='readonly')
-        logging.info('objective_menu created')
-        self.objective_menu.pack(side='top', fill='x', padx=10, pady=(0,4))
-        logging.info('objective_menu packed')
-        self.objective_menu.bind('<<ComboboxSelected>>', lambda e: self.on_objective_select(self.selected_objective.get()))
-        logging.info('objective_menu bind complete')
-
-        # Flash card display area
-        self.flash_card_display_frame = tk.Frame(self.flash_frame, bd=1, relief='ridge', width=500)
-        logging.info('flash_card_display_frame created')
-        self.flash_card_display_frame.pack(fill='x', padx=10, pady=(8,0))
-        self.flash_card_display_frame.pack_propagate(True)
-        logging.info('flash_card_display_frame packed')
-        self.flash_card_text_label = tk.Label(self.flash_card_display_frame, textvariable=self.flash_card_text, font=('Arial', 12, 'bold'), fg='blue', anchor='w', justify='left', wraplength=480)
-        logging.info('flash_card_text_label created')
-        self.flash_card_text_label.pack(fill='x')
-        logging.info('flash_card_text_label packed')
-        self.flash_card_details_label = tk.Label(self.flash_card_display_frame, textvariable=self.flash_card_details, font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
-        logging.info('flash_card_details_label created')
-        self.flash_card_details_label.pack(fill='x')
-        logging.info('flash_card_details_label packed')
-        self.flash_card_desc_label = tk.Label(self.flash_card_display_frame, text='Description:', font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
-        logging.info('flash_card_desc_label created')
-        self.flash_card_desc_label.pack(fill='x')
-        logging.info('flash_card_desc_label packed')
-        self.flash_card_files_label = tk.Label(self.flash_card_display_frame, text='Files to Edit:', font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
-        logging.info('flash_card_files_label created')
-        self.flash_card_files_label.pack(fill='x')
-        logging.info('flash_card_files_label packed')
-        self.flash_card_instructions_label = tk.Label(self.flash_card_display_frame, text='Instructions:', font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
-        logging.info('flash_card_instructions_label created')
-        self.flash_card_instructions_label.pack(fill='x')
-        logging.info('flash_card_instructions_label packed')
-        self.flash_card_related_label = tk.Label(self.flash_card_display_frame, text='Related Topics:', font=('Arial', 10), fg='black', justify='left', wraplength=480, anchor='w')
-        logging.info('flash_card_related_label created')
-        self.flash_card_related_label.pack(fill='x')
-        logging.info('flash_card_related_label packed')
-        self.flash_card_docs_label = tk.Label(self.flash_card_display_frame, text='More Info:', font=('Arial', 10), fg='blue', justify='left', wraplength=480, anchor='w', cursor='hand2')
-        logging.info('flash_card_docs_label created')
-        self.flash_card_docs_label.pack(fill='x')
-        logging.info('flash_card_docs_label packed')
-        self.flash_card_warnings_label = tk.Label(self.flash_card_display_frame, text='Warnings:', font=('Arial', 10), fg='red', justify='left', wraplength=480, anchor='w')
-        logging.info('flash_card_warnings_label created')
-        self.flash_card_warnings_label.pack(fill='x')
-        logging.info('flash_card_warnings_label packed')
-
-        # Load flash cards using the shared function
-        self.flash_cards = load_flash_cards()
-        logging.info('flash_cards loaded')
-
-        # Objective Keywords subframe
-        self.keywords_frame = tk.Frame(self.flash_frame)
-        logging.info('keywords_frame created')
-        self.keywords_frame.pack(fill='x', padx=10, pady=2)
-        logging.info('keywords_frame packed')
-        self.update_flash_card_display()
-        logging.info('update_flash_card_display called after all flash card widgets created')
-
+            
     # Editor frame
         self.editor_frame = tk.Frame(self.main_row_frame, bd=1, relief='groove')
         logging.info('editor_frame created')
         self.editor_frame.pack(side='left', fill='both', expand=True, padx=10, pady=5)
         logging.info('editor_frame packed')
+                # Config file selection dropdown
+        self.config_files = [
+            os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration.h')),
+            os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration_adv.h'))
+        ]
+        self.config_file_names = [os.path.basename(f) for f in self.config_files]
+        self.selected_config_file = tk.StringVar(value=self.config_file_names[0])
+        self.config_file_menu = ttk.Combobox(self.editor_frame, textvariable=self.selected_config_file, values=self.config_file_names, state='readonly', width=20)
+        self.config_file_menu.pack(fill='x', padx=2, pady=2)
+        self.config_file_menu.bind('<<ComboboxSelected>>', lambda e: self.on_config_file_select())
+        self.opened_config_path = self.config_files[0]  # Track currently opened file
         self.current_file_label = tk.Label(self.editor_frame, text='', font=('Arial', 10, 'bold'), fg='darkgreen', anchor='w', justify='left')
         logging.info('current_file_label created')
         self.current_file_label.pack(fill='x', padx=2, pady=2)
@@ -225,29 +229,29 @@ class ConfiguratorApp(tk.Tk):
         logging.info('controls_frame created')
         self.controls_frame.pack(fill='x', padx=2, pady=2)
         logging.info('controls_frame packed')
-        self.load_base_button = tk.Button(self.controls_frame, text='Load Base', command=self.load_base_config)
+        self.load_base_button = tk.Button(self.controls_frame, text='Load Base (default)', command=self.load_base_config)
         logging.info('load_base_button created')
         self.load_base_button.pack(side='left', padx=5)
         logging.info('load_base_button packed')
-        self.load_example_button = tk.Button(self.controls_frame, text='Load Example', command=self.load_example_dialog)
+        self.load_example_button = tk.Button(self.controls_frame, text='Load Config Example', command=self.load_example_dialog)
         logging.info('load_example_button created')
         self.load_example_button.pack(side='left', padx=5)
         logging.info('load_example_button packed')
-        self.load_selected_button = tk.Button(self.controls_frame, text='Browse...', command=self.load_other_file)
+        self.load_selected_button = tk.Button(self.controls_frame, text='Load Other...', command=self.load_other_file)
         logging.info('load_selected_button created')
         self.load_selected_button.pack(side='left', padx=5)
         logging.info('load_selected_button packed')
         self.save_edit_button = tk.Button(self.controls_frame, text='Save Edit', command=self.save_edit)
         logging.info('save_edit_button created')
-        self.save_edit_button.pack(side='left', padx=5)
+        self.save_edit_button.pack(side='left', padx=15)
         logging.info('save_edit_button packed')
         self.save_file_button = tk.Button(self.controls_frame, text='Save File', command=self.save_with_prompt)
         logging.info('save_file_button created')
-        self.save_file_button.pack(side='left', fill='x', padx=5)
+        self.save_file_button.pack(side='left', padx=5)
         logging.info('save_file_button packed')
         self.build_firmware_button = tk.Button(self.controls_frame, text='Build Firmware', command=self.build_firmware)
         logging.info('build_firmware_button created')
-        self.build_firmware_button.pack(side='left', fill='x', padx=5)
+        self.build_firmware_button.pack(side='left', fill='x', padx=15)
         logging.info('build_firmware_button packed')
 
         # Keyword filter subframe
@@ -268,11 +272,6 @@ class ConfiguratorApp(tk.Tk):
         logging.info('keyword_apply_button created')
         self.keyword_apply_button.pack(side='left', padx=5)
         logging.info('keyword_apply_button packed')
-        # Hide Comments checkbox
-        self.hide_comments_var = tk.BooleanVar(value=False)
-        self.hide_comments_checkbox = tk.Checkbutton(self.filter_frame, text='Hide Comments', variable=self.hide_comments_var, command=self.apply_keyword_filter)
-        self.hide_comments_checkbox.pack(side='left', padx=10)
-        logging.info('hide_comments_checkbox created and packed')
         self.view_in_context_button = tk.Button(self.filter_frame, text='View in Context', command=self.view_in_context)
         logging.info('view_in_context_button created')
         self.view_in_context_button.pack(side='left', padx=5)
@@ -293,14 +292,14 @@ class ConfiguratorApp(tk.Tk):
         self.lines_frame_id = self.canvas.create_window((0, 0), window=self.lines_frame, anchor='nw')
         logging.info('lines_frame_id created')
         
-        # Editor/scrolling/filter variables
-        self.modified_entries = []
-        self.displayed_indices = []
-        self.modified_lines = []
-        self.base_lines = []
-        self.file_lines = []
-        self.keyword_vars = []
-        self.last_example_env_value = None
+
+    def on_config_file_select(self):
+        '''Handle config file dropdown selection.'''
+        selected_name = self.selected_config_file.get()
+        idx = self.config_file_names.index(selected_name)
+        self.opened_config_path = self.config_files[idx]
+        self.edit_label.config(text=f'Edit Marlin/{selected_name} (filtered by keyword):')
+        self.load_config_file(self.opened_config_path)
 
     def copy_env_to_platformio(self):
         '''Copy the example environment value to platformio.ini.'''
@@ -384,27 +383,20 @@ class ConfiguratorApp(tk.Tk):
             self.after(10, lambda: self.canvas.yview_moveto(0))
 
     def apply_keyword_filter(self):
-        '''Filter displayed lines by selected keywords, entry, and hide comments if checked.'''
+        '''Filter displayed lines by selected keywords and entry.'''
         logging.info('apply_keyword_filter called')
         # If no file is loaded, do not try to filter it
         if not self.base_lines:
             return
         keywords = [kw for kw, var in getattr(self, 'keyword_vars', []) if var.get()]
         filter_text = self.keyword_var.get().strip().lower()
-        hide_comments = getattr(self, 'hide_comments_var', None)
-        hide_comments = hide_comments.get() if hide_comments else False
 
         for line in self.base_lines:
             match = True
-            content = line["content"].strip()
-            # Hide comments and blank lines logic
-            if hide_comments:
-                if (not content or content.startswith('//') or content.startswith('/*') or content.startswith('*') or content.endswith('*/')):
-                    match = False
-            if keywords and match:
-                match = any(kw.lower() in content.lower() for kw in keywords)
-            if filter_text and match:
-                match = filter_text in content.lower()
+            if keywords:
+                match = any(kw.lower() in line["content"].lower() for kw in keywords)
+            if filter_text:
+                match = match and (filter_text in line["content"].lower())
             line['match'] = match
         self.show_lines()
 
@@ -446,8 +438,10 @@ class ConfiguratorApp(tk.Tk):
         if file_path:
             self.load_config_file(file_path)
 
-    def load_config_file(self, file_path, error_message = None):
+    def load_config_file(self, file_path=None, error_message=None):
         '''Load the specified configuration file.'''
+        if file_path is None:
+            file_path = self.opened_config_path if hasattr(self, 'opened_config_path') else self.config_files[0]
         logging.info(f'load_config_file called with file_path: {file_path}')
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -459,18 +453,19 @@ class ConfiguratorApp(tk.Tk):
             self.base_lines = self.lines.copy()
             self.show_lines()
             self.current_file_label.config(text=file_path)
+            self.opened_config_path = file_path
         except Exception as e:
             msg = error_message if error_message else f'Failed to load: {e}'
             messagebox.showerror('Error', msg)
 
     def load_base_config(self):
-        '''Load the base Marlin configuration file into the editor, only if a config example is selected.'''
+        '''Load the selected config file into the editor, only if a config example is selected.'''
         logging.info('load_base_config called')
         selected = self.selected_example.get()
         if not selected:
             messagebox.showwarning('Select Example', 'Please select a printer configuration example before loading the base config.')
             return
-        self.load_config_file(MARLIN_CONFIG_PATH, error_message='Failed to load base Marlin configuration file.')
+        self.load_config_file(self.opened_config_path, error_message='Failed to load base Marlin configuration file.')
 
     def load_example_dialog(self):
         '''Load an example configuration file.'''
@@ -520,13 +515,13 @@ class ConfiguratorApp(tk.Tk):
             self.save_as_config()
 
     def save_base_config(self):
-        '''Save changes to the base Marlin configuration file.'''
+        '''Save changes to the currently opened config file.'''
         logging.info('save_base_config called')
         try:
             content = '\n'.join(line['content'] for line in self.lines)
-            with open(MARLIN_CONFIG_PATH, 'w', encoding='utf-8') as f:
+            with open(self.opened_config_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            messagebox.showinfo('Saved', f'Base configuration updated: {MARLIN_CONFIG_PATH}')
+            messagebox.showinfo('Saved', f'Configuration updated: {self.opened_config_path}')
         except Exception as e:
             messagebox.showerror('Error', f'Failed to save: {e}')
 
@@ -537,8 +532,8 @@ class ConfiguratorApp(tk.Tk):
             title='Save Configuration As...',
             defaultextension='.h',
             filetypes=[('Header Files', '*.h'), ('All Files', '*.*')],
-            initialdir=os.path.dirname(MARLIN_CONFIG_PATH),
-            initialfile='Configuration.h'
+            initialdir=os.path.dirname(self.opened_config_path),
+            initialfile=os.path.basename(self.opened_config_path)
         )
         if file_path:
             config_dir_abs = os.path.abspath(CONFIG_DIR)
@@ -568,8 +563,6 @@ class ConfiguratorApp(tk.Tk):
         card = next((c for c in self.flash_cards if c['objective'] == selected), None)
         logging.debug(f'Flash card selected: {selected}, card data: {card}')
         if card:
-            self.flash_card_text.set(card.get('objective', ''))
-            self.flash_card_details.set(card.get('details', ''))
             self.flash_card_desc_label.config(text=f"Description: {card.get('description', '')}")
             self.flash_card_files_label.config(text=f"Files to edit: {card.get('files to edit', '')}")
             instructions = card.get('instructions', [])
@@ -596,8 +589,6 @@ class ConfiguratorApp(tk.Tk):
             else:
                 self.flash_card_warnings_label.config(text="Warnings: (none)")
         else:
-            self.flash_card_text.set('')
-            self.flash_card_details.set('')
             self.flash_card_desc_label.config(text="Description: ")
             self.flash_card_files_label.config(text="Files to edit: ")
             self.flash_card_instructions_label.config(text="Instructions: ")
