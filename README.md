@@ -1,7 +1,8 @@
 # Community firmware for the Creality CR-6 3D printer
 
 To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.  
-For the latest guidance on how to build a customized firmware.bin file for your specific printer (e.g. with a higher max nozzle temperature), please read ./docs/quick-start/readme.md
+
+For the latest guidance on how to build a customized firmware.bin file for your specific printer (e.g. with a higher max nozzle temperature), please read [./docs/quick-start/readme.md](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/docs/quick-start/readme.md)
 
 Platformio.ini and the Marlin/Configuration.h and Configuration_adv.h files in this repository are pre-configured for Thinkersbluff's own Creality CR-6 SE with:
 - stock v1.1.0.3 ERA motherboard
