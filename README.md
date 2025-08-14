@@ -26,8 +26,6 @@ If you need it, there is a copy of the DWIN_SET folder in the .zip file you down
 *The same firmware[suffix].bin that supports the Creality v4.5.3 motherboard also supports the Creality v1.1.03 (ERA) board.*
 *Additional support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
 
-If you want to modify the default Configuration.h or Configuration_adv.h file(s) and recompile the firmware for your own system, then you should instead download the Source.zip file.
-
 ### Development and compile-it-yourself
 
 There are several example configurations available for your convenience which can be found in the [`config`](./config) directory. Those files are the ones used when building the firmware for a "stock" configuration of the named printer.
