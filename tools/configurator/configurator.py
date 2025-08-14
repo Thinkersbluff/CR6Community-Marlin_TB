@@ -61,7 +61,7 @@ class ConfiguratorApp(tk.Tk):
         logging.info('picklist_frame created')
         self.picklist_frame.pack(side='top', fill='x', padx=10, pady=(10,0))
         logging.info('picklist_frame packed')
-        self.picklist_label = tk.Label(self.picklist_frame, text='Select printer configuration example:', font=('Arial', 10), anchor='w', justify='left')
+        self.picklist_label = tk.Label(self.picklist_frame, text='Select printer configuration example:', font=('Arial', 10, 'bold'), anchor='w', justify='left')
         logging.info('picklist_label created')
         self.picklist_label.pack(side='left', anchor='w')
         logging.info('picklist_label packed')
@@ -129,7 +129,7 @@ class ConfiguratorApp(tk.Tk):
         objectives = [card['objective'] for card in self.flash_cards]
         if objectives:
             self.selected_objective.set(objectives[0])
-        self.objective_menu = ttk.Combobox(self.flash_frame, textvariable=self.selected_objective, values=objectives, state='readonly', width=28)
+        self.objective_menu = ttk.Combobox(self.flash_frame, textvariable=self.selected_objective, values=objectives, state='readonly', width=28,  font=('Arial', 10, 'bold'))
         logging.info('objective_menu created')
         self.objective_menu.pack(side='top', fill='x', padx=10, pady=(0,4))
         logging.info('objective_menu packed')
@@ -209,9 +209,23 @@ class ConfiguratorApp(tk.Tk):
             os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration.h')),
             os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration_adv.h'))
         ]
+        self.config_file_label = tk.Label(
+            self.editor_frame,
+            text="Select file to edit:",
+            font=('Arial', 10, 'bold'),
+            anchor='w'
+        )
+        self.config_file_label.pack(fill='x', padx=2, pady=(8,2))
+
         self.config_file_names = [os.path.basename(f) for f in self.config_files]
-        self.selected_config_file = tk.StringVar(value=self.config_file_names[0])
-        self.config_file_menu = ttk.Combobox(self.editor_frame, textvariable=self.selected_config_file, values=self.config_file_names, state='readonly', width=20)
+        self.selected_config_file = tk.StringVar(value="")
+        self.config_file_menu = ttk.Combobox(
+            self.editor_frame,
+            textvariable=self.selected_config_file,
+            values=self.config_file_names,
+            state='readonly',
+            width=20
+        )
         self.config_file_menu.pack(fill='x', padx=2, pady=2)
         self.config_file_menu.bind('<<ComboboxSelected>>', lambda e: self.on_config_file_select())
         self.opened_config_path = self.config_files[0]  # Track currently opened file
@@ -276,6 +290,14 @@ class ConfiguratorApp(tk.Tk):
         logging.info('view_in_context_button created')
         self.view_in_context_button.pack(side='left', padx=5)
         logging.info('view_in_context_button packed')
+        self.hide_comments_var = tk.BooleanVar(value=False)
+        self.hide_comments_check = tk.Checkbutton(
+            self.filter_frame,
+            text="Hide Comments",
+            variable=self.hide_comments_var,
+            command=self.apply_keyword_filter
+        )
+        self.hide_comments_check.pack(side='left', padx=5)
 
         # Canvas and scrollbar
         self.canvas = tk.Canvas(self.editor_frame)
@@ -383,13 +405,13 @@ class ConfiguratorApp(tk.Tk):
             self.after(10, lambda: self.canvas.yview_moveto(0))
 
     def apply_keyword_filter(self):
-        '''Filter displayed lines by selected keywords and entry.'''
+        '''Filter displayed lines based on keywords, text input, and hide comments option.'''
         logging.info('apply_keyword_filter called')
-        # If no file is loaded, do not try to filter it
         if not self.base_lines:
             return
         keywords = [kw for kw, var in getattr(self, 'keyword_vars', []) if var.get()]
         filter_text = self.keyword_var.get().strip().lower()
+        hide_comments = self.hide_comments_var.get()
 
         for line in self.base_lines:
             match = True
@@ -397,6 +419,11 @@ class ConfiguratorApp(tk.Tk):
                 match = any(kw.lower() in line["content"].lower() for kw in keywords)
             if filter_text:
                 match = match and (filter_text in line["content"].lower())
+            if hide_comments:
+                stripped = line["content"].strip()
+                # Hide lines that start with // or * or /* are empty or only whitespace
+                if stripped.startswith("//") or stripped.startswith("*") or stripped.startswith("/*") or stripped == "":
+                    match = False
             line['match'] = match
         self.show_lines()
 
@@ -462,9 +489,6 @@ class ConfiguratorApp(tk.Tk):
         '''Load the selected config file into the editor, only if a config example is selected.'''
         logging.info('load_base_config called')
         selected = self.selected_example.get()
-        if not selected:
-            messagebox.showwarning('Select Example', 'Please select a printer configuration example before loading the base config.')
-            return
         self.load_config_file(self.opened_config_path, error_message='Failed to load base Marlin configuration file.')
 
     def load_example_dialog(self):
