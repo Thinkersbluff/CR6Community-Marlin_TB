@@ -1126,7 +1126,7 @@ class output_window(Text):
     else:
       try:
         temp_text = IO_queue.get(block=False)
-      except Queue.Empty:
+      except queue.Empty:
         continue_updates = False  # queue is exhausted so no need for further updates
       else:
         self.insert('end', temp_text[0], temp_text[1])
