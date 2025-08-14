@@ -30,6 +30,7 @@
 #
 
 import os
+import sys
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox, simpledialog
 import json
@@ -746,7 +747,7 @@ class ConfiguratorApp(tk.Tk):
         try:
             repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
             build_script = os.path.join(repo_root, 'tools', 'build', 'auto_build.py')
-            build_cmd = ['python3', build_script, 'build']
+            build_cmd = [sys.executable, build_script, 'build']
             logging.info(f'Running build command: {build_cmd} in {repo_root}')
             subprocess.Popen(build_cmd, cwd=repo_root)
             messagebox.showinfo('Build Started', 'Firmware build started in background. Check terminal or logs for output.')
