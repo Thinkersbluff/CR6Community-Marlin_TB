@@ -1,98 +1,229 @@
-# Marlin Configurator GUI
+# 🛠️ CR6Community Marlin Configurator
 
-A Tkinter-based graphical tool for safely editing Marlin firmware configuration files, with onboarding, workflow guidance, and PlatformIO environment management.
+Welcome to the CR6Community Marlin Configurator! This tool helps you customize your Marlin firmware with ease.  
 
-## Features
-- Select printer configuration examples from dropdown
-- Step-by-step workflow menu with onboarding objectives (flash cards)
-- Keyword filtering for configuration lines
-- Safe file operations (prevents overwriting example configs)
-- PlatformIO `default_envs` management
-- One-click Firmware Build, using auto_build.py
+Whether you're new to 3D printing or a seasoned tinkerer, this guide will walk you through setup and usage across Windows, Linux, and macOS.
 
-## UI Structure
-```
-Main Window
-├── Workflow Menu (left)
-│   ├── Step labels & descriptions
-└── Content Frame (right)
-    ├── Default Env Label
-    ├── Flash Card Frame
-    │   ├── Picklist label & dropdown (printer example)
-    │   ├── Objective dropdown
-    │   ├── Flash Card Display Frame
-    │   │   ├── Objective text label
-    │   │   └── Details label
-    │   └── Keywords Frame (checkboxes)
-    ├── Editor Frame
-    │   ├── Current file label
-    │   ├── Edit label
-    │   ├── Canvas (scrollable)
-    │   │   └── Lines Frame
-    │   │       └── Filter Frame (keyword entry & apply button)
-    │   └── Scrollbar
-    └── Controls Frame (file operation buttons)
-```
+---
 
-### Frame/Widget Structure
+## 📦 Setup Instructions
 
-- `self.content_frame`: Main container for the right-side content (everything except the workflow menu)
-    - `self.default_envs_label`: Label showing the current PlatformIO environment
-    - `self.flash_frame`: Contains the onboarding/flash card area
-        - `self.picklist_label` and `self.example_menu`: "Select printer configuration example" label and dropdown
-        - `self.objective_menu`: "Select objective" dropdown
-        - `self.flash_card_display_frame`: Contains the flash card text and details
-            - `self.flash_card_text_label`: Flash card objective text
-            - `self.flash_card_details_label`: Flash card details
-        - `self.keywords_frame`: Contains keyword filter checkboxes for the flash card
-    - `self.editor_frame`: Contains the file editor area
-        - `self.current_file_label`: Shows the current file path
-        - `self.edit_label`: Label for the editor
-        - `self.canvas`: Scrollable area for editing lines
-            - `self.lines_frame`: Frame inside the canvas for line widgets
-                - `self.filter_frame`: Contains keyword filter entry and apply button
-                    - `self.keyword_label`, `self.keyword_entry`, `self.keyword_apply_button`: Keyword filter controls
-        - `self.scrollbar`: Scrollbar for the editor
-    - `self.controls_frame`: Contains file operation buttons
-        - `self.load_base_button`, `self.load_example_button`, `self.load_selected_button`, `self.save_button`: File operation buttons
-- `self.workflow_frame`: Left-side frame for the workflow menu
-    - Workflow step labels and descriptions
+1. Download the ZIP file from the repository
+2. Extract it to a folder of your choice
 
-## How It Works
-- **Workflow Menu:** Guides users through configuration steps, showing/hiding controls as needed.
-- **Flash Card Area:** Presents onboarding objectives, details, and recommended keywords for filtering.
-- **Editor:** Allows safe editing of Marlin configuration files, with keyword filtering and file path display.
-- **Controls:** Buttons for loading/saving configs and updating PlatformIO environment.
+> 📁 **Default path after extracting the ZIP:**  
+> `<your chosen folder>/CR6Community-Marlin_TB-main/tools/configurator`  
+> *(Adjust the path to where you actually extracted CR6Community-Marlin_TB-main.zip)*
 
-## Getting Started
-1. Install Python 3 and Tkinter (`sudo apt install python3-tk`)
-2. Run: `python3 configurator.py` from the `tools/configurator` directory
-3. Follow the workflow menu and use the flash card area for onboarding and guidance
+---
+## 🧰 What Else You’ll Need
+Before you run the Configurator, your computer needs a few helpers installed:
+- **Python 3** – a free tool that runs the Configurator
+- ***Tkinter** – lets Python show windows and buttons (included with most Python installations.)
+- **PlatformIO** – builds the Marlin firmware for your printer
+> 🧠 ***A nod to the nerds:**  
+> The GUI toolkit formerly known as `Tkinter` (capital T in Python 2) now lives on as `tkinter` (lowercase) in Python 3.  
+> Same toolkit, new casing.
 
-## File Safety
-- The app prevents overwriting example configs in the `config/` folder
-- All edits to Marlin/Configuration.h are tracked and can be saved safely
+If you’ve never installed anything like this before, don’t worry. Choose your operating system below and follow the steps.
 
-## PlatformIO Integration
-- The app can update the `default_envs` value in `platformio.ini` using the selected example's environment
-- Firmware builds are launched via the Build Firmware button, which runs `auto_build.py`
 
-## Customization
-- Workflow steps and control visibility are defined in `ui.json`
-- Onboarding objectives are defined in `flash_cards.json`
+<details>
+<summary><strong>🪟 Windows</strong></summary>
 
-## License
-(C) Thinkersbluff, 2025
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+### Step-by-step Instructions
+1. Download Python 3 from the [official website](https://www.python.org/downloads/).
+2. Run the installer.  **Important:** On the first screen, check the box that says "Add Python to PATH".
+3. Proceed with the installation. On the "Optional Features" screen, ensure that "tcl/tk and IDLE" is selected (this installs Tkinter).
+4. After installation, open the Command Prompt (Windows+R, type cmd) and type this into the Command window:
+   ```sh
+   python --version
+   ```
+   You should see a confirmation appear in the Command Window showing the version of python that is now installed.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+   Now type:
+   ```sh
+   python -m tkinter
+   ```
+   If a small window appears, Tkinter is working. If you get an error, rerun the installer and make sure "tcl/tk and IDLE" is checked.
 
+5. (Optional) If you use VS Code, install the Python extension for best experience.
+
+### Troubleshooting
+- If you see `ImportError: No module named '_tkinter'`, rerun the Python installer and select "Modify", then ensure "tcl/tk and IDLE" is checked.
+- If `python` is not recognized, you may need to add Python to your PATH manually or use `py` instead of `python`.
+
+</details>
+
+<details>
+<summary><strong>🍏 macOS</strong></summary>
+
+### Prerequisites
+- Python 3 (pre-installed on most recent macOS versions)
+- Tkinter (included with Python)
+
+### Step-by-step Instructions
+1. Open Terminal.
+2. Check your Python version:
+   ```sh
+   python3 --version
+   python3 -m tkinter
+   ```
+   If a small window appears, Tkinter is working. If not, install Python 3 from [python.org](https://www.python.org/downloads/).
+3. If you use Homebrew, you can also install Python 3 with:
+   ```sh
+   brew install python3
+   ```
+
+### Troubleshooting
+- If you see `ModuleNotFoundError: No module named 'tkinter'`, try reinstalling Python from python.org, as some Homebrew builds may lack Tkinter.
+
+</details>
+
+<details>
+<summary><strong>🐧 Linux (Ubuntu/Debian)</strong></summary>
+
+### Prerequisites
+- Python 3
+- Tkinter (may require separate package)
+
+### Step-by-step Instructions
+1. Open Terminal.
+2. Update your package list:
+   ```sh
+   sudo apt update
+   ```
+3. Install Python 3 and Tkinter:
+   ```sh
+   sudo apt install python3 python3-tk
+   ```
+4. Check installation:
+   ```sh
+   python3 --version
+   python3 -m tkinter
+   ```
+   If a small window appears, Tkinter is working.
+
+### Troubleshooting
+- If you see `ModuleNotFoundError: No module named 'tkinter'`, make sure you installed `python3-tk`.
+- On other distributions, the package name may be `tk` or `tkinter`.
+
+</details>
+
+<details>
+<summary><strong>Other Linux</strong></summary>
+
+- Use your package manager to install Python 3 and Tkinter. For example, on Fedora:
+  ```sh
+  sudo dnf install python3 python3-tkinter
+  ```
+- On Arch Linux:
+  ```sh
+  sudo pacman -S python tk
+  ```
+- Always check with:
+  ```sh
+  python3 -m tkinter
+  ```
+
+</details>
+
+---
+
+## 🚀 Run the Configurator
+
+<details>
+<summary>🪟 Windows</summary>
+
+**🟢 Option 1: Using the Terminal**
+
+1. Press `Windows + R`, type `cmd`, and press Enter  
+2. In the terminal window, type:
+   ```sh
+   cd "<your chosen folder>\CR6Community-Marlin_TB-main\tools\configurator"
+   python -m configurator
+   ```
+3. Follow the on-screen instructions to select your firmware version and configuration options.
+4. Once configured, download the customized firmware files.
+
+**🟢 Option 2: Using the File Explorer**
+
+1. Open File Explorer and navigate to the configurator folder:
+   `<your chosen folder>\CR6Community-Marlin_TB-main\tools\configurator`
+2. Double-click on `configurator.py` to run the tool.
+3. Follow the on-screen instructions to select your firmware version and configuration options.
+4. Once configured, download the customized firmware files.
+
+</details>
+
+<details>
+<summary>🍏 macOS</summary>
+
+**🟢 Option 1: Using the Terminal**
+
+1. Open the Terminal application.
+2. In the terminal window, type:
+   ```sh
+   cd "<your chosen folder>/CR6Community-Marlin_TB-main/tools/configurator"
+   python3 -m configurator
+   ```
+3. Follow the on-screen instructions to select your firmware version and configuration options.
+4. Once configured, download the customized firmware files.
+
+**🟢 Option 2: Using the Finder**
+
+1. Open Finder and navigate to the configurator folder:
+   `<your chosen folder>/CR6Community-Marlin_TB-main/tools/configurator`
+2. Double-click on `configurator.py` to run the tool.
+3. Follow the on-screen instructions to select your firmware version and configuration options.
+4. Once configured, download the customized firmware files.
+
+</details>
+
+<details>
+<summary>🐧 Linux</summary>
+
+**🟢 Option 1: Using the Terminal**
+
+1. Open a terminal window.
+2. In the terminal, type:
+   ```sh
+   cd "<your chosen folder>/CR6Community-Marlin_TB-main/tools/configurator"
+   python3 -m configurator
+   ```
+3. Follow the on-screen instructions to select your firmware version and configuration options.
+4. Once configured, download the customized firmware files.
+
+**🟢 Option 2: Using the File Manager**
+
+1. Open your file manager and navigate to the configurator folder:
+   `<your chosen folder>/CR6Community-Marlin_TB-main/tools/configurator`
+2. Double-click on `configurator.py` to run the tool.
+3. Follow the on-screen instructions to select your firmware version and configuration options.
+4. Once configured, download the customized firmware files.
+
+</details>
+
+---
+
+## ❓ Troubleshooting
+
+- **Issue:** Configurator fails to start.
+  - **Solution:** Ensure Python 3 and Tkinter are correctly installed. Try running the configurator from the terminal to see error messages.
+
+- **Issue:** Downloaded firmware files are not appearing.
+  - **Solution:** Check your internet connection and ensure you have write permissions in the download directory. Try changing the download location in the configurator settings.
+
+For more troubleshooting tips, visit the [CR6Community forums](https://community.cr6.com).
+
+---
+
+## 📚 Getting Help
+
+- For help with the configurator tool, visit the [CR6Community GitHub repository](https://github.com/CR6Community/CR6Community-Marlin_TB/issues).
+- For 3D printing and firmware questions, check the [CR6Community forums](https://community.cr6.com).
+
+---
+
+Happy printing! 🖨️
