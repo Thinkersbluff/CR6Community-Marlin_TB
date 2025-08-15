@@ -203,14 +203,14 @@ class ConfiguratorApp(tk.Tk):
         self.workflow_completed = [False] * len(self.workflow_data)
         for i, step in enumerate(self.workflow_data):
             cb = tk.Checkbutton(self.workflow_frame, text=step['step'], variable=tk.BooleanVar(value=False), font=('Arial', 12), anchor='w', justify='left')
-            logging.info(f'workflow checkbox created for step: {step["step"]}')
+            logging.info('workflow checkbox created for step: %s', step["step"])
             cb.pack(fill='x', pady=(2,0), anchor='w')
-            logging.info(f'workflow checkbox packed for step: {step["step"]}')
+            logging.info('workflow checkbox packed for step: %s', step["step"])
             self.workflow_checkboxes.append(cb)
             desc_label = tk.Label(self.workflow_frame, text=step.get('description', ''), font=('Arial', 9), anchor='w', justify='left', wraplength=260, fg='gray')
-            logging.info(f'workflow desc_label created for step: {step["step"]}')
+            logging.info('workflow desc_label created for step: %s', step["step"])
             desc_label.pack(fill='x', pady=(0,8), anchor='w')
-            logging.info(f'workflow desc_label packed for step: {step["step"]}')
+            logging.info('workflow desc_label packed for step: %s', step["step"])
             self.workflow_desc_labels.append(desc_label)
             
     # Editor frame
@@ -327,7 +327,12 @@ class ConfiguratorApp(tk.Tk):
         logging.info('lines_frame created')
         self.lines_frame_id = self.canvas.create_window((0, 0), window=self.lines_frame, anchor='nw')
         logging.info('lines_frame_id created')
-        
+
+        # Initialize editor state variables
+        self.modified_entries = []
+        self.displayed_indices = []
+        self.lines = []
+        self.base_lines = []
 
     def on_config_file_select(self):
         '''Handle config file dropdown selection.'''
@@ -389,7 +394,7 @@ class ConfiguratorApp(tk.Tk):
             lines_to_display = self.base_lines
         else:
             lines_to_display = self.lines
-        logging.info(f"Displaying {len(lines_to_display)} lines, first line_num: {lines_to_display[0]['line_num'] if lines_to_display else 'None'}")
+        logging.info("Displaying %d lines, first line_num: %s", len(lines_to_display), lines_to_display[0]['line_num'] if lines_to_display else 'None')
         max_lines = 200  # Limit for testing large files
         for idx, line in enumerate(lines_to_display[:max_lines]):
             entry = tk.Entry(self.lines_frame, width=120)
@@ -414,7 +419,7 @@ class ConfiguratorApp(tk.Tk):
                 else:
                     self.after(10, lambda: self.canvas.yview_moveto(0))
             except Exception as e:
-                logging.warning(f'Could not scroll to highlighted line: {e}')
+                logging.warning('Could not scroll to highlighted line: %s', e)
         else:
             self.after(10, lambda: self.canvas.yview_moveto(0))
 
@@ -458,7 +463,7 @@ class ConfiguratorApp(tk.Tk):
             messagebox.showerror('Error', 'Selected line index out of range.')
             return
         line_num = self.displayed_indices[selected_idx]
-        logging.info(f'view_in_context: selected line_num={line_num}')
+        logging.info('view_in_context: selected line_num=%s', line_num)
         # Set all lines to display False, then set +/- 99 to True
         for line in self.base_lines:
             line['match'] = False
@@ -483,7 +488,7 @@ class ConfiguratorApp(tk.Tk):
         '''Load the specified configuration file.'''
         if file_path is None:
             file_path = self.opened_config_path if hasattr(self, 'opened_config_path') else self.config_files[0]
-        logging.info(f'load_config_file called with file_path: {file_path}')
+        logging.info('load_config_file called with file_path: %s', file_path)
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 file_lines = f.readlines()
@@ -502,7 +507,6 @@ class ConfiguratorApp(tk.Tk):
     def load_base_config(self):
         '''Load the selected config file into the editor, only if a config example is selected.'''
         logging.info('load_base_config called')
-        selected = self.selected_example.get()
         self.load_config_file(self.opened_config_path, error_message='Failed to load base Marlin configuration file.')
 
     def load_example_dialog(self):
@@ -589,7 +593,7 @@ class ConfiguratorApp(tk.Tk):
 
     def on_objective_select(self, value):
         '''Handle selection of an objective flash card.'''
-        logging.info(f'on_objective_select called with value: {value}')
+        logging.info('on_objective_select called with value: %s', value)
         self.selected_objective.set(value)
         # Only update widget contents, never recreate frames/widgets
         self.update_flash_card_display()
@@ -599,7 +603,7 @@ class ConfiguratorApp(tk.Tk):
         logging.info('update_flash_card_display called')
         selected = self.selected_objective.get()
         card = next((c for c in self.flash_cards if c['objective'] == selected), None)
-        logging.debug(f'Flash card selected: {selected}, card data: {card}')
+        logging.debug('Flash card selected: %s, card data: %s', selected, card)
         if card:
             self.flash_card_desc_label.config(text=f"Description: {card.get('description', '')}")
             self.flash_card_files_label.config(text=f"Files to edit: {card.get('files to edit', '')}")
@@ -638,7 +642,7 @@ class ConfiguratorApp(tk.Tk):
         self.update_flash_card_keywords()
 
     def open_docs_link(self, url):
-        logging.info(f'open_docs_link called with url: {url}')
+        logging.info('open_docs_link called with url: %s', url)
         import webbrowser
         webbrowser.open(url)
         
@@ -761,11 +765,11 @@ class ConfiguratorApp(tk.Tk):
             repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
             build_script = os.path.join(repo_root, 'tools', 'build', 'auto_build.py')
             build_cmd = [sys.executable, build_script, 'build']
-            logging.info(f'Running build command: {build_cmd} in {repo_root}')
+            logging.info('Running build command: %s in %s', build_cmd, repo_root)
             subprocess.Popen(build_cmd, cwd=repo_root)
             messagebox.showinfo('Build Started', 'Firmware build started in background. Check terminal or logs for output.')
         except Exception as e:
-            logging.error(f'Build failed: {e}')
+            logging.error('Build failed: %s', e)
             messagebox.showerror('Error', f'Failed to start build: {e}')
 
 if __name__ == "__main__":
