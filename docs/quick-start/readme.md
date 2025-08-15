@@ -1,6 +1,6 @@
 # Quick-Start Guide to CR6Community-Marlin_TB
 
-## What is here?
+## What is in this repository?
 This repository contains:
 -   the CR6Community Marlin Firmware, at release 6.2
 -   tools and documents designed to facilitate the configuration, build and distribution of this firmware
@@ -9,10 +9,24 @@ This repository contains:
 **Pre-compiled builds** ready to download and flash are listed in [the Assets section of the latest Release, here.](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/releases/tag/v2.0.9.1-cr6-community-release-6.2)
 
 ### How do I "roll my own" firmware?
-**You can use [the configurator.py desktop GUI tool](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator)** to define and build your own customized version of this firmware. 
-The configurator.py app runs on either Windows or Linux systems.  It uses the Marlin3D tool [auto_build.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/build), which in-turn uses the app platformio to perform the actual build.
+**You need to download a copy of the repository to your local hard drive**, like this:
+
+Download the project to your computer:
+- Go to: [github.com/Thinkersbluff/CR6Community-Marlin_TB](https://github.com/Thinkersbluff/CR6Community-Marlin_TB)
+- Click the green Code button
+- Select Download ZIP
+- Open your Downloads folder
+- Right-click the file CR6Community-Marlin_TB-main.zip → choose Extract All…
+- Choose where you want to keep the project (e.g., D:\Firmware)
+- Open the folder: CR6Community-Marlin_TB-main\tools\configurator
+- Open README.md for next steps
+💡 If Python, pip, or PlatformIO aren’t installed yet, you’ll also need them, to build the firmware. The README explains how.
+
+**Then you can use [the configurator.py desktop GUI tool](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator)** to define and build your own customized version of this firmware.  
 
 #### What can I do with configurator.py?
+The configurator.py app uses the Marlin3D tool [auto_build.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/build), which in-turn uses the app platformio to perform the actual build.
+
 The configurator.py app includes:
 - a recommended workflow checklist
 - a series of "objective-specific flash cards", which detail how to perform the most common Marlin customizations (e.g. increasing the maximum nozzle temperature threshold).  These cards include a recommended keyword filter that makes finding the line(s) to change as easy as clicking a box.
