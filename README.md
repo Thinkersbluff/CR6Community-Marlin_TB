@@ -1,6 +1,8 @@
 # Community firmware for the Creality CR-6 3D printer
 
-To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.
+To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.  
+
+For the latest guidance on how to build a customized firmware.bin file for your specific printer (e.g. with a higher max nozzle temperature), please read [./docs/quick-start/readme.md](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/docs/quick-start/readme.md)
 
 Platformio.ini and the Marlin/Configuration.h and Configuration_adv.h files in this repository are pre-configured for Thinkersbluff's own Creality CR-6 SE with:
 - stock v1.1.0.3 ERA motherboard
@@ -9,21 +11,10 @@ Platformio.ini and the Marlin/Configuration.h and Configuration_adv.h files in t
 - All-metal hotend (HEATER_0_MAXTEMP 375)
 - stock TFT display.
 
-_To compile a unique version of this firmware tailored for your own customized CR6-SE or MAX, clone the repo or download Sources.zip from the latest Release and follow the instructions in the [Development and compile-it-yourself](#development-and-compile-it-yourself) section below._
 
-This repository comes complete with the original comprehensive automation suite and new [documentation on how to install and use that suite](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/extui/BUILD_AND_TEST.md), for anyone who decides to clone this repo and work with it locally.
-
-Note: The new documentation assumes you are working on a Linux PC, and guides you through installing the development and test suites into a docker container.
-
-There are also Powershell [scripts](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/extui/scripts) and documentation on how to use those on Windows and in the VSCode terminal window.
-
-## Downloads
-
-Please find official releases in the [Releases section](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/releases/tag/v2.0.9.1-cr6-community-release-6.2) . 
-Please read the release notes *carefully* and ensure that you download the right asset.
-
-If your printer is a CR6-SE or CR-6-MAX in stock condition, you will see a .zip file whose name describes your printer.
-Download and extract that file, read any included notes and flash the included firmware to your printer. 
+## Where are the Downloads?
+If your printer is a CR6-SE or CR-6-MAX in stock condition, you will see a .zip file in the Assets section of the latest Release, whose name best describes your printer.
+Download and extract that file, read any included notes, and flash the included firmware to your printer.
 
 ### About the display firmware
 Version 6.2 of the motherboard firmware still works with [the refactored v1.1.x display firmware.](https://github.com/CR6Community/CR-6-touchscreen)
@@ -35,17 +26,18 @@ If you need it, there is a copy of the DWIN_SET folder in the .zip file you down
 *The same firmware[suffix].bin that supports the Creality v4.5.3 motherboard also supports the Creality v1.1.03 (ERA) board.*
 *Additional support for the [BTT SKR board](https://damsteen.nl/blog/2020/11/25/how-to-btt-skr-cr6-installation) is available.*
 
-If you want to modify the default Configuration.h or Configuration_adv.h file(s) and recompile the firmware for your own system, then you should instead download the Source.zip file.
-
 ### Development and compile-it-yourself
 
-There are several example configurations available for your convenience which can be found in the [`config`](./config) directory. Delete the Configuration.h and Configuration_adv files already in the root of the [`Marlin`](./Marlin) directory and copy/paste the equivalent files from the config subdirectory named for the target hardware configuration. 
+There are several example configurations available for your convenience which can be found in the [`config`](./config) directory. Those files are the ones used when building the firmware for a "stock" configuration of the named printer.
 
-To do your own compilation, you will need to download and install Microsoft Visual Studio Code and install at least the Platform.io extension.
-There is an optional Auto Build Marlin extension for VSCode, you could also install.
-Edit the configuration files as you wish.  Ensure that the Platform.io environment variable `default_envs` in the platformio.ini file is set to the text in the `platformio-environment.txt` file in that same config folder, before you try to build the firmware.
+To do your own compilation, you will need to download and install some tools.
+You actually have 'too many' options for building your own firmware, and documenting all of the possibilities is just confusing, not helpful.
 
-If you run into troubles figuring out how to install, configure and compile with VSCode and Platform.io, you can look for help on YouTube or try asking the GitHub CoPilot to troubleshoot and repair your setup, right in VSCode!
+To make this option 'accessible', Thinkersbluff has built and provided a gui-based desktop utility that enables you to customize your firmware with 'a few clicks.'
+ - See the quick-start guide, to get started.  
+ - Let us know how we could do better, in the Discussions.
+
+If you run into troubles figuring out how to install, configure and compile with VSCode and Platform.io, you can try asking the GitHub CoPilot to troubleshoot and repair your setup, right in VSCode!
 
 Validated configuration examples and pre-compiled flashable assets using those configurations are maintained here for the following hardware configurations:
 
