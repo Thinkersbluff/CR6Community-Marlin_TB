@@ -8,14 +8,13 @@ A Tkinter-based graphical tool for safely editing Marlin firmware configuration 
 - Keyword filtering for configuration lines
 - Safe file operations (prevents overwriting example configs)
 - PlatformIO `default_envs` management
-- Conditional visibility and navigation per workflow step
+- One-click Firmware Build, using auto_build.py
 
 ## UI Structure
 ```
 Main Window
 ├── Workflow Menu (left)
 │   ├── Step labels & descriptions
-│   └── Navigation buttons (Previous, Next, Start Again)
 └── Content Frame (right)
     ├── Default Env Label
     ├── Flash Card Frame
@@ -58,7 +57,6 @@ Main Window
         - `self.load_base_button`, `self.load_example_button`, `self.load_selected_button`, `self.save_button`: File operation buttons
 - `self.workflow_frame`: Left-side frame for the workflow menu
     - Workflow step labels and descriptions
-    - Navigation buttons (`self.prev_step_button`, `self.next_step_button`, `self.start_again_button`)
 
 ## How It Works
 - **Workflow Menu:** Guides users through configuration steps, showing/hiding controls as needed.
@@ -68,7 +66,7 @@ Main Window
 
 ## Getting Started
 1. Install Python 3 and Tkinter (`sudo apt install python3-tk`)
-2. Run: `python3 configurator_gui.py` from the `tools/configurator` directory
+2. Run: `python3 configurator.py` from the `tools/configurator` directory
 3. Follow the workflow menu and use the flash card area for onboarding and guidance
 
 ## File Safety
@@ -77,6 +75,7 @@ Main Window
 
 ## PlatformIO Integration
 - The app can update the `default_envs` value in `platformio.ini` using the selected example's environment
+- Firmware builds are launched via the Build Firmware button, which runs `auto_build.py`
 
 ## Customization
 - Workflow steps and control visibility are defined in `ui.json`
@@ -84,3 +83,16 @@ Main Window
 
 ## License
 (C) Thinkersbluff, 2025
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
