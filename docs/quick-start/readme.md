@@ -9,8 +9,8 @@ This repository contains:
 **Pre-compiled builds** ready to download and flash are listed in [the Assets section of the latest Release, here.](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/releases/tag/v2.0.9.1-cr6-community-release-6.2)
 
 ### How do I "roll my own" firmware?
-**You can use [the configurator.py desktop GUI tool](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator/configurator.py)** to define and build your own customized version of this firmware. 
-The configurator.py app runs on either Windows or Linux systems.  It uses the Marlin3D tool [auto_build.py](), which in-turn uses the app platformio to perform the actual build.
+**You can use [the configurator.py desktop GUI tool](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator)** to define and build your own customized version of this firmware. 
+The configurator.py app runs on either Windows or Linux systems.  It uses the Marlin3D tool [auto_build.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/build), which in-turn uses the app platformio to perform the actual build.
 
 #### What can I do with configurator.py?
 The configurator.py app includes:
