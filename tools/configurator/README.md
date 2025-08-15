@@ -227,3 +227,6 @@ For more troubleshooting tips, visit the [CR6Community forums](https://community
 ---
 
 Happy printing! 🖨️
+
+
+Need "More input?” – <a href="./README_tldr-not.md" title="Input overload initiated!">🤖 <strong>Johnny 5!</strong></a>
