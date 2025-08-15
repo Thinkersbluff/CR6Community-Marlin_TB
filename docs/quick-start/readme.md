@@ -37,7 +37,7 @@ Any AI agent (e.g. Microsoft CoPilot on Windows) can guide you through the proce
 
 
 ### What about all the other stuff, here?
-If you just want to make a customized build for your printer(s), you can safely disregard all of "the other stuff" and just use [configurator.py]{https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator/configurator.py}.
+If you just want to make a customized build for your printer(s), you can safely disregard all of "the other stuff" and just use [configurator.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator/configurator.py).
 
 That is not to say that you can safely delete or move that other stuff.  
  - Some of it is used by Platformio, when building the firmware.
