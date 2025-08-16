@@ -5,7 +5,7 @@ This repository contains:
 -   the CR6Community Marlin Firmware, at release 6.2
 -   tools and documents designed to facilitate the configuration, build and distribution of this firmware
 
-### Where is the firmware?
+## Where is the firmware?
 **Pre-compiled builds** ready to download and flash are listed in [the Assets section of the latest Release, here.](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/releases/tag/v2.0.9.1-cr6-community-release-6.2)
 
 <details>
@@ -26,7 +26,7 @@ This repository contains:
 **Then you can use [the configurator.py desktop GUI tool](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator)** to define and build your own customized version of this firmware.  
 </details>
 <details>
-#### What can I do with configurator.py?
+<summary><strong>What can I do with configurator.py?</summary></strong>
 The configurator.py app uses the Marlin3D tool [auto_build.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/build), which in-turn uses the app platformio to perform the actual build.
 
 The configurator.py app includes:
@@ -42,7 +42,7 @@ The configurator.py app includes:
 Robust error-checking and prevention logic guides the user through the recommended workflow, helping to ensure success.
 </details>
 <details>
-### Do I need to install anything else, for this stuff to work?
+<summary><strong>Do I need to install anything else, for this stuff to work?</summary></strong>
 **Probably...**
 The python tools require python version 3.7+ to be installed on your system.
 The GUI needs tkinter installed with your python.
@@ -53,7 +53,7 @@ When you are ready to do that, you will find all of the "how-to's" in the config
 NOTE: If you feel the need for more help, any AI agent (e.g. Microsoft CoPilot on Windows) can guide you through the entire process of installing, troubleshooting and configuring python, platformio, etc.
 </details>
 <details>
-### What about all the other stuff, here?
+<summary><strong>What about all the other stuff, here?</summary></strong>
 If you just want to make a customized build for your printer(s), you can safely disregard all of "the other stuff" and just use [configurator.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator/configurator.py).
 
 That is not to say that you can safely delete or move that other stuff.  
