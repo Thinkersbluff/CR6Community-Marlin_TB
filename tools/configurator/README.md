@@ -142,7 +142,7 @@ If you’ve never installed anything like this before, don’t worry. Choose you
 2. In the terminal window, type:
    ```sh
    cd "<your chosen folder>\CR6Community-Marlin_TB-main\tools\configurator"
-   python -m configurator
+   python -m configurator.py
    ```
 3. Follow the on-screen instructions to select your firmware version and configuration options.
 4. Once configured, download the customized firmware files.
@@ -166,7 +166,7 @@ If you’ve never installed anything like this before, don’t worry. Choose you
 2. In the terminal window, type:
    ```sh
    cd "<your chosen folder>/CR6Community-Marlin_TB-main/tools/configurator"
-   python3 -m configurator
+   python3 -m configurator.py
    ```
 3. Follow the on-screen instructions to select your firmware version and configuration options.
 4. Once configured, download the customized firmware files.
@@ -190,7 +190,7 @@ If you’ve never installed anything like this before, don’t worry. Choose you
 2. In the terminal, type:
    ```sh
    cd "<your chosen folder>/CR6Community-Marlin_TB-main/tools/configurator"
-   python3 -m configurator
+   python3 -m configurator.py
    ```
 3. Follow the on-screen instructions to select your firmware version and configuration options.
 4. Once configured, download the customized firmware files.
