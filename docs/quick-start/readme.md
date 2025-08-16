@@ -10,7 +10,7 @@ This repository contains:
 
 <details>
 <summary><strong>How do I make my own version of the firmware?</summary></strong>
-**FIrst, you need to download a copy of the repository to your local hard drive**, like this:  
+**First, you need to download a copy of the repository to your local hard drive**, like this:  
 
 ## 1. Download the Repository to Your Hard Drive
 ### Step-by-step Instructions:
@@ -37,7 +37,7 @@ If you install the Auto-Build Marlin extension and the Platformio extension, you
 <details>
 <summary><strong>What can I do with configurator.py?</summary></strong>
 
-The configurator.py app uses the Marlin3D tool [auto_build.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/build) , which in-turn uses the app platformio to perform the actual build.
+The configurator.py app uses the Marlin3D tool [auto_build.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/build) which in-turn uses the app platformio to perform the actual build.
 
 The configurator.py app includes:
 - a recommended workflow checklist
@@ -64,7 +64,7 @@ NOTE: If you feel the need for more help, any AI agent (e.g. Microsoft CoPilot o
 </details>
 <details>
 <summary><strong>What about all the other stuff, here?</summary></strong>
-If you just want to make a customized build for your printer(s), you can safely disregard all of "the other stuff" and just use [configurator.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator/configurator.py).
+If you just want to make a customized build for your printer(s), you can safely disregard all of "the other stuff" and just use [configurator.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator/).
 
 That is not to say that you can safely delete or move that other stuff.  
  - Some of it is used by Platformio, when building the firmware.
