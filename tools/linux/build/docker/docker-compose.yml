@@ -13,7 +13,7 @@ services:
       - /home/stephen/CR6Community-Marlin_TB:/code
       - platformio-cache:/home/user/.platformio
     environment:
-    - HOME=/home/userdocker ps -a
+      HOME: /home/user
 
 volumes:
   # This volume holds installed libraries for PlatformIO. If this is deleted you
