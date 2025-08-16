@@ -10,9 +10,10 @@ This repository contains:
 
 <details>
 <summary><strong>How do I make my own version of the firmware?</summary></strong>
-**You need to download a copy of the repository to your local hard drive**, like this:  
+**FIrst, you need to download a copy of the repository to your local hard drive**, like this:  
 
-## Step-by-step Instructions:
+## 1. Download the Repository to Your Hard Drive
+### Step-by-step Instructions:
 - Go to: [github.com/Thinkersbluff/CR6Community-Marlin_TB](https://github.com/Thinkersbluff/CR6Community-Marlin_TB)
 - Click the green Code button
 - Select Download ZIP
@@ -23,7 +24,15 @@ This repository contains:
 - Open README.md for next steps
 💡 If Python, pip, or PlatformIO aren’t installed yet, you’ll also need them, to build the firmware. The README explains how.
 
-**Then you can use [the configurator.py desktop GUI tool](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator)** to define and build your own customized version of this firmware.  
+## 2. Now, You Have Multiple Options...
+1. The original Marlin3D.org repository contains a number of Powershell tools and a python program auto_build.py.  There are some instructions included for how to use those tools and they do work. If you are very comfortable with using the Windows Powershell command window, you may find these scripts relatively easy to understand and use.
+
+2. Developers will likely be familiar with the Microsoft Visual Studio Code application.
+If you install the Auto-Build Marlin extension and the Platformio extension, you can use the Auto-Build Marlin extension to build your firmware.
+
+3. If you prefer using GUI-based apps, or if you just find the first two options are too complicated, we are hoping you will find [**the CR6Community Marlin Configurator desktop gui app**](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator) to be exactly the tool you need!
+
+
 </details>
 <details>
 <summary><strong>What can I do with configurator.py?</summary></strong>
