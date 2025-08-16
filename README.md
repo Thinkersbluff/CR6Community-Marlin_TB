@@ -52,7 +52,7 @@ In 2025, the only board still being sold for the CR6 is the 1.1.0.3 ERA board, b
 The original project also experimented with examples for other printers with compatible display hardware, but that is more than Thinkersbluff has time to research.
 Those examples remain in this repo, and may work for you, but they are not supported here.
 
-## Can I Run The Latest Marlin on a CR6 Printer?
+## Can I Run The Latest Marlin on a CR6 Printer, Instead?
 Yes, you can.  
 
 ### Option 1: Octoprint
