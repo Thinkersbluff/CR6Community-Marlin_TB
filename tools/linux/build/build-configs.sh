@@ -14,6 +14,7 @@ fi
 
 echo "Repository root detected: $REPO_ROOT"
 cd "$REPO_ROOT"
+export REPO_ROOT="$(realpath "$REPO_ROOT")"
 
 RELEASE_NAME="${1:-test-build}"
 SINGLE_BUILD="${2:-}"
@@ -140,9 +141,10 @@ build_config() {
         docker-compose -f "$SCRIPT_DIR/docker/docker-compose.yml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash -c "
             set -e
             cd /code
-            echo 'Applying configuration: $config_name'
-            cp $config_dir/Configuration*.h Marlin/
-            
+            echo "DEBUG: Listing files in $config_dir"
+            ls -l "$config_dir"
+            echo "DEBUG: Copying $config_dir/Configuration*.h to Marlin/"
+            cp $config_dir/Configuration*.h Marlin/            
             echo 'Updating platformio.ini default_envs to: '\$PLATFORM_ENV
             sed -i 's/^default_envs = .*/default_envs = '\$PLATFORM_ENV'/' platformio.ini
             

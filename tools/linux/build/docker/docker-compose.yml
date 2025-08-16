@@ -10,10 +10,10 @@ services:
     working_dir: /code
     user: "${UID:-1000}:${GID:-1000}"
     volumes:
-    - ../../..:/code
-    - platformio-cache:/home/user/.platformio
+      - /home/stephen/CR6Community-Marlin_TB:/code
+      - platformio-cache:/home/user/.platformio
     environment:
-    - HOME=/home/user
+    - HOME=/home/userdocker ps -a
 
 volumes:
   # This volume holds installed libraries for PlatformIO. If this is deleted you
