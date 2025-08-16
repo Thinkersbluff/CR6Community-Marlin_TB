@@ -8,7 +8,8 @@ This repository contains:
 ### Where is the firmware?
 **Pre-compiled builds** ready to download and flash are listed in [the Assets section of the latest Release, here.](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/releases/tag/v2.0.9.1-cr6-community-release-6.2)
 
-### How do I "roll my own" firmware?
+<details>
+### How do I make my own version of the firmware?
 **You need to download a copy of the repository to your local hard drive**, like this:
 
 Download the project to your computer:
@@ -23,7 +24,8 @@ Download the project to your computer:
 💡 If Python, pip, or PlatformIO aren’t installed yet, you’ll also need them, to build the firmware. The README explains how.
 
 **Then you can use [the configurator.py desktop GUI tool](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator)** to define and build your own customized version of this firmware.  
-
+</details>
+<details>
 #### What can I do with configurator.py?
 The configurator.py app uses the Marlin3D tool [auto_build.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/build), which in-turn uses the app platformio to perform the actual build.
 
@@ -38,18 +40,19 @@ The configurator.py app includes:
 - a one-click function to build the customized firmware.
 
 Robust error-checking and prevention logic guides the user through the recommended workflow, helping to ensure success.
-
+</details>
+<details>
 ### Do I need to install anything else, for this stuff to work?
-**Maybe...**
-The python tools require python version 3.6+ to be installed on your system.
+**Probably...**
+The python tools require python version 3.7+ to be installed on your system.
+The GUI needs tkinter installed with your python.
 The auto_build.py tool requires platformio to be installed.
 
-If you are using a Linux platform, python is probably already installed.
-If you are using a Windows platform, you may need to download and install python. (Python nstallers are available from Python.org (recommended) or from the Microsoft Store.)
+When you are ready to do that, you will find all of the "how-to's" in the configurator README.md file.
 
-Any AI agent (e.g. Microsoft CoPilot on Windows) can guide you through the process of installing and configuring python, platformio, etc.
-
-
+NOTE: If you feel the need for more help, any AI agent (e.g. Microsoft CoPilot on Windows) can guide you through the entire process of installing, troubleshooting and configuring python, platformio, etc.
+</details>
+<details>
 ### What about all the other stuff, here?
 If you just want to make a customized build for your printer(s), you can safely disregard all of "the other stuff" and just use [configurator.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator/configurator.py).
 
@@ -59,3 +62,4 @@ That is not to say that you can safely delete or move that other stuff.
 It is best to leave everything right where it is, for simple stable operation.
 
 If you decide to explore more sophisticated installations and operations, like using the Docker-based containerized environment, everything is here to help you do that, too.
+</details>
