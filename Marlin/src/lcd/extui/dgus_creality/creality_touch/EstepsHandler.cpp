@@ -93,8 +93,12 @@ void EstepsHandler::HandleStartButton(DGUS_VP_Variable &var, void *val_ptr) {
     // Set-up command
     SetStatusMessage(PSTR("Extruding..."));
 
+    SERIAL_ECHOLNPAIR("filament_to_extrude: ", filament_to_extrude);
     char cmd[64];
-    sprintf_P(cmd, PSTR("G1 E%f F50"), filament_to_extrude);
+    char lengthStr[16];
+    dtostrf(filament_to_extrude, 1, 1, lengthStr);  // Convert float to string with 1 decimal place
+    snprintf(cmd, sizeof(cmd), "G1 E%s F50", lengthStr);
+    SERIAL_ECHOLNPAIR("Command: ", cmd);
 
     ExtUI::injectCommands(cmd);
     queue.advance();
