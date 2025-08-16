@@ -10,7 +10,8 @@ This repository contains:
 
 <details>
 <summary><strong>How do I make my own version of the firmware?</summary></strong>
-**You need to download a copy of the repository to your local hard drive**, like this:
+**You need to download a copy of the repository to your local hard drive**, like this:  
+
 ## Step-by-step Instructions:
 - Go to: [github.com/Thinkersbluff/CR6Community-Marlin_TB](https://github.com/Thinkersbluff/CR6Community-Marlin_TB)
 - Click the green Code button
