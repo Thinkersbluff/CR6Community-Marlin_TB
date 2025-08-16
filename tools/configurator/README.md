@@ -6,17 +6,11 @@ Whether you're new to 3D printing or a seasoned tinkerer, this guide will walk y
 
 ---
 
-## 📦 Setup Instructions
+## So, FIRST You Installed the Repository, Right?
+This guide assumes that you started by following the instructions in the [Quick-Start README.md](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/docs/quick-start/readme.md), and now you have landed here.
+HINT: (If you have not yet installed the repository files, please go back and start there...)
 
-1. Download the ZIP file from the repository
-2. Extract it to a folder of your choice
-
-> 📁 **Default path after extracting the ZIP:**  
-> `<your chosen folder>/CR6Community-Marlin_TB-main/tools/configurator`  
-> *(Adjust the path to where you actually extracted CR6Community-Marlin_TB-main.zip)*
-
----
-## 🧰 What Else You’ll Need
+## 🧰 What Else You’ll Need to Install
 Before you run the Configurator, your computer needs a few helpers installed:
 - **Python 3** – a free tool that runs the Configurator
 - ***Tkinter** – lets Python show windows and buttons (included with most Python installations.)
