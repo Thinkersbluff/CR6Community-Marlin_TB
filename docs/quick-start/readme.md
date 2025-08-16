@@ -9,10 +9,9 @@ This repository contains:
 **Pre-compiled builds** ready to download and flash are listed in [the Assets section of the latest Release, here.](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/releases/tag/v2.0.9.1-cr6-community-release-6.2)
 
 <details>
-### How do I make my own version of the firmware?
+<summary><strong>How do I make my own version of the firmware?</summary></strong>
 **You need to download a copy of the repository to your local hard drive**, like this:
-
-Download the project to your computer:
+## Step-by-step Instructions:
 - Go to: [github.com/Thinkersbluff/CR6Community-Marlin_TB](https://github.com/Thinkersbluff/CR6Community-Marlin_TB)
 - Click the green Code button
 - Select Download ZIP
