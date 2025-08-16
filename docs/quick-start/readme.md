@@ -36,7 +36,8 @@ If you install the Auto-Build Marlin extension and the Platformio extension, you
 </details>
 <details>
 <summary><strong>What can I do with configurator.py?</summary></strong>
-The configurator.py app uses the Marlin3D tool [auto_build.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/build), which in-turn uses the app platformio to perform the actual build.
+
+The configurator.py app uses the Marlin3D tool [auto_build.py](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/build) , which in-turn uses the app platformio to perform the actual build.
 
 The configurator.py app includes:
 - a recommended workflow checklist
