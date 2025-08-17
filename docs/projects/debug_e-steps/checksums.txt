@@ -1,7 +1,0 @@
-ef93698fda0b6e57da83caf15951e2647912f9bd3b208f835ad70b593567c50f  test_build-btt-skr-cr6-with-btt-tft-2025-08-17-01-44.zip
-66086a25a20e65aecd601a74564d4859a89cb5ccfd02d0d226c353a0480360d3  test_build-btt-skr-cr6-with-stock-creality-tft-2025-08-17-01-44.zip
-0ee0579b99060544f207d73fb5fccf43732f71d46f403b9d7ba738346dc0ecba  test_build-cr6-max-btt-skr-cr6-with-btt-tft-2025-08-17-01-44.zip
-2e9f92fe547aa1630d3d66b0dc617088209288c8161f831a111f0ed69ac8fd06  test_build-cr6-max-btt-skr-cr6-with-stock-creality-tft-2025-08-17-01-44.zip
-174c6ea302b0396e3d31c15926fb5c89532ab22d8cf32df138009d96daeae219  test_build-cr6-max-stock-mb-2025-08-17-01-44.zip
-b60351a5cddfb73a6636c57e2f7051bb807ad2c18a4a080aa73207f1ca90318d  test_build-cr6-se-v4.5.2-mb-2025-08-17-01-44.zip
-09c4d37a64a29b3d080a43bee8974764dc2971d62bd95830d96f692ac5902e71  test_build-cr6-se-v4.5.3-mb-2025-08-17-01-44.zip
