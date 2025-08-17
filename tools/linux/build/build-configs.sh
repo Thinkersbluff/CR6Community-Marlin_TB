@@ -1,6 +1,52 @@
+
 #!/bin/bash
-# Linux equivalent of Run-ExampleConfigBuilds.ps1
-# Builds multiple configuration examples and packages them for release
+# ============================================================================
+# CR6Community-Marlin_TB Multi-Config Build Script
+# ----------------------------------------------------------------------------
+# This script automates building, packaging, and archiving Marlin firmware for
+# multiple board/configuration targets in the CR6Community-Marlin_TB repository.
+#
+# It is the Linux equivalent of Run-ExampleConfigBuilds.ps1
+#
+# Features:
+#   - Scans all valid config/* directories for buildable configurations
+#   - Backs up and restores your own Marlin/Configuration*.h files
+#   - Copies config-specific Configuration.h/adv.h and builds with PlatformIO (via Docker)
+#   - Captures all build output and errors with timestamps
+#   - Packages firmware and (optionally) touchscreen firmware for each config
+#   - Creates per-build logs, checksums, and ZIP archives for easy release
+#
+# Requirements:
+#   - Must be run from within the CR6Community-Marlin_TB repository (any subdir)
+#   - Docker and docker-compose must be installed and working
+#   - The repo must have a valid platformio.ini and config/*/platformio-environment.txt files
+#
+# Usage Examples:
+#   ./build-configs.sh my_release_name
+#     - Builds all valid configs, output in .pio/build-output/my_release_name-*
+#
+#   ./build-configs.sh my_release_name btt-skr-cr6-with-btt-tft
+#     - Builds only the specified config (by directory name)
+#
+#   ./build-configs.sh my_release_name "" true
+#     - Dry run: shows what would be built, but does not actually build
+#
+#   ./build-configs.sh my_release_name "" false /path/to/CR-6-Touchscreen
+#     - Uses a custom path for the touchscreen repo
+#
+# Output:
+#   - Firmware, logs, and ZIPs in .pio/build-output/
+#   - Original Marlin/Configuration*.h always restored after build
+# ============================================================================
+
+# Redirect all output to build_log with timestamps
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BUILD_LOG="$SCRIPT_DIR/build_log"
+if command -v ts >/dev/null 2>&1; then
+    exec > >(ts '%Y-%m-%d %H:%M:%S' | tee "$BUILD_LOG") 2>&1
+else
+    exec > >(awk '{ print strftime("%Y-%m-%d %H:%M:%S"), $0; fflush(); }' | tee "$BUILD_LOG") 2>&1
+fi
 
 # Auto-detect repository root directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -92,7 +138,20 @@ build_config() {
     local config_name="$1"
     local config_dir="$REPO_ROOT/config/$config_name"
     
+
     echo "=== Building $config_name ==="
+
+    # Check for no-autobuild flag before any hashing or copying
+    if [ -f "$config_dir/no-autobuild.txt" ] && [ "$config_name" != "$SINGLE_BUILD" ]; then
+        echo "Skipping $config_name (marked no-autobuild)"
+        return 0
+    fi
+
+    # Hash before overwriting
+    echo "[DEBUG] Hashing base Configuration*.h before overwrite..."
+    HASH_BEFORE=$("$SCRIPT_DIR/hash-configs.sh")
+    HASH_BEFORE_H=$(echo "$HASH_BEFORE" | grep CONFIG_H_SHA256 | cut -d'=' -f2)
+    HASH_BEFORE_ADV=$(echo "$HASH_BEFORE" | grep CONFIG_ADV_H_SHA256 | cut -d'=' -f2)
     
     # Check if configuration exists
     if [ ! -d "$config_dir" ]; then
@@ -113,7 +172,11 @@ build_config() {
     
     # Check for no-autobuild flag
     if [ -f "$config_dir/no-autobuild.txt" ] && [ "$config_name" != "$SINGLE_BUILD" ]; then
-        echo "Skipping $config_name (marked no-autobuild)"
+        echo "Skipping $config_name (marked no-autobuild)"[InternetShortcut]
+URL=https://github.com/CR6Community/CR-6-touchscreen
+IconFile=https://github.com/favicon.ico
+IconIndex=0
+EOF
         return 0
     fi
     
@@ -122,10 +185,23 @@ build_config() {
     local firmware_dir="$build_output_dir/Firmware/Motherboard firmware"
     local display_dir="$build_output_dir/Firmware/Display Firmware"
     local config_copy_dir="$build_output_dir/configs"
-    
+
     mkdir -p "$firmware_dir"
     mkdir -p "$display_dir"
     mkdir -p "$config_copy_dir"
+
+    # Overwrite Marlin/Configuration*.h with config's files
+    cp "$config_dir"/Configuration*.h "$REPO_ROOT/Marlin/"
+
+    # Hash after overwriting
+    echo "[DEBUG] Hashing base Configuration*.h after overwrite..."
+    HASH_AFTER=$("$SCRIPT_DIR/hash-configs.sh")
+    HASH_AFTER_H=$(echo "$HASH_AFTER" | grep CONFIG_H_SHA256 | cut -d'=' -f2)
+    HASH_AFTER_ADV=$(echo "$HASH_AFTER" | grep CONFIG_ADV_H_SHA256 | cut -d'=' -f2)
+
+    if [ "$HASH_BEFORE_H" = "$HASH_AFTER_H" ] && [ "$HASH_BEFORE_ADV" = "$HASH_AFTER_ADV" ]; then
+        echo "WARNING: Configuration*.h hashes before and after overwrite are identical! The config files may not have been copied."
+    fi
     
     # Check for touchscreen support
     local has_touchscreen=true
@@ -135,92 +211,76 @@ build_config() {
     fi
     
     if [ "$DRY_RUN" != "true" ]; then
-        echo "Building firmware..."
-        
-        # Use Docker to build with proper environment
-        docker-compose -f "$SCRIPT_DIR/docker/docker-compose.yml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash -c "
-            set -e
-            cd /code
-            echo "DEBUG: Listing files in $config_dir"
-            ls -l "$config_dir"
-            echo "DEBUG: Copying $config_dir/Configuration*.h to Marlin/"
-            cp $config_dir/Configuration*.h Marlin/            
-            echo 'Updating platformio.ini default_envs to: '\$PLATFORM_ENV
-            sed -i 's/^default_envs = .*/default_envs = '\$PLATFORM_ENV'/' platformio.ini
-            
-            # For BTT boards, ensure correct motherboard selection
-            if [[ \$PLATFORM_ENV == *'btt'* ]]; then
-                echo 'Applying BTT board configuration...'
-                # Ensure board is set correctly for BTT environment
-                sed -i 's/^[[:space:]]*#define[[:space:]]*MOTHERBOARD[[:space:]]*BOARD_CREALITY_V453/#define MOTHERBOARD BOARD_BTT_SKR_CR6/' Marlin/Configuration.h
-                sed -i 's/^[[:space:]]*#define[[:space:]]*MOTHERBOARD[[:space:]]*BOARD_CREALITY_V452/#define MOTHERBOARD BOARD_BTT_SKR_CR6/' Marlin/Configuration.h
-                sed -i 's/^[[:space:]]*#define[[:space:]]*MOTHERBOARD[[:space:]]*BOARD_CREALITY_V427/#define MOTHERBOARD BOARD_BTT_SKR_CR6/' Marlin/Configuration.h
-                echo 'BTT board configuration applied'
+        echo "[DEBUG] Starting Docker build for $config_name (platform_env: $platform_env)"
+        BUILD_OUT_FILE="$build_output_dir/platformio-build.log"
+        echo "[DEBUG] Invoking docker-compose for $config_name, output will be logged to $BUILD_OUT_FILE"
+
+        # Write the build script to a temp file for robust execution
+        BUILD_SCRIPT="$build_output_dir/docker-build-script.sh"
+cat > "$BUILD_SCRIPT" <<EOF
+            set -ex
+            echo 'DEBUG: Entered container, PWD='"$(pwd)"'
+            yellow\ncd /code\necho 'DEBUG: Listing files in $config_dir'\nls -l '$config_dir'\necho 'DEBUG: Listing Marlin/ before copy'\nls -l Marlin/\necho 'DEBUG: Copying $config_dir/Configuration*.h to Marlin/'\ncp $config_dir/Configuration*.h Marlin/\necho 'DEBUG: Listing Marlin/ after copy'\nls -l Marlin/\necho 'Updating platformio.ini default_envs to: '$PLATFORM_ENV\nsed -i 's/^default_envs = .*/default_envs = '$PLATFORM_ENV'/' platformio.ini\necho 'Building firmware for platform: '$PLATFORM_ENV\nplatformio run -e $PLATFORM_ENV --target clean\nplatformio run -e $PLATFORM_ENV\necho 'Build completed successfully'\nEOF
+            chmod +x "$BUILD_SCRIPT"
+            docker-compose -f "$SCRIPT_DIR/docker/docker-compose.yml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash "$BUILD_SCRIPT" &> "$BUILD_OUT_FILE"
+
+            BUILD_RESULT=$?
+            echo "[DEBUG] Docker build finished for $config_name with exit code $BUILD_RESULT"
+            cat "$BUILD_OUT_FILE"
+            if [ $BUILD_RESULT -ne 0 ]; then
+                echo "ERROR: Build failed for $config_name. See $BUILD_OUT_FILE for details."
+                return 1
             fi
-            
-            echo 'Building firmware for platform: '\$PLATFORM_ENV
-            platformio run -e \$PLATFORM_ENV --target clean
-            platformio run -e \$PLATFORM_ENV
-            
-            echo 'Build completed successfully'
-        "
-        
-        if [ $? -ne 0 ]; then
-            echo "ERROR: Build failed for $config_name"
-            return 1
-        fi
-        
-        # Copy firmware binary
-        local firmware_files=($(find "$REPO_ROOT/.pio/build/$platform_env" -name "firmware*.bin" 2>/dev/null))
-        if [ ${#firmware_files[@]} -eq 0 ]; then
-            echo "ERROR: No firmware binary found for $config_name"
-            return 1
-        fi
-        
-        cp "${firmware_files[0]}" "$firmware_dir/"
-        echo "Firmware copied: $(basename "${firmware_files[0]}")"
-        
-    else
-        echo "DRY RUN: Would build $config_name with platform $platform_env"
+
+
+            # Copy the most recent firmware*.bin file (handles timestamped names)
+            local firmware_file=$(ls -1t "$REPO_ROOT/.pio/build/$platform_env"/firmware*.bin 2>/dev/null | head -n1)
+            if [ -z "$firmware_file" ]; then
+                echo "ERROR: No firmware binary found for $config_name. See $BUILD_OUT_FILE for build output."
+                return 1
+            fi
+
+            cp "$firmware_file" "$firmware_dir/"
+            echo "Firmware copied: $(basename "$firmware_file")"
+
+            else
+            echo "DRY RUN: Would build $config_name with platform $platform_env"
+            fi
+
+            # Copy configuration files
+            cp "$config_dir"/*.h "$config_copy_dir/" 2>/dev/null || true
+
+            if [ "$has_touchscreen" = true ]; then
+                if [ "$TOUCHSCREEN_AVAILABLE" = true ] && [ "$DRY_RUN" != "true" ]; then
+                    echo "Creating DWIN_SET.zip from touchscreen firmware..."
+                    # Create ZIP file of DWIN_SET folder
+                    local dwin_zip="$display_dir/DWIN_SET.zip"
+                    (cd "$(dirname "$DWIN_SET_PATH")" && zip -r "$(basename "$dwin_zip")" "$(basename "$DWIN_SET_PATH")")
+                    mv "$(dirname "$DWIN_SET_PATH")/DWIN_SET.zip" "$dwin_zip"
+                    echo "Display firmware packaged: DWIN_SET.zip"
+                elif [ "$DRY_RUN" = "true" ]; then
+                    echo "DRY RUN: Would create DWIN_SET.zip from $DWIN_SET_PATH"
+                else
+                    echo "Creating URL shortcut for touchscreen firmware download..."
+                    # Create URL shortcut file
+                    cat > "$display_dir/CR-6-Touchscreen-Download.url" << EOF
+            [InternetShortcut]
+            URL=https://github.com/CR6Community/CR-6-touchscreen
+            IconFile=https://github.com/favicon.ico
+            IconIndex=0
+        echo "Created download link: CR-6-Touchscreen-Download.url"
+    fi
+else
+    # Configuration excludes touchscreen - copy the no-touchscreen.txt file to explain
+    if [ -f "$config_dir/no-touchscreen.txt" ] && [ "$DRY_RUN" != "true" ]; then
+        cp "$config_dir/no-touchscreen.txt" "$display_dir/"
+        echo "Copied no-touchscreen.txt to Display Firmware folder"
+    elif [ "$DRY_RUN" = "true" ]; then
+        echo "DRY RUN: Would copy no-touchscreen.txt to Display Firmware folder"
     fi
     
-    # Copy configuration files
-    cp "$config_dir"/*.h "$config_copy_dir/" 2>/dev/null || true
-    
-    # Handle touchscreen/display firmware
-    if [ "$has_touchscreen" = true ]; then
-        if [ "$TOUCHSCREEN_AVAILABLE" = true ] && [ "$DRY_RUN" != "true" ]; then
-            echo "Creating DWIN_SET.zip from touchscreen firmware..."
-            # Create ZIP file of DWIN_SET folder
-            local dwin_zip="$display_dir/DWIN_SET.zip"
-            (cd "$(dirname "$DWIN_SET_PATH")" && zip -r "$(basename "$dwin_zip")" "$(basename "$DWIN_SET_PATH")")
-            mv "$(dirname "$DWIN_SET_PATH")/DWIN_SET.zip" "$dwin_zip"
-            echo "Display firmware packaged: DWIN_SET.zip"
-        elif [ "$DRY_RUN" = "true" ]; then
-            echo "DRY RUN: Would create DWIN_SET.zip from $DWIN_SET_PATH"
-        else
-            echo "Creating URL shortcut for touchscreen firmware download..."
-            # Create URL shortcut file
-            cat > "$display_dir/CR-6-Touchscreen-Download.url" << EOF
-[InternetShortcut]
-URL=https://github.com/CR6Community/CR-6-touchscreen
-IconFile=https://github.com/favicon.ico
-IconIndex=0
-EOF
-            echo "Created download link: CR-6-Touchscreen-Download.url"
-        fi
-    else
-        # Configuration excludes touchscreen - copy the no-touchscreen.txt file to explain
-        if [ -f "$config_dir/no-touchscreen.txt" ] && [ "$DRY_RUN" != "true" ]; then
-            cp "$config_dir/no-touchscreen.txt" "$display_dir/"
-            echo "Copied no-touchscreen.txt to Display Firmware folder"
-        elif [ "$DRY_RUN" = "true" ]; then
-            echo "DRY RUN: Would copy no-touchscreen.txt to Display Firmware folder"
-        fi
-        
-        if [ "$DRY_RUN" != "true" ]; then
-            echo "Configuration uses BTT TFT - no CR-6 touchscreen firmware needed"
-        fi
+    if [ "$DRY_RUN" != "true" ]; then
+        echo "Configuration uses BTT TFT - no CR-6 touchscreen firmware needed"
     fi
     
     # Copy description if available
@@ -257,7 +317,17 @@ EOF
     echo ""
 }
 
-# Main build loop
+
+# Backup user's original Marlin/Configuration*.h files
+ORIG_CONFIG_H="$REPO_ROOT/Marlin/Configuration.h"
+ORIG_CONFIG_ADV_H="$REPO_ROOT/Marlin/Configuration_adv.h"
+ORIG_CONFIG_H_BAK="$REPO_ROOT/Marlin/Configuration.h.userbak"
+ORIG_CONFIG_ADV_H_BAK="$REPO_ROOT/Marlin/Configuration_adv.h.userbak"
+
+cp "$ORIG_CONFIG_H" "$ORIG_CONFIG_H_BAK"
+cp "$ORIG_CONFIG_ADV_H" "$ORIG_CONFIG_ADV_H_BAK"
+
+# Main build loopBTT
 if [ -n "$SINGLE_BUILD" ]; then
     echo "Building single configuration: $SINGLE_BUILD"
     build_config "$SINGLE_BUILD"
@@ -268,9 +338,11 @@ else
     done
 fi
 
-# Restore original configuration
-echo "Restoring original configuration..."
-docker-compose -f "$SCRIPT_DIR/docker/docker-compose.yml" run --rm marlin bash -c "cd /code && git checkout HEAD -- Marlin/Configuration*.h platformio.ini"
+# Restore user's original Configuration*.h files
+echo "Restoring user's original Marlin/Configuration*.h files..."
+cp "$ORIG_CONFIG_H_BAK" "$ORIG_CONFIG_H"
+cp "$ORIG_CONFIG_ADV_H_BAK" "$ORIG_CONFIG_ADV_H"
+rm -f "$ORIG_CONFIG_H_BAK" "$ORIG_CONFIG_ADV_H_BAK"
 
 echo ""
 echo "=== Build Summary ==="
