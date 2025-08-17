@@ -1,5 +1,14 @@
 # Community firmware for the Creality CR-6 3D printer
 
+```
+CAUTION:
+This version of the CR6Community Firmware is compiled from the code last posted on the CR6Community - Marlin repository in 2021.
+Although it is labelled as being based on Marlin 2.0.9.1, a comparison of the files between this version and the official
+Marlin 2.0.9.1 release reveals numerous differences between the two.
+We can not be certain that all of the functionality (or indeed of the bugs) in the official Marlin release are also captured in this release 6.2.
+We have done our best to ensure that this release is stable and fully-functional.  Please check the Issues before deciding to download and use this firmware.
+If you find issues with this code on your printer, please advise Thinkersbluff, either in an Issue here or on the CR6Community Discord.
+```
 To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release.  
 
 For the latest guidance on how to build a customized firmware.bin file for your specific printer (e.g. with a higher max nozzle temperature), please read [./docs/quick-start/readme.md](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/docs/quick-start/readme.md)
