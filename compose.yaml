@@ -8,7 +8,8 @@ services:
       dockerfile: Dockerfile
       context: .
     working_dir: /code
-    user: "${UID:-1000}:${GID:-1000}"
+   # user: "${UID:-1000}:${GID:-1000}"
+    user: "0:0"
     volumes:
       - /home/stephen/CR6Community-Marlin_TB:/code
       - platformio-cache:/home/user/.platformio

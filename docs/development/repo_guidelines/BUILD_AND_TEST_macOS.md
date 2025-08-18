@@ -1,14 +1,14 @@
-# Build & Test Documentation (Linux)
+# Build & Test Documentation (macOS)
 
-This document provides users with basic instructions and workflows for configuring this repository and building CR6Community Firmware on a Linux platform.
+This document provides users with basic instructions and workflows for configuring this repository and building CR6Community Firmware on a macOS platform.
 
-> **Note:** If you use both Linux and Windows on the same computer to maintain this repository, see also the [DUAL_BOOT_GUIDELINES.md](../DUAL_BOOT_GUIDELINES.md).
+> **Note:** If you use both macOS and Windows on the same computer to maintain this repository, see also the [DUAL_BOOT_GUIDELINES.md](../DUAL_BOOT_GUIDELINES.md).
 
 ## Table of Contents
 - [Script Usage Guidelines](#script-usage-guidelines)
 - [Containerized (Podman) Environment](#containerized-podman-environment)
 - [Build Methods](#build-methods)
-- [Linux Build Scripts](#linux-build-scripts)
+- [macOS Build Scripts](#macos-build-scripts)
 - [Permission Management](#permission-management)
 - [Testing Infrastructure](#testing-infrastructure)
 - [Configuration Management](#configuration-management)
@@ -16,7 +16,7 @@ This document provides users with basic instructions and workflows for configuri
 - [Continuous Integration](#continuous-integration)
 - [Build Tools and Scripts](#build-tools-and-scripts)
 - [Focused Development Workflow](#focused-development-workflow)
-- [Troubleshooting](#troubleshooting-podman--platformio)
+- [Troubleshooting (Podman & PlatformIO)](#troubleshooting-podman--platformio)
 - [Performance Notes](#performance-notes)
 - [Security Guidelines](#security-guidelines)
 
@@ -32,11 +32,11 @@ All scripts in this repository are designed to work when you navigate to their d
 ### Examples:
 ```bash
 # Build scripts - navigate to your platform's build directory
-cd tools/linux/build
+cd tools/macos/build
 ./build-configs.sh
 
 # VS Code tools - navigate to your platform's vscode directory
-cd tools/linux/vscode
+cd tools/macos/vscode
 ```
 
 ## Containerized (Podman) Environment
@@ -44,10 +44,16 @@ cd tools/linux/vscode
 
 ### Install Podman and Podman Compose
 ```bash
-sudo apt update && sudo apt install -y podman podman-compose
+brew install podman podman-compose
 ```
 
-### Use the configuration files in `tools/linux/build/podman/`.
+- You may need to initialize and start the Podman machine (Podman runs in a lightweight VM on macOS):
+  ```bash
+  podman machine init
+  podman machine start
+  ```
+
+### Use the configuration files in `tools/macos/build/podman/`.
 
 ## Build Methods
 ← [ToC](#table-of-contents)
@@ -56,7 +62,7 @@ sudo apt update && sudo apt install -y podman podman-compose
 
 #### Build Specific Configuration
 ```bash
-cd tools/linux/build/podman
+cd tools/macos/build/podman
 # Build CR6 SE v4.5.3 configuration
 # Example:
 podman-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
@@ -64,7 +70,7 @@ podman-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs conf
 
 #### Interactive Podman Session
 ```bash
-cd tools/linux/build/podman
+cd tools/macos/build/podman
 # Get shell inside container
 podman-compose run --rm marlin bash
 # Inside container, you can run any build commands:
@@ -78,55 +84,60 @@ platformio run -e STM32F103RET6_creality
 - Visual Studio Code with PlatformIO extension
 - Python 3.7+
 - PlatformIO Core
+- Xcode Command Line Tools (for build dependencies):
+  ```bash
+  xcode-select --install
+  ```
 
 #### Process
 1. Copy configuration files from `config/[your-config]/` to `Marlin/`
 2. Update `platformio.ini` `default_envs` to match `platformio-environment.txt`
 3. Build using PlatformIO IDE or command line
 
-## Linux Build Scripts
+## macOS Build Scripts
+← [ToC](#table-of-contents)
 ← [ToC](#table-of-contents)
 
-The Linux build script (`tools/linux/build/build-configs.sh`) can build all or specific configuration examples. The script automatically detects the repository root and can be run from any directory within the repository.
+The build script (`tools/macos/build/build-configs.sh`) can build all or specific configuration examples. The script automatically detects the repository root and can be run from any directory within the repository.
 
 **Basic usage (run from repository root):**
 ```bash
-./tools/linux/build/build-configs.sh
+./tools/macos/build/build-configs.sh
 ```
 
-**Basic usage (run from tools/linux/build directory):**
+**Basic usage (run from tools/macos/build directory):**
 ```bash
-cd tools/linux/build && ./build-configs.sh
+cd tools/macos/build && ./build-configs.sh
 ```
 
 **Build with custom release name:**
 ```bash
-./tools/linux/build/build-configs.sh v2.1.3.2
+./tools/macos/build/build-configs.sh v2.1.3.2
 ```
 
 **Build single configuration:**
 ```bash
-./tools/linux/build/build-configs.sh test-build cr6-se-v4.5.3-mb
+./tools/macos/build/build-configs.sh test-build cr6-se-v4.5.3-mb
 ```
 
 **Dry run (test without building):**
 ```bash
-./tools/linux/build/build-configs.sh test-build cr6-se-v4.5.3-mb true
+./tools/macos/build/build-configs.sh test-build cr6-se-v4.5.3-mb true
 ```
 
 **Custom touchscreen path:**
 ```bash
-./tools/linux/build/build-configs.sh v2.1.3.2 "" "" ../path/to/CR-6-Touchscreen
+./tools/macos/build/build-configs.sh v2.1.3.2 "" "" ../path/to/CR-6-Touchscreen
 ```
 
 **All parameters:**
 ```bash
-./tools/linux/build/build-configs.sh release-name cr6-se-v4.5.3-mb false ../CR-6-Touchscreen
+./tools/macos/build/build-configs.sh release-name cr6-se-v4.5.3-mb false ../CR-6-Touchscreen
 ```
 
 ## Permission Management
 ← [ToC](#table-of-contents)
-
+← [ToC](#table-of-contents)
 
 Podman containers can create files owned by root, causing permission issues in development workflows. This section covers prevention and resolution strategies.
 
@@ -160,14 +171,14 @@ find . -user root -ls
 
 #### Method 1: Fix Ownership (Quick Fix)
 ```bash
-sudo chown -R $USER:$USER .
-sudo chown -R $USER:$USER .pio/
+sudo chown -R $(id -u):$(id -g) .
+sudo chown -R $(id -u):$(id -g) .pio/
 ```
 
 #### Method 2: Clean and Rebuild
 ```bash
 sudo rm -rf .pio/build/*
-sudo chown -R $USER:$USER .pio/
+sudo chown -R $(id -u):$(id -g) .pio/
 pio system prune --force
 ```
 
@@ -175,7 +186,7 @@ pio system prune --force
 ```bash
 sudo rm -rf ~/.platformio/
 sudo rm -rf .pio/
-pip install --user platformio
+pip3 install --user platformio
 ```
 
 #### Method 4: Podman User Mapping (Permanent Solution)
@@ -185,7 +196,7 @@ pip install --user platformio
 
 If you encounter permission issues, first try Method 1 (fix ownership), then rebuild the Podman environment:
 ```bash
-sudo chown -R $USER:$USER .
+sudo chown -R $(id -u):$(id -g) .
 cd tools/build/podman
 podman-compose down
 podman-compose build --no-cache
@@ -193,10 +204,10 @@ podman-compose build --no-cache
 
 ## Testing Infrastructure
 ← [ToC](#table-of-contents)
-
-The repository supports automated testing across 50+ hardware platforms. See the main README for supported platforms and test execution instructions.
+The test infrastructure and documentation will be reviewed, revised, and expanded in a future update. Instructions for running and validating tests will be provided once the new system is in place.
 
 ## Configuration Management
+← [ToC](#table-of-contents)
 ← [ToC](#table-of-contents)
 
 Configuration directories are in `config/`. Each contains:
@@ -206,25 +217,26 @@ Configuration directories are in `config/`. Each contains:
 
 ## Makefile Targets
 ← [ToC](#table-of-contents)
+← [ToC](#table-of-contents)
 
 ### Setup Targets
 ```bash
-make setup-local-docker          # Build Docker development environment
+make setup-local-podman          # Build Podman development environment
 ```
 
 ### Testing Targets
 ```bash
 make tests-single-local          # Run single test locally
-make tests-single-local-docker   # Run single test in Docker
+make tests-single-local-podman   # Run single test in Podman
 make tests-all-local            # Run all tests locally  
-make tests-all-local-docker     # Run all tests in Docker
+make tests-all-local-podman     # Run all tests in Podman
 make tests-single-ci            # Run single test (CI mode)
 ```
 
 ## Continuous Integration
 ← [ToC](#table-of-contents)
 
-See `.github/workflows/test-builds.yml` for CI details. Matrix tests run on all supported platforms using Docker and PlatformIO.
+See `.github/workflows/test-builds.yml` for CI details. Matrix tests run on all supported platforms using Podman and PlatformIO.
 
 ## Build Tools and Scripts
 ← [ToC](#table-of-contents)
@@ -241,8 +253,7 @@ restore_configs        # Restore original configuration
 ## Focused Development Workflow
 ← [ToC](#table-of-contents)
 
-For CR6-specific development, use the supported configurations in `config/` and test using the provided Makefile and Docker commands.
-
+For CR6-specific development, use the supported configurations in `config/` and test using the provided Makefile and Podman commands.
 
 ## Troubleshooting (Podman & PlatformIO)
 ← [ToC](#table-of-contents)
@@ -253,8 +264,8 @@ For CR6-specific development, use the supported configurations in `config/` and 
    - Usually caused by files created as `root` or by a mismatched user inside the container.
    - **Solution:** On your host, run:
       ```bash
-      sudo chown -R $UID:$UID /path/to/your/project
-      sudo chown -R $UID:$UID /path/to/your/project/.pio
+      sudo chown -R $(id -u):$(id -g) /path/to/your/project
+      sudo chown -R $(id -u):$(id -g) /path/to/your/project/.pio
       ```
    - If you use a Podman volume for PlatformIO cache, fix its permissions:
       ```bash
@@ -263,7 +274,6 @@ For CR6-specific development, use the supported configurations in `config/` and 
 
 - **PlatformIO cannot find framework packages (e.g., `framework-arduinoststm32`):**
    - The PlatformIO cache volume may be empty or missing the required framework.
-   - **Solution:** Start a container with the volume mounted and run a build. PlatformIO will download the framework as needed:
       ```bash
       podman run --rm -it \
          -v /path/to/your/project:/code \
@@ -275,13 +285,13 @@ For CR6-specific development, use the supported configurations in `config/` and 
 
 - **"Operation not permitted" when running `chown` inside the container:**
    - You may not have permission to change ownership of files created by root or another user.
-   - **Solution:** Always fix permissions on the host using `sudo chown -R $UID:$UID ...` or by deleting and recreating the `.pio` directory.
+   - **Solution:** Always fix permissions on the host using `sudo chown -R $(id -u):$(id -g) ...` or by deleting and recreating the `.pio` directory.
 
 - **Podman volume overwrites pre-installed packages:**
    - If you mount a volume to `/home/user/.platformio`, it will hide any packages installed in the image. Always ensure the volume contains the required packages, or let PlatformIO install them during the first build.
 
 - **General Podman Compose usage:**
-   - Use `podman-compose` instead of `docker-compose` for orchestration.
+   - Use `podman-compose` for orchestration.
    - Example:
       ```bash
       podman-compose up
@@ -292,17 +302,19 @@ For CR6-specific development, use the supported configurations in `config/` and 
 
 ## Performance Notes
 ← [ToC](#table-of-contents)
+← [ToC](#table-of-contents)
 - Single platform test: ~2-3 minutes
 - All platform tests: ~2-3 hours
-- Docker container build: ~5-10 minutes (first time)
-- RAM: ~2GB recommended for Docker builds
+- Podman container build: ~5-10 minutes (first time)
+- RAM: ~2GB recommended for Podman builds
 - Disk: ~5GB for complete environment
 - Network: Initial setup downloads ~500MB
 
 ## Security Guidelines
 ← [ToC](#table-of-contents)
+← [ToC](#table-of-contents)
 
-For Linux users, GPG key management is essential for secure Docker and package installations. Please review [SECURITY.md](SECURITY.md) for:
+For macOS users, GPG key management is essential for secure Podman and package installations. Please review [SECURITY.md](SECURITY.md) for:
 - How to verify and manage GPG keys
 - Best practices for key safety
 - Troubleshooting common GPG-related issues

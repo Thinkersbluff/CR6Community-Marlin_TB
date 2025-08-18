@@ -44,9 +44,9 @@ tests-all-local:
 .PHONY: tests-all-local
 
 tests-all-local-podman:
-	podman-compose -f tools/linux/build/podman/podman-compose.yml run --rm marlin $(MAKE) tests-all-local VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD)
+	podman-compose -f tools/linux/build/podman/compose.yaml run --rm marlin $(MAKE) tests-all-local VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD)
 .PHONY: tests-all-local-podman
 
 setup-local-podman:
-	podman-compose -f tools/linux/build/podman/podman-compose.yml build
+	podman-compose -f tools/linux/build/podman/compose.yaml build
 .PHONY: setup-local-podman

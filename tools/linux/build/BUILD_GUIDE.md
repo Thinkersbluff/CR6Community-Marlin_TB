@@ -44,7 +44,7 @@ If you encounter errors, follow these steps:
 ### 1. Podman Cannot Find Files or Configs
 - **Symptom:** Errors like `cp: cannot stat .../Configuration*.h: No such file or directory` or missing configs.
 - **Solution:**
-  - Ensure your `podman-compose.yml` has the correct absolute path for the repo root:
+  - Ensure your `compose.yaml` has the correct absolute path for the repo root:
     ```yaml
     volumes:
       - /home/stephen/CR6Community-Marlin_TB:/code
@@ -57,7 +57,7 @@ If you encounter errors, follow these steps:
     ```
   - Check inside the container:
     ```bash
-    podman-compose -f podman/podman-compose.yml run --rm marlin bash
+    podman-compose -f podman/compose.yaml run --rm marlin bash
     ls -l /code/config/<config-name>/Configuration*.h
     ```
 
@@ -91,8 +91,8 @@ If you encounter errors, follow these steps:
 ---
 
 ## Notes
-- If you move the repository, update the absolute path in `podman-compose.yml`.
-- For portability, add a comment in `podman-compose.yml` to remind users to update the path if they clone the repo elsewhere.
+- If you move the repository, update the absolute path in `compose.yaml`.
+- For portability, add a comment in `compose.yaml` to remind users to update the path if they clone the repo elsewhere.
 - Always run the script from `tools/linux/build/` for consistent results.
 
 ---
@@ -101,6 +101,6 @@ If you encounter errors, follow these steps:
 If you encounter issues not covered here, please provide:
 - The exact error message
 - The output of `ls -l` for the relevant config folder (both on host and in Podman)
-- The relevant section of your `podman-compose.yml`
+- The relevant section of your `compose.yaml`
 
 This will help others assist you more quickly.

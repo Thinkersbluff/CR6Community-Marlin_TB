@@ -5,9 +5,15 @@
 # the appropriate framework variants folder, so that its contents
 # will be picked up by PlatformIO just like any other variant.
 #
-import os,shutil,marlin
-from SCons.Script import DefaultEnvironment
-from platformio import util
+import os, shutil
+try:
+    import marlin
+    from SCons.Script import DefaultEnvironment
+    from platformio import util
+except ImportError:
+    pass  # Ignore import errors in IDEs
+
+from platformio.package.meta import PackageSpec
 
 env = DefaultEnvironment()
 
@@ -17,7 +23,7 @@ env = DefaultEnvironment()
 #
 platform = env.PioPlatform()
 
-from platformio.package.meta import PackageSpec
+
 platform_packages = env.GetProjectOption('platform_packages')
 if len(platform_packages) == 0:
     framewords = {
@@ -31,7 +37,15 @@ else:
 if platform_name in [ "usb-host-msc", "usb-host-msc-cdc-msc", "usb-host-msc-cdc-msc-2", "usb-host-msc-cdc-msc-3", "tool-stm32duino" ]:
     platform_name = "framework-arduinoststm32"
 
+
 FRAMEWORK_DIR = platform.get_package_dir(platform_name)
+print("DEBUG: platform_name =", platform_name)
+print("DEBUG: FRAMEWORK_DIR =", FRAMEWORK_DIR)
+if FRAMEWORK_DIR is None:
+    print("\nERROR: PlatformIO could not find the framework package directory for:", platform_name)
+    print("This usually means the required framework is not installed in your PlatformIO environment.")
+    print("Try running: platformio platform install ststm32 or platformio platform install framework-arduinoststm32 inside your container.")
+    raise SystemExit(1)
 assert os.path.isdir(FRAMEWORK_DIR)
 
 board = env.BoardConfig()

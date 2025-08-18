@@ -1,0 +1,482 @@
+2025-08-18 03:24:55 Repository root detected: /home/stephen/CR6Community-Marlin_TB
+2025-08-18 03:24:55 === CR6 Community Firmware Build Script ===
+2025-08-18 03:24:55 Release Name: test-6.2
+2025-08-18 03:24:55 Timestamp: 2025-08-18-03-24
+2025-08-18 03:24:55 Touchscreen Repo: ../CR-6-Touchscreen
+2025-08-18 03:24:55 
+2025-08-18 03:24:55 === Touchscreen DWIN_SET Found ===
+2025-08-18 03:24:55 DWIN_SET folder located at: ../CR-6-Touchscreen/src/DWIN/DWIN_SET
+2025-08-18 03:24:55 
+2025-08-18 03:24:55 Cleaning previous build output...
+2025-08-18 03:24:55 Scanning configurations...
+2025-08-18 03:24:55 WARNING: Skipping anycubic-vyper - missing Configuration_adv.h
+2025-08-18 03:24:55 Available configurations:
+2025-08-18 03:24:55   - btt-skr-cr6-with-btt-tft
+2025-08-18 03:24:55   - btt-skr-cr6-with-btt-tft-biqu-h2
+2025-08-18 03:24:55   - btt-skr-cr6-with-btt-tft-e3d-hemera
+2025-08-18 03:24:55   - btt-skr-cr6-with-stock-creality-tft
+2025-08-18 03:24:55   - btt-skr-cr6-with-stock-creality-tft-biqu-h2
+2025-08-18 03:24:55   - btt-skr-cr6-with-stock-creality-tft-neopixel
+2025-08-18 03:24:55   - cr10-smart-btt-skr-cr6-with-btt-tft
+2025-08-18 03:24:55   - cr10-smart-btt-skr-cr6-with-stock-creality-tft
+2025-08-18 03:24:55   - cr200b-v4.2.5-mb
+2025-08-18 03:24:55   - cr6-max-btt-skr-cr6-with-btt-tft
+2025-08-18 03:24:55   - cr6-max-btt-skr-cr6-with-stock-creality-tft
+2025-08-18 03:24:55   - cr6-max-stock-mb
+2025-08-18 03:24:55   - cr6-se-v4.5.2-mb
+2025-08-18 03:24:55   - cr6-se-v4.5.2-mb-no-watchdog
+2025-08-18 03:24:55   - cr6-se-v4.5.3-mb
+2025-08-18 03:24:55   - ender-3-pro-v427-board-bltouch
+2025-08-18 03:24:55   - sovol-sv-01
+2025-08-18 03:24:55 
+2025-08-18 03:24:55 Building all configurations...
+2025-08-18 03:24:55 === Building btt-skr-cr6-with-btt-tft ===
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h before overwrite...
+2025-08-18 03:24:55 Platform environment: STM32F103RE_btt_USB
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h after overwrite...
+2025-08-18 03:24:55 Configuration excludes touchscreen firmware
+2025-08-18 03:24:55 [DEBUG] Starting podman build for btt-skr-cr6-with-btt-tft (platform_env: STM32F103RE_btt_USB)
+2025-08-18 03:24:55 [DEBUG] Invoking podman-compose for btt-skr-cr6-with-btt-tft, output will be logged to /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-btt-skr-cr6-with-btt-tft-2025-08-18-03-24/platformio-build.log
+2025-08-18 03:24:55 [DEBUG] podman build finished for btt-skr-cr6-with-btt-tft with exit code 0
+2025-08-18 03:24:55 podman-compose version: 1.0.6
+2025-08-18 03:24:55 ['podman', '--version', '']
+2025-08-18 03:24:55 using podman version: 4.9.3
+2025-08-18 03:24:55 podman volume inspect podman_platformio-cache || podman volume create podman_platformio-cache
+2025-08-18 03:24:55 ['podman', 'volume', 'inspect', 'podman_platformio-cache']
+2025-08-18 03:24:55 ['podman', 'network', 'exists', 'podman_default']
+2025-08-18 03:24:55 podman run --name=podman_marlin_tmp53133 --rm -i --label io.podman.compose.config-hash=4e7eb44e451dd2cc02cb27a72dedadb0d8c400ba8363d715c04e5b5114782c38 --label io.podman.compose.project=podman --label io.podman.compose.version=1.0.6 --label PODMAN_SYSTEMD_UNIT=podman-compose@podman.service --label com.docker.compose.project=podman --label com.docker.compose.project.working_dir=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman --label com.docker.compose.project.config_files=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman/compose.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=marlin -e HOME=/home/user -e PLATFORM_ENV=STM32F103RE_btt_USB -v /home/stephen/CR6Community-Marlin_TB:/code -v podman_platformio-cache:/home/user/.platformio --net podman_default --network-alias marlin -u 1000:1000 -w /code --tty marlin-dev bash /code/podman-build-script.sh
+2025-08-18 03:24:55 + echo 'DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB'
+2025-08-18 03:24:55 DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB
+2025-08-18 03:24:55 + cd /code
+2025-08-18 03:24:55 + echo 'DEBUG: Listing files in /code/config/btt-skr-cr6-with-btt-tft'
+2025-08-18 03:24:55 DEBUG: Listing files in /code/config/btt-skr-cr6-with-btt-tft
+2025-08-18 03:24:55 + ls -l /code/config/btt-skr-cr6-with-btt-tft
+2025-08-18 03:24:55 total 288
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 109713 Aug  2 07:22 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 169775 Aug  2 07:22 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     44 Aug  2 07:22 description.txt
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root    163 Aug  5 00:57 no-touchscreen.txt
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     19 Aug  2 07:22 platformio-environment.txt
+2025-08-18 03:24:55 + echo 'DEBUG: Listing Marlin/ before copy'
+2025-08-18 03:24:55 DEBUG: Listing Marlin/ before copy
+2025-08-18 03:24:55 + ls -l Marlin/
+2025-08-18 03:24:55 total 628
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109713 Aug 18 07:24 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109805 Aug 18 07:24 Configuration.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169775 Aug 18 07:24 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169799 Aug 18 07:24 Configuration_adv.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  33283 Aug  2 07:22 Makefile
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2115 Aug  2 07:22 Marlin.ino
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2633 Aug  5 00:52 Version.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  19999 Aug  5 08:04 _Bootscreen.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   3780 Aug  5 08:04 _Statusscreen.h
+2025-08-18 03:24:55 drwxrwxr-x  2 root root   4096 Aug  2 07:22 lib
+2025-08-18 03:24:55 drwxrwxr-x 12 root root   4096 Aug  2 07:22 src
+2025-08-18 03:24:55 + echo 'DEBUG: Copying /code/config/btt-skr-cr6-with-btt-tft/Configuration*.h to Marlin/'
+2025-08-18 03:24:55 DEBUG: Copying /code/config/btt-skr-cr6-with-btt-tft/Configuration*.h to Marlin/
+2025-08-18 03:24:55 + cp /code/config/btt-skr-cr6-with-btt-tft/Configuration.h /code/config/btt-skr-cr6-with-btt-tft/Configuration_adv.h Marlin/
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration.h': Permission denied
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration_adv.h': Permission denied
+2025-08-18 03:24:55 exit code: 1
+2025-08-18 03:24:55 ERROR: No firmware binary found for btt-skr-cr6-with-btt-tft. See /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-btt-skr-cr6-with-btt-tft-2025-08-18-03-24/platformio-build.log for build output.
+2025-08-18 03:24:55 === Building btt-skr-cr6-with-btt-tft-biqu-h2 ===
+2025-08-18 03:24:55 Skipping btt-skr-cr6-with-btt-tft-biqu-h2 (marked no-autobuild)
+2025-08-18 03:24:55 === Building btt-skr-cr6-with-btt-tft-e3d-hemera ===
+2025-08-18 03:24:55 Skipping btt-skr-cr6-with-btt-tft-e3d-hemera (marked no-autobuild)
+2025-08-18 03:24:55 === Building btt-skr-cr6-with-stock-creality-tft ===
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h before overwrite...
+2025-08-18 03:24:55 Platform environment: STM32F103RE_btt_USB
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h after overwrite...
+2025-08-18 03:24:55 [DEBUG] Starting podman build for btt-skr-cr6-with-stock-creality-tft (platform_env: STM32F103RE_btt_USB)
+2025-08-18 03:24:55 [DEBUG] Invoking podman-compose for btt-skr-cr6-with-stock-creality-tft, output will be logged to /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-btt-skr-cr6-with-stock-creality-tft-2025-08-18-03-24/platformio-build.log
+2025-08-18 03:24:55 [DEBUG] podman build finished for btt-skr-cr6-with-stock-creality-tft with exit code 0
+2025-08-18 03:24:55 podman-compose version: 1.0.6
+2025-08-18 03:24:55 ['podman', '--version', '']
+2025-08-18 03:24:55 using podman version: 4.9.3
+2025-08-18 03:24:55 podman volume inspect podman_platformio-cache || podman volume create podman_platformio-cache
+2025-08-18 03:24:55 ['podman', 'volume', 'inspect', 'podman_platformio-cache']
+2025-08-18 03:24:55 ['podman', 'network', 'exists', 'podman_default']
+2025-08-18 03:24:55 podman run --name=podman_marlin_tmp29036 --rm -i --label io.podman.compose.config-hash=4e7eb44e451dd2cc02cb27a72dedadb0d8c400ba8363d715c04e5b5114782c38 --label io.podman.compose.project=podman --label io.podman.compose.version=1.0.6 --label PODMAN_SYSTEMD_UNIT=podman-compose@podman.service --label com.docker.compose.project=podman --label com.docker.compose.project.working_dir=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman --label com.docker.compose.project.config_files=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman/compose.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=marlin -e HOME=/home/user -e PLATFORM_ENV=STM32F103RE_btt_USB -v /home/stephen/CR6Community-Marlin_TB:/code -v podman_platformio-cache:/home/user/.platformio --net podman_default --network-alias marlin -u 1000:1000 -w /code --tty marlin-dev bash /code/podman-build-script.sh
+2025-08-18 03:24:55 + echo 'DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB'
+2025-08-18 03:24:55 DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB
+2025-08-18 03:24:55 + cd /code
+2025-08-18 03:24:55 + echo 'DEBUG: Listing files in /code/config/btt-skr-cr6-with-stock-creality-tft'
+2025-08-18 03:24:55 DEBUG: Listing files in /code/config/btt-skr-cr6-with-stock-creality-tft
+2025-08-18 03:24:55 + ls -l /code/config/btt-skr-cr6-with-stock-creality-tft
+2025-08-18 03:24:55 total 284
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 109697 Aug  2 07:22 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 169813 Aug  2 07:22 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     58 Aug  2 07:22 description.txt
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     19 Aug  2 07:22 platformio-environment.txt
+2025-08-18 03:24:55 + echo 'DEBUG: Listing Marlin/ before copy'
+2025-08-18 03:24:55 DEBUG: Listing Marlin/ before copy
+2025-08-18 03:24:55 + ls -l Marlin/
+2025-08-18 03:24:55 total 628
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109697 Aug 18 07:24 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109805 Aug 18 07:24 Configuration.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169813 Aug 18 07:24 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169799 Aug 18 07:24 Configuration_adv.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  33283 Aug  2 07:22 Makefile
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2115 Aug  2 07:22 Marlin.ino
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2633 Aug  5 00:52 Version.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  19999 Aug  5 08:04 _Bootscreen.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   3780 Aug  5 08:04 _Statusscreen.h
+2025-08-18 03:24:55 drwxrwxr-x  2 root root   4096 Aug  2 07:22 lib
+2025-08-18 03:24:55 drwxrwxr-x 12 root root   4096 Aug  2 07:22 src
+2025-08-18 03:24:55 + echo 'DEBUG: Copying /code/config/btt-skr-cr6-with-stock-creality-tft/Configuration*.h to Marlin/'
+2025-08-18 03:24:55 DEBUG: Copying /code/config/btt-skr-cr6-with-stock-creality-tft/Configuration*.h to Marlin/
+2025-08-18 03:24:55 + cp /code/config/btt-skr-cr6-with-stock-creality-tft/Configuration.h /code/config/btt-skr-cr6-with-stock-creality-tft/Configuration_adv.h Marlin/
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration.h': Permission denied
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration_adv.h': Permission denied
+2025-08-18 03:24:55 exit code: 1
+2025-08-18 03:24:55 ERROR: No firmware binary found for btt-skr-cr6-with-stock-creality-tft. See /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-btt-skr-cr6-with-stock-creality-tft-2025-08-18-03-24/platformio-build.log for build output.
+2025-08-18 03:24:55 === Building btt-skr-cr6-with-stock-creality-tft-biqu-h2 ===
+2025-08-18 03:24:55 Skipping btt-skr-cr6-with-stock-creality-tft-biqu-h2 (marked no-autobuild)
+2025-08-18 03:24:55 === Building btt-skr-cr6-with-stock-creality-tft-neopixel ===
+2025-08-18 03:24:55 Skipping btt-skr-cr6-with-stock-creality-tft-neopixel (marked no-autobuild)
+2025-08-18 03:24:55 === Building cr10-smart-btt-skr-cr6-with-btt-tft ===
+2025-08-18 03:24:55 Skipping cr10-smart-btt-skr-cr6-with-btt-tft (marked no-autobuild)
+2025-08-18 03:24:55 === Building cr10-smart-btt-skr-cr6-with-stock-creality-tft ===
+2025-08-18 03:24:55 Skipping cr10-smart-btt-skr-cr6-with-stock-creality-tft (marked no-autobuild)
+2025-08-18 03:24:55 === Building cr200b-v4.2.5-mb ===
+2025-08-18 03:24:55 Skipping cr200b-v4.2.5-mb (marked no-autobuild)
+2025-08-18 03:24:55 === Building cr6-max-btt-skr-cr6-with-btt-tft ===
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h before overwrite...
+2025-08-18 03:24:55 Platform environment: STM32F103RE_btt_USB
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h after overwrite...
+2025-08-18 03:24:55 Configuration excludes touchscreen firmware
+2025-08-18 03:24:55 [DEBUG] Starting podman build for cr6-max-btt-skr-cr6-with-btt-tft (platform_env: STM32F103RE_btt_USB)
+2025-08-18 03:24:55 [DEBUG] Invoking podman-compose for cr6-max-btt-skr-cr6-with-btt-tft, output will be logged to /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-max-btt-skr-cr6-with-btt-tft-2025-08-18-03-24/platformio-build.log
+2025-08-18 03:24:55 [DEBUG] podman build finished for cr6-max-btt-skr-cr6-with-btt-tft with exit code 0
+2025-08-18 03:24:55 podman-compose version: 1.0.6
+2025-08-18 03:24:55 ['podman', '--version', '']
+2025-08-18 03:24:55 using podman version: 4.9.3
+2025-08-18 03:24:55 podman volume inspect podman_platformio-cache || podman volume create podman_platformio-cache
+2025-08-18 03:24:55 ['podman', 'volume', 'inspect', 'podman_platformio-cache']
+2025-08-18 03:24:55 ['podman', 'network', 'exists', 'podman_default']
+2025-08-18 03:24:55 podman run --name=podman_marlin_tmp64919 --rm -i --label io.podman.compose.config-hash=4e7eb44e451dd2cc02cb27a72dedadb0d8c400ba8363d715c04e5b5114782c38 --label io.podman.compose.project=podman --label io.podman.compose.version=1.0.6 --label PODMAN_SYSTEMD_UNIT=podman-compose@podman.service --label com.docker.compose.project=podman --label com.docker.compose.project.working_dir=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman --label com.docker.compose.project.config_files=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman/compose.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=marlin -e HOME=/home/user -e PLATFORM_ENV=STM32F103RE_btt_USB -v /home/stephen/CR6Community-Marlin_TB:/code -v podman_platformio-cache:/home/user/.platformio --net podman_default --network-alias marlin -u 1000:1000 -w /code --tty marlin-dev bash /code/podman-build-script.sh
+2025-08-18 03:24:55 + echo 'DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB'
+2025-08-18 03:24:55 DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB
+2025-08-18 03:24:55 + cd /code
+2025-08-18 03:24:55 + echo 'DEBUG: Listing files in /code/config/cr6-max-btt-skr-cr6-with-btt-tft'
+2025-08-18 03:24:55 DEBUG: Listing files in /code/config/cr6-max-btt-skr-cr6-with-btt-tft
+2025-08-18 03:24:55 + ls -l /code/config/cr6-max-btt-skr-cr6-with-btt-tft
+2025-08-18 03:24:55 total 288
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 109682 Aug  2 07:22 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 169773 Aug  2 07:22 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     60 Aug  2 07:22 description.txt
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root    163 Aug  5 00:58 no-touchscreen.txt
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     19 Aug  2 07:22 platformio-environment.txt
+2025-08-18 03:24:55 + echo 'DEBUG: Listing Marlin/ before copy'
+2025-08-18 03:24:55 DEBUG: Listing Marlin/ before copy
+2025-08-18 03:24:55 + ls -l Marlin/
+2025-08-18 03:24:55 total 628
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109682 Aug 18 07:24 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109805 Aug 18 07:24 Configuration.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169773 Aug 18 07:24 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169799 Aug 18 07:24 Configuration_adv.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  33283 Aug  2 07:22 Makefile
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2115 Aug  2 07:22 Marlin.ino
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2633 Aug  5 00:52 Version.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  19999 Aug  5 08:04 _Bootscreen.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   3780 Aug  5 08:04 _Statusscreen.h
+2025-08-18 03:24:55 drwxrwxr-x  2 root root   4096 Aug  2 07:22 lib
+2025-08-18 03:24:55 drwxrwxr-x 12 root root   4096 Aug  2 07:22 src
+2025-08-18 03:24:55 + echo 'DEBUG: Copying /code/config/cr6-max-btt-skr-cr6-with-btt-tft/Configuration*.h to Marlin/'
+2025-08-18 03:24:55 DEBUG: Copying /code/config/cr6-max-btt-skr-cr6-with-btt-tft/Configuration*.h to Marlin/
+2025-08-18 03:24:55 + cp /code/config/cr6-max-btt-skr-cr6-with-btt-tft/Configuration.h /code/config/cr6-max-btt-skr-cr6-with-btt-tft/Configuration_adv.h Marlin/
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration.h': Permission denied
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration_adv.h': Permission denied
+2025-08-18 03:24:55 exit code: 1
+2025-08-18 03:24:55 ERROR: No firmware binary found for cr6-max-btt-skr-cr6-with-btt-tft. See /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-max-btt-skr-cr6-with-btt-tft-2025-08-18-03-24/platformio-build.log for build output.
+2025-08-18 03:24:55 === Building cr6-max-btt-skr-cr6-with-stock-creality-tft ===
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h before overwrite...
+2025-08-18 03:24:55 Platform environment: STM32F103RE_btt_USB
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h after overwrite...
+2025-08-18 03:24:55 [DEBUG] Starting podman build for cr6-max-btt-skr-cr6-with-stock-creality-tft (platform_env: STM32F103RE_btt_USB)
+2025-08-18 03:24:55 [DEBUG] Invoking podman-compose for cr6-max-btt-skr-cr6-with-stock-creality-tft, output will be logged to /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-max-btt-skr-cr6-with-stock-creality-tft-2025-08-18-03-24/platformio-build.log
+2025-08-18 03:24:55 [DEBUG] podman build finished for cr6-max-btt-skr-cr6-with-stock-creality-tft with exit code 0
+2025-08-18 03:24:55 podman-compose version: 1.0.6
+2025-08-18 03:24:55 ['podman', '--version', '']
+2025-08-18 03:24:55 using podman version: 4.9.3
+2025-08-18 03:24:55 podman volume inspect podman_platformio-cache || podman volume create podman_platformio-cache
+2025-08-18 03:24:55 ['podman', 'volume', 'inspect', 'podman_platformio-cache']
+2025-08-18 03:24:55 ['podman', 'network', 'exists', 'podman_default']
+2025-08-18 03:24:55 podman run --name=podman_marlin_tmp25602 --rm -i --label io.podman.compose.config-hash=4e7eb44e451dd2cc02cb27a72dedadb0d8c400ba8363d715c04e5b5114782c38 --label io.podman.compose.project=podman --label io.podman.compose.version=1.0.6 --label PODMAN_SYSTEMD_UNIT=podman-compose@podman.service --label com.docker.compose.project=podman --label com.docker.compose.project.working_dir=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman --label com.docker.compose.project.config_files=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman/compose.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=marlin -e HOME=/home/user -e PLATFORM_ENV=STM32F103RE_btt_USB -v /home/stephen/CR6Community-Marlin_TB:/code -v podman_platformio-cache:/home/user/.platformio --net podman_default --network-alias marlin -u 1000:1000 -w /code --tty marlin-dev bash /code/podman-build-script.sh
+2025-08-18 03:24:55 + echo 'DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB'
+2025-08-18 03:24:55 DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB
+2025-08-18 03:24:55 + cd /code
+2025-08-18 03:24:55 + echo 'DEBUG: Listing files in /code/config/cr6-max-btt-skr-cr6-with-stock-creality-tft'
+2025-08-18 03:24:55 DEBUG: Listing files in /code/config/cr6-max-btt-skr-cr6-with-stock-creality-tft
+2025-08-18 03:24:55 + ls -l /code/config/cr6-max-btt-skr-cr6-with-stock-creality-tft
+2025-08-18 03:24:55 total 284
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 109687 Aug  2 07:22 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 169814 Aug  2 07:22 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     74 Aug  2 07:22 description.txt
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     19 Aug  2 07:22 platformio-environment.txt
+2025-08-18 03:24:55 + echo 'DEBUG: Listing Marlin/ before copy'
+2025-08-18 03:24:55 DEBUG: Listing Marlin/ before copy
+2025-08-18 03:24:55 + ls -l Marlin/
+2025-08-18 03:24:55 total 628
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109687 Aug 18 07:24 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109805 Aug 18 07:24 Configuration.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169814 Aug 18 07:24 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169799 Aug 18 07:24 Configuration_adv.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  33283 Aug  2 07:22 Makefile
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2115 Aug  2 07:22 Marlin.ino
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2633 Aug  5 00:52 Version.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  19999 Aug  5 08:04 _Bootscreen.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   3780 Aug  5 08:04 _Statusscreen.h
+2025-08-18 03:24:55 drwxrwxr-x  2 root root   4096 Aug  2 07:22 lib
+2025-08-18 03:24:55 drwxrwxr-x 12 root root   4096 Aug  2 07:22 src
+2025-08-18 03:24:55 + echo 'DEBUG: Copying /code/config/cr6-max-btt-skr-cr6-with-stock-creality-tft/Configuration*.h to Marlin/'
+2025-08-18 03:24:55 DEBUG: Copying /code/config/cr6-max-btt-skr-cr6-with-stock-creality-tft/Configuration*.h to Marlin/
+2025-08-18 03:24:55 + cp /code/config/cr6-max-btt-skr-cr6-with-stock-creality-tft/Configuration.h /code/config/cr6-max-btt-skr-cr6-with-stock-creality-tft/Configuration_adv.h Marlin/
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration.h': Permission denied
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration_adv.h': Permission denied
+2025-08-18 03:24:55 exit code: 1
+2025-08-18 03:24:55 ERROR: No firmware binary found for cr6-max-btt-skr-cr6-with-stock-creality-tft. See /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-max-btt-skr-cr6-with-stock-creality-tft-2025-08-18-03-24/platformio-build.log for build output.
+2025-08-18 03:24:55 === Building cr6-max-stock-mb ===
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h before overwrite...
+2025-08-18 03:24:55 Platform environment: STM32F103RET6_creality
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h after overwrite...
+2025-08-18 03:24:55 [DEBUG] Starting podman build for cr6-max-stock-mb (platform_env: STM32F103RET6_creality)
+2025-08-18 03:24:55 [DEBUG] Invoking podman-compose for cr6-max-stock-mb, output will be logged to /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-max-stock-mb-2025-08-18-03-24/platformio-build.log
+2025-08-18 03:24:55 [DEBUG] podman build finished for cr6-max-stock-mb with exit code 0
+2025-08-18 03:24:55 podman-compose version: 1.0.6
+2025-08-18 03:24:55 ['podman', '--version', '']
+2025-08-18 03:24:55 using podman version: 4.9.3
+2025-08-18 03:24:55 podman volume inspect podman_platformio-cache || podman volume create podman_platformio-cache
+2025-08-18 03:24:55 ['podman', 'volume', 'inspect', 'podman_platformio-cache']
+2025-08-18 03:24:55 ['podman', 'network', 'exists', 'podman_default']
+2025-08-18 03:24:55 podman run --name=podman_marlin_tmp16338 --rm -i --label io.podman.compose.config-hash=4e7eb44e451dd2cc02cb27a72dedadb0d8c400ba8363d715c04e5b5114782c38 --label io.podman.compose.project=podman --label io.podman.compose.version=1.0.6 --label PODMAN_SYSTEMD_UNIT=podman-compose@podman.service --label com.docker.compose.project=podman --label com.docker.compose.project.working_dir=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman --label com.docker.compose.project.config_files=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman/compose.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=marlin -e HOME=/home/user -e PLATFORM_ENV=STM32F103RET6_creality -v /home/stephen/CR6Community-Marlin_TB:/code -v podman_platformio-cache:/home/user/.platformio --net podman_default --network-alias marlin -u 1000:1000 -w /code --tty marlin-dev bash /code/podman-build-script.sh
+2025-08-18 03:24:55 + echo 'DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB'
+2025-08-18 03:24:55 DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB
+2025-08-18 03:24:55 + cd /code
+2025-08-18 03:24:55 + echo 'DEBUG: Listing files in /code/config/cr6-max-stock-mb'
+2025-08-18 03:24:55 DEBUG: Listing files in /code/config/cr6-max-stock-mb
+2025-08-18 03:24:55 + ls -l /code/config/cr6-max-stock-mb
+2025-08-18 03:24:55 total 284
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 109806 Aug  2 07:22 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 169822 Aug  2 07:22 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     45 Aug  4 21:21 description.txt
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     22 Aug  2 07:22 platformio-environment.txt
+2025-08-18 03:24:55 + echo 'DEBUG: Listing Marlin/ before copy'
+2025-08-18 03:24:55 DEBUG: Listing Marlin/ before copy
+2025-08-18 03:24:55 + ls -l Marlin/
+2025-08-18 03:24:55 total 628
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109806 Aug 18 07:24 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109805 Aug 18 07:24 Configuration.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169822 Aug 18 07:24 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169799 Aug 18 07:24 Configuration_adv.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  33283 Aug  2 07:22 Makefile
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2115 Aug  2 07:22 Marlin.ino
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2633 Aug  5 00:52 Version.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  19999 Aug  5 08:04 _Bootscreen.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   3780 Aug  5 08:04 _Statusscreen.h
+2025-08-18 03:24:55 drwxrwxr-x  2 root root   4096 Aug  2 07:22 lib
+2025-08-18 03:24:55 drwxrwxr-x 12 root root   4096 Aug  2 07:22 src
+2025-08-18 03:24:55 + echo 'DEBUG: Copying /code/config/cr6-max-stock-mb/Configuration*.h to Marlin/'
+2025-08-18 03:24:55 DEBUG: Copying /code/config/cr6-max-stock-mb/Configuration*.h to Marlin/
+2025-08-18 03:24:55 + cp /code/config/cr6-max-stock-mb/Configuration.h /code/config/cr6-max-stock-mb/Configuration_adv.h Marlin/
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration.h': Permission denied
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration_adv.h': Permission denied
+2025-08-18 03:24:55 exit code: 1
+2025-08-18 03:24:55 Firmware copied: firmware-20250817-233832.bin
+2025-08-18 03:24:55 Creating DWIN_SET.zip from touchscreen firmware...
+2025-08-18 03:24:55   adding: DWIN_SET/ (stored 0%)
+2025-08-18 03:24:55   adding: DWIN_SET/22_Config.bin (deflated 100%)
+2025-08-18 03:24:55   adding: DWIN_SET/T5LCFG_272480.CFG (deflated 35%)
+2025-08-18 03:24:55   adding: DWIN_SET/32_LoadingBar.icl (deflated 91%)
+2025-08-18 03:24:55   adding: DWIN_SET/14ShowFile.bin (deflated 93%)
+2025-08-18 03:24:55   adding: DWIN_SET/50_Animations.icl (deflated 62%)
+2025-08-18 03:24:55   adding: DWIN_SET/0_DWIN_ASC_New_At_v1.1.HZK (deflated 92%)
+2025-08-18 03:24:55   adding: DWIN_SET/42_Toggles.icl (deflated 31%)
+2025-08-18 03:24:55   adding: DWIN_SET/23_Screens.icl (deflated 28%)
+2025-08-18 03:24:55   adding: DWIN_SET/35_AutoLevel.icl (deflated 93%)
+2025-08-18 03:24:55   adding: DWIN_SET/45_Icons.icl (deflated 28%)
+2025-08-18 03:24:55   adding: DWIN_SET/DWINOS_page_change.bin (deflated 98%)
+2025-08-18 03:24:55   adding: DWIN_SET/13TouchFile.bin (deflated 80%)
+2025-08-18 03:24:55 Display firmware packaged: DWIN_SET.zip
+2025-08-18 03:24:55 Configuration uses BTT TFT - no CR-6 touchscreen firmware needed
+2025-08-18 03:24:55   adding: configs/ (stored 0%)
+2025-08-18 03:24:55   adding: configs/Configuration_adv.h (deflated 69%)
+2025-08-18 03:24:55   adding: configs/Configuration.h (deflated 68%)
+2025-08-18 03:24:55   adding: Firmware/ (stored 0%)
+2025-08-18 03:24:55   adding: Firmware/Motherboard firmware/ (stored 0%)
+2025-08-18 03:24:55   adding: Firmware/Motherboard firmware/firmware-20250817-233832.bin (deflated 32%)
+2025-08-18 03:24:55   adding: Firmware/Display Firmware/ (stored 0%)
+2025-08-18 03:24:55   adding: Firmware/Display Firmware/DWIN_SET.zip (stored 0%)
+2025-08-18 03:24:55   adding: description.txt (stored 0%)
+2025-08-18 03:24:55   adding: CR6Community-Marlin-Repository.url (deflated 16%)
+2025-08-18 03:24:55   adding: platformio-build.log (deflated 68%)
+2025-08-18 03:24:55 Created: test-6.2-cr6-max-stock-mb-2025-08-18-03-24.zip
+2025-08-18 03:24:55 SHA256: e6490cd4197b172629a1897331c1c90610d1b39d9dc45643a74a29597a5cc793
+2025-08-18 03:24:55 Completed: cr6-max-stock-mb
+2025-08-18 03:24:55 
+2025-08-18 03:24:55 Build output available in: /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-max-stock-mb-2025-08-18-03-24
+2025-08-18 03:24:55 === Building cr6-se-v4.5.2-mb ===
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h before overwrite...
+2025-08-18 03:24:55 Platform environment: STM32F103RET6_creality
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h after overwrite...
+2025-08-18 03:24:55 [DEBUG] Starting podman build for cr6-se-v4.5.2-mb (platform_env: STM32F103RET6_creality)
+2025-08-18 03:24:55 [DEBUG] Invoking podman-compose for cr6-se-v4.5.2-mb, output will be logged to /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-se-v4.5.2-mb-2025-08-18-03-24/platformio-build.log
+2025-08-18 03:24:55 [DEBUG] podman build finished for cr6-se-v4.5.2-mb with exit code 0
+2025-08-18 03:24:55 podman-compose version: 1.0.6
+2025-08-18 03:24:55 ['podman', '--version', '']
+2025-08-18 03:24:55 using podman version: 4.9.3
+2025-08-18 03:24:55 podman volume inspect podman_platformio-cache || podman volume create podman_platformio-cache
+2025-08-18 03:24:55 ['podman', 'volume', 'inspect', 'podman_platformio-cache']
+2025-08-18 03:24:55 ['podman', 'network', 'exists', 'podman_default']
+2025-08-18 03:24:55 podman run --name=podman_marlin_tmp52287 --rm -i --label io.podman.compose.config-hash=4e7eb44e451dd2cc02cb27a72dedadb0d8c400ba8363d715c04e5b5114782c38 --label io.podman.compose.project=podman --label io.podman.compose.version=1.0.6 --label PODMAN_SYSTEMD_UNIT=podman-compose@podman.service --label com.docker.compose.project=podman --label com.docker.compose.project.working_dir=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman --label com.docker.compose.project.config_files=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman/compose.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=marlin -e HOME=/home/user -e PLATFORM_ENV=STM32F103RET6_creality -v /home/stephen/CR6Community-Marlin_TB:/code -v podman_platformio-cache:/home/user/.platformio --net podman_default --network-alias marlin -u 1000:1000 -w /code --tty marlin-dev bash /code/podman-build-script.sh
+2025-08-18 03:24:55 + echo 'DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB'
+2025-08-18 03:24:55 DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB
+2025-08-18 03:24:55 + cd /code
+2025-08-18 03:24:55 + echo 'DEBUG: Listing files in /code/config/cr6-se-v4.5.2-mb'
+2025-08-18 03:24:55 DEBUG: Listing files in /code/config/cr6-se-v4.5.2-mb
+2025-08-18 03:24:55 + ls -l /code/config/cr6-se-v4.5.2-mb
+2025-08-18 03:24:55 total 284
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 109819 Aug  2 07:22 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 169836 Aug  2 07:22 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     28 Aug  2 07:22 description.txt
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     22 Aug  2 07:22 platformio-environment.txt
+2025-08-18 03:24:55 + echo 'DEBUG: Listing Marlin/ before copy'
+2025-08-18 03:24:55 DEBUG: Listing Marlin/ before copy
+2025-08-18 03:24:55 + ls -l Marlin/
+2025-08-18 03:24:55 total 628
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109819 Aug 18 07:24 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109805 Aug 18 07:24 Configuration.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169836 Aug 18 07:24 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169799 Aug 18 07:24 Configuration_adv.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  33283 Aug  2 07:22 Makefile
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2115 Aug  2 07:22 Marlin.ino
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2633 Aug  5 00:52 Version.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  19999 Aug  5 08:04 _Bootscreen.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   3780 Aug  5 08:04 _Statusscreen.h
+2025-08-18 03:24:55 drwxrwxr-x  2 root root   4096 Aug  2 07:22 lib
+2025-08-18 03:24:55 drwxrwxr-x 12 root root   4096 Aug  2 07:22 src
+2025-08-18 03:24:55 + echo 'DEBUG: Copying /code/config/cr6-se-v4.5.2-mb/Configuration*.h to Marlin/'
+2025-08-18 03:24:55 DEBUG: Copying /code/config/cr6-se-v4.5.2-mb/Configuration*.h to Marlin/
+2025-08-18 03:24:55 + cp /code/config/cr6-se-v4.5.2-mb/Configuration.h /code/config/cr6-se-v4.5.2-mb/Configuration_adv.h Marlin/
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration.h': Permission denied
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration_adv.h': Permission denied
+2025-08-18 03:24:55 exit code: 1
+2025-08-18 03:24:55 Firmware copied: firmware-20250817-233832.bin
+2025-08-18 03:24:55 Creating DWIN_SET.zip from touchscreen firmware...
+2025-08-18 03:24:55   adding: DWIN_SET/ (stored 0%)
+2025-08-18 03:24:55   adding: DWIN_SET/22_Config.bin (deflated 100%)
+2025-08-18 03:24:55   adding: DWIN_SET/T5LCFG_272480.CFG (deflated 35%)
+2025-08-18 03:24:55   adding: DWIN_SET/32_LoadingBar.icl (deflated 91%)
+2025-08-18 03:24:55   adding: DWIN_SET/14ShowFile.bin (deflated 93%)
+2025-08-18 03:24:55   adding: DWIN_SET/50_Animations.icl (deflated 62%)
+2025-08-18 03:24:55   adding: DWIN_SET/0_DWIN_ASC_New_At_v1.1.HZK (deflated 92%)
+2025-08-18 03:24:55   adding: DWIN_SET/42_Toggles.icl (deflated 31%)
+2025-08-18 03:24:55   adding: DWIN_SET/23_Screens.icl (deflated 28%)
+2025-08-18 03:24:55   adding: DWIN_SET/35_AutoLevel.icl (deflated 93%)
+2025-08-18 03:24:55   adding: DWIN_SET/45_Icons.icl (deflated 28%)
+2025-08-18 03:24:55   adding: DWIN_SET/DWINOS_page_change.bin (deflated 98%)
+2025-08-18 03:24:55   adding: DWIN_SET/13TouchFile.bin (deflated 80%)
+2025-08-18 03:24:55 Display firmware packaged: DWIN_SET.zip
+2025-08-18 03:24:55 Configuration uses BTT TFT - no CR-6 touchscreen firmware needed
+2025-08-18 03:24:55   adding: configs/ (stored 0%)
+2025-08-18 03:24:55   adding: configs/Configuration_adv.h (deflated 69%)
+2025-08-18 03:24:55   adding: configs/Configuration.h (deflated 68%)
+2025-08-18 03:24:55   adding: Firmware/ (stored 0%)
+2025-08-18 03:24:55   adding: Firmware/Motherboard firmware/ (stored 0%)
+2025-08-18 03:24:55   adding: Firmware/Motherboard firmware/firmware-20250817-233832.bin (deflated 32%)
+2025-08-18 03:24:55   adding: Firmware/Display Firmware/ (stored 0%)
+2025-08-18 03:24:55   adding: Firmware/Display Firmware/DWIN_SET.zip (stored 0%)
+2025-08-18 03:24:55   adding: description.txt (stored 0%)
+2025-08-18 03:24:55   adding: CR6Community-Marlin-Repository.url (deflated 16%)
+2025-08-18 03:24:55   adding: platformio-build.log (deflated 68%)
+2025-08-18 03:24:55 Created: test-6.2-cr6-se-v4.5.2-mb-2025-08-18-03-24.zip
+2025-08-18 03:24:55 SHA256: de8e564c7b3a3206a84b52ca6510cd639d1c0e74bd6b57803b398fb9e756977c
+2025-08-18 03:24:55 Completed: cr6-se-v4.5.2-mb
+2025-08-18 03:24:55 
+2025-08-18 03:24:55 Build output available in: /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-se-v4.5.2-mb-2025-08-18-03-24
+2025-08-18 03:24:55 === Building cr6-se-v4.5.2-mb-no-watchdog ===
+2025-08-18 03:24:55 Skipping cr6-se-v4.5.2-mb-no-watchdog (marked no-autobuild)
+2025-08-18 03:24:55 === Building cr6-se-v4.5.3-mb ===
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h before overwrite...
+2025-08-18 03:24:55 Platform environment: STM32F103RET6_creality
+2025-08-18 03:24:55 [DEBUG] Hashing base Configuration*.h after overwrite...
+2025-08-18 03:24:55 [DEBUG] Starting podman build for cr6-se-v4.5.3-mb (platform_env: STM32F103RET6_creality)
+2025-08-18 03:24:55 [DEBUG] Invoking podman-compose for cr6-se-v4.5.3-mb, output will be logged to /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-se-v4.5.3-mb-2025-08-18-03-24/platformio-build.log
+2025-08-18 03:24:55 [DEBUG] podman build finished for cr6-se-v4.5.3-mb with exit code 0
+2025-08-18 03:24:55 podman-compose version: 1.0.6
+2025-08-18 03:24:55 ['podman', '--version', '']
+2025-08-18 03:24:55 using podman version: 4.9.3
+2025-08-18 03:24:55 podman volume inspect podman_platformio-cache || podman volume create podman_platformio-cache
+2025-08-18 03:24:55 ['podman', 'volume', 'inspect', 'podman_platformio-cache']
+2025-08-18 03:24:55 ['podman', 'network', 'exists', 'podman_default']
+2025-08-18 03:24:55 podman run --name=podman_marlin_tmp36871 --rm -i --label io.podman.compose.config-hash=4e7eb44e451dd2cc02cb27a72dedadb0d8c400ba8363d715c04e5b5114782c38 --label io.podman.compose.project=podman --label io.podman.compose.version=1.0.6 --label PODMAN_SYSTEMD_UNIT=podman-compose@podman.service --label com.docker.compose.project=podman --label com.docker.compose.project.working_dir=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman --label com.docker.compose.project.config_files=/home/stephen/CR6Community-Marlin_TB/tools/linux/build/podman/compose.yaml --label com.docker.compose.container-number=1 --label com.docker.compose.service=marlin -e HOME=/home/user -e PLATFORM_ENV=STM32F103RET6_creality -v /home/stephen/CR6Community-Marlin_TB:/code -v podman_platformio-cache:/home/user/.platformio --net podman_default --network-alias marlin -u 1000:1000 -w /code --tty marlin-dev bash /code/podman-build-script.sh
+2025-08-18 03:24:55 + echo 'DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB'
+2025-08-18 03:24:55 DEBUG: Entered container, PWD=/home/stephen/CR6Community-Marlin_TB
+2025-08-18 03:24:55 + cd /code
+2025-08-18 03:24:55 + echo 'DEBUG: Listing files in /code/config/cr6-se-v4.5.3-mb'
+2025-08-18 03:24:55 DEBUG: Listing files in /code/config/cr6-se-v4.5.3-mb
+2025-08-18 03:24:55 + ls -l /code/config/cr6-se-v4.5.3-mb
+2025-08-18 03:24:55 total 284
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 109805 Aug  2 07:22 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root 169799 Aug  2 07:22 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     44 Aug  4 21:20 description.txt
+2025-08-18 03:24:55 -rw-rw-r-- 1 root root     22 Aug  2 07:22 platformio-environment.txt
+2025-08-18 03:24:55 + echo 'DEBUG: Listing Marlin/ before copy'
+2025-08-18 03:24:55 DEBUG: Listing Marlin/ before copy
+2025-08-18 03:24:55 + ls -l Marlin/
+2025-08-18 03:24:55 total 628
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109805 Aug 18 07:24 Configuration.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 109805 Aug 18 07:24 Configuration.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169799 Aug 18 07:24 Configuration_adv.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root 169799 Aug 18 07:24 Configuration_adv.h.userbak
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  33283 Aug  2 07:22 Makefile
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2115 Aug  2 07:22 Marlin.ino
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   2633 Aug  5 00:52 Version.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root  19999 Aug  5 08:04 _Bootscreen.h
+2025-08-18 03:24:55 -rw-rw-r--  1 root root   3780 Aug  5 08:04 _Statusscreen.h
+2025-08-18 03:24:55 drwxrwxr-x  2 root root   4096 Aug  2 07:22 lib
+2025-08-18 03:24:55 drwxrwxr-x 12 root root   4096 Aug  2 07:22 src
+2025-08-18 03:24:55 + echo 'DEBUG: Copying /code/config/cr6-se-v4.5.3-mb/Configuration*.h to Marlin/'
+2025-08-18 03:24:55 DEBUG: Copying /code/config/cr6-se-v4.5.3-mb/Configuration*.h to Marlin/
+2025-08-18 03:24:55 + cp /code/config/cr6-se-v4.5.3-mb/Configuration.h /code/config/cr6-se-v4.5.3-mb/Configuration_adv.h Marlin/
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration.h': Permission denied
+2025-08-18 03:24:55 cp: cannot create regular file 'Marlin/Configuration_adv.h': Permission denied
+2025-08-18 03:24:55 exit code: 1
+2025-08-18 03:24:55 Firmware copied: firmware-20250817-233832.bin
+2025-08-18 03:24:55 Creating DWIN_SET.zip from touchscreen firmware...
+2025-08-18 03:24:55   adding: DWIN_SET/ (stored 0%)
+2025-08-18 03:24:55   adding: DWIN_SET/22_Config.bin (deflated 100%)
+2025-08-18 03:24:55   adding: DWIN_SET/T5LCFG_272480.CFG (deflated 35%)
+2025-08-18 03:24:55   adding: DWIN_SET/32_LoadingBar.icl (deflated 91%)
+2025-08-18 03:24:55   adding: DWIN_SET/14ShowFile.bin (deflated 93%)
+2025-08-18 03:24:55   adding: DWIN_SET/50_Animations.icl (deflated 62%)
+2025-08-18 03:24:55   adding: DWIN_SET/0_DWIN_ASC_New_At_v1.1.HZK (deflated 92%)
+2025-08-18 03:24:55   adding: DWIN_SET/42_Toggles.icl (deflated 31%)
+2025-08-18 03:24:55   adding: DWIN_SET/23_Screens.icl (deflated 28%)
+2025-08-18 03:24:55   adding: DWIN_SET/35_AutoLevel.icl (deflated 93%)
+2025-08-18 03:24:55   adding: DWIN_SET/45_Icons.icl (deflated 28%)
+2025-08-18 03:24:55   adding: DWIN_SET/DWINOS_page_change.bin (deflated 98%)
+2025-08-18 03:24:55   adding: DWIN_SET/13TouchFile.bin (deflated 80%)
+2025-08-18 03:24:55 Display firmware packaged: DWIN_SET.zip
+2025-08-18 03:24:55 Configuration uses BTT TFT - no CR-6 touchscreen firmware needed
+2025-08-18 03:24:55   adding: configs/ (stored 0%)
+2025-08-18 03:24:55   adding: configs/Configuration_adv.h (deflated 69%)
+2025-08-18 03:24:55   adding: configs/Configuration.h (deflated 68%)
+2025-08-18 03:24:55   adding: Firmware/ (stored 0%)
+2025-08-18 03:24:55   adding: Firmware/Motherboard firmware/ (stored 0%)
+2025-08-18 03:24:55   adding: Firmware/Motherboard firmware/firmware-20250817-233832.bin (deflated 32%)
+2025-08-18 03:24:55   adding: Firmware/Display Firmware/ (stored 0%)
+2025-08-18 03:24:55   adding: Firmware/Display Firmware/DWIN_SET.zip (stored 0%)
+2025-08-18 03:24:55   adding: description.txt (stored 0%)
+2025-08-18 03:24:55   adding: CR6Community-Marlin-Repository.url (deflated 16%)
+2025-08-18 03:24:55   adding: platformio-build.log (deflated 68%)
+2025-08-18 03:24:55 Created: test-6.2-cr6-se-v4.5.3-mb-2025-08-18-03-24.zip
+2025-08-18 03:24:55 SHA256: 6b8009bf90a138aab05481cfad8f3d846f5fd9a61445971e38b0ea501fae9612
+2025-08-18 03:24:55 Completed: cr6-se-v4.5.3-mb
+2025-08-18 03:24:55 
+2025-08-18 03:24:55 Build output available in: /home/stephen/CR6Community-Marlin_TB/.pio/build-output/test-6.2-cr6-se-v4.5.3-mb-2025-08-18-03-24
+2025-08-18 03:24:55 === Building ender-3-pro-v427-board-bltouch ===
+2025-08-18 03:24:55 Skipping ender-3-pro-v427-board-bltouch (marked no-autobuild)
+2025-08-18 03:24:55 === Building sovol-sv-01 ===
+2025-08-18 03:24:55 Skipping sovol-sv-01 (marked no-autobuild)
+2025-08-18 03:24:55 Restoring user's original Marlin/Configuration*.h files...
