@@ -23,7 +23,7 @@ cd tools/linux/build
 ```
 
 **Features:**
-- Docker-based building using PlatformIO
+- Container-based building using PlatformIO and Python3
 - Automatic ZIP packaging with organized directory structure
 - SHA256 checksum generation
 - Touchscreen firmware integration
@@ -31,7 +31,7 @@ cd tools/linux/build
 - Progress reporting
 
 ### run-powershell.sh
-Wrapper script for running PowerShell scripts on Linux via Docker.
+Wrapper script for running PowerShell scripts on Linux.
 
 **Usage:**
 ```bash
@@ -43,28 +43,28 @@ Wrapper script for running PowerShell scripts on Linux via Docker.
 ./run-powershell.sh ../windows/build/Invoke-PioBuild.ps1 -ConfigName cr6-se-v4.5.3-mb
 ```
 
-## Docker Configuration
+## Container Configuration
 
-The `docker/` subdirectory contains the complete Docker development environment:
+The `podman/` subdirectory contains the complete podman development environment:
 
-- `docker-compose.yml` - Main Docker Compose configuration
+- `podman-compose.yml` - Main podman Compose configuration
 - `Dockerfile` - Container definition with PlatformIO and dependencies
-- `get-docker.sh` - Docker installation helper script
+- `get-podman.sh` - podman installation helper script
 - `.env` - Environment variables for user mapping
 
 **Usage:**
 ```bash
-# Navigate to docker directory first
-cd docker
+# Navigate to podman directory first
+cd podman
 
 # Build the container
-docker-compose build
+podman-compose build
 
 # Run interactive shell
-docker-compose run --rm marlin bash
+podman-compose run --rm marlin bash
 
 # Run specific build
-docker-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
+podman-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
 ```
 
 ## Output Structure
@@ -88,10 +88,10 @@ Built packages are organized in `.pio/build-output/`:
 
 ## Getting Started
 
-1. **Setup Docker environment:**
+1. **Setup podman environment:**
    ```bash
-   cd docker
-   docker-compose build
+   cd podman
+   podman-compose build
    ```
 
 2. **Test with a single build:**

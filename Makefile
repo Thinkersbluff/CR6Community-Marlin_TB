@@ -2,10 +2,10 @@ help:
 	@echo "Tasks for local development:"
 	@echo "* tests-single-ci:             Run a single test from inside the CI"
 	@echo "* tests-single-local:          Run a single test locally"
-	@echo "* tests-single-local-docker:   Run a single test locally, using docker-compose"
+	@echo "* tests-single-local-podman:   Run a single test locally, using podman-compose"
 	@echo "* tests-all-local:             Run all tests locally"
-	@echo "* tests-all-local-docker:      Run all tests locally, using docker-compose"
-	@echo "* setup-local-docker:          Setup local docker-compose"
+	@echo "* tests-all-local-podman:      Run all tests locally, using podman-compose"
+	@echo "* setup-local-podman:          Setup local podman-compose"
 	@echo ""
 	@echo "Options for testing:"
 	@echo "  TEST_TARGET          Set when running tests-single-*, to select the"
@@ -32,10 +32,10 @@ tests-single-local:
 	  && run_tests . $(TEST_TARGET) "$(ONLY_TEST)"
 .PHONY: tests-single-local
 
-tests-single-local-docker:
-	@if ! test -n "$(TEST_TARGET)" ; then echo "***ERROR*** Set TEST_TARGET=<your-module> or use make tests-all-local-docker" ; return 1; fi
-	docker-compose -f tools/linux/build/docker/docker-compose.yml run --rm marlin $(MAKE) tests-single-local TEST_TARGET=$(TEST_TARGET) VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD) ONLY_TEST="$(ONLY_TEST)"
-.PHONY: tests-single-local-docker
+tests-single-local-podman:
+	@if ! test -n "$(TEST_TARGET)" ; then echo "***ERROR*** Set TEST_TARGET=<your-module> or use make tests-all-local-podman" ; return 1; fi
+	podman-compose -f tools/linux/build/podman/podman-compose.yml run --rm marlin $(MAKE) tests-single-local TEST_TARGET=$(TEST_TARGET) VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD) ONLY_TEST="$(ONLY_TEST)"
+.PHONY: tests-single-local-podman
 
 tests-all-local:
 	export PATH=./buildroot/bin/:./buildroot/tests/:${PATH} \
@@ -43,10 +43,10 @@ tests-all-local:
 	  && for TEST_TARGET in $$(./tools/linux/test/get_test_targets.py) ; do echo "Running tests for $$TEST_TARGET" ; run_tests . $$TEST_TARGET ; done
 .PHONY: tests-all-local
 
-tests-all-local-docker:
-	docker-compose -f tools/linux/build/docker/docker-compose.yml run --rm marlin $(MAKE) tests-all-local VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD)
-.PHONY: tests-all-local-docker
+tests-all-local-podman:
+	podman-compose -f tools/linux/build/podman/podman-compose.yml run --rm marlin $(MAKE) tests-all-local VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD)
+.PHONY: tests-all-local-podman
 
-setup-local-docker:
-	docker-compose -f tools/linux/build/docker/docker-compose.yml build
-.PHONY: setup-local-docker
+setup-local-podman:
+	podman-compose -f tools/linux/build/podman/podman-compose.yml build
+.PHONY: setup-local-podman

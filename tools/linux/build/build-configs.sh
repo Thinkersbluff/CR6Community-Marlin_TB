@@ -10,14 +10,14 @@
 # Features:
 #   - Scans all valid config/* directories for buildable configurations
 #   - Backs up and restores your own Marlin/Configuration*.h files
-#   - Copies config-specific Configuration.h/adv.h and builds with PlatformIO (via Docker)
+#   - Copies config-specific Configuration.h/adv.h and builds with PlatformIO (via podman)
 #   - Captures all build output and errors with timestamps
 #   - Packages firmware and (optionally) touchscreen firmware for each config
 #   - Creates per-build logs, checksums, and ZIP archives for easy release
 #
 # Requirements:
 #   - Must be run from within the CR6Community-Marlin_TB repository (any subdir)
-#   - Docker and docker-compose must be installed and working
+#   - podman and podman-compose must be installed and working
 #   - The repo must have a valid platformio.ini and config/*/platformio-environment.txt files
 #
 # Usage Examples:
@@ -212,12 +212,12 @@ build_config() {
     fi
     
     if [ "$DRY_RUN" != "true" ]; then
-        echo "[DEBUG] Starting Docker build for $config_name (platform_env: $platform_env)"
+        echo "[DEBUG] Starting podman build for $config_name (platform_env: $platform_env)"
         BUILD_OUT_FILE="$build_output_dir/platformio-build.log"
-        echo "[DEBUG] Invoking docker-compose for $config_name, output will be logged to $BUILD_OUT_FILE"
+        echo "[DEBUG] Invoking podman-compose for $config_name, output will be logged to $BUILD_OUT_FILE"
 
     # Write the build script to a temp file in $REPO_ROOT for robust execution (always mounted in container)
-    BUILD_SCRIPT="$REPO_ROOT/docker-build-script.sh"
+    BUILD_SCRIPT="$REPO_ROOT/podman-build-script.sh"
     cat > "$BUILD_SCRIPT" <<EOF
 set -ex
 echo 'DEBUG: Entered container, PWD='" $(pwd)"
@@ -247,11 +247,11 @@ EOF
             echo "ERROR: Build script $BUILD_SCRIPT was not created!"
             return 1
         fi
-    docker-compose -f "$SCRIPT_DIR/docker/docker-compose.yml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash "/code/docker-build-script.sh" &> "$BUILD_OUT_FILE"
+    podman-compose -f "$SCRIPT_DIR/podman/podman-compose.yml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash "/code/podman-build-script.sh" &> "$BUILD_OUT_FILE"
         rm -f "$BUILD_SCRIPT"
 
         BUILD_RESULT=$?
-        echo "[DEBUG] Docker build finished for $config_name with exit code $BUILD_RESULT"
+        echo "[DEBUG] podman build finished for $config_name with exit code $BUILD_RESULT"
         cat "$BUILD_OUT_FILE"
         if [ $BUILD_RESULT -ne 0 ]; then
             echo "ERROR: Build failed for $config_name. See $BUILD_OUT_FILE for details."

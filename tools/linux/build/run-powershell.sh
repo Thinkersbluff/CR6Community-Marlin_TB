@@ -20,8 +20,8 @@ echo "Running PowerShell script: $SCRIPT_PATH"
 echo "Arguments: $@"
 echo ""
 
-# Run PowerShell script in Docker container
-docker run --rm \
+# Run PowerShell script in podman container
+podman run --rm \
     -v "$(pwd):/workspace" \
     -w /workspace \
     mcr.microsoft.com/powershell:latest \

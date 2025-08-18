@@ -1,12 +1,12 @@
 # Guidebook: Building Marlin Firmware with `build-configs.sh`
 
 ## Overview
-This guide explains how to use the `build-configs.sh` script from the `tools/linux/build` directory to build and package multiple Marlin firmware configurations using Docker. It also includes a troubleshooting section based on real-world issues and solutions.
+This guide explains how to use the `build-configs.sh` script from the `tools/linux/build` directory to build and package multiple Marlin firmware configurations using a containerized build environment. It also includes a troubleshooting section based on real-world issues and solutions.
 
 ---
 
 ## Prerequisites
-- Docker and Docker Compose installed and running on your system.
+- Podman and Podman Compose installed and running on your system.
 - All required configuration files (`Configuration.h`, `Configuration_adv.h`, `platformio-environment.txt`) present in each `config/<config-name>/` folder.
 - The repository cloned to your local machine.
 
@@ -32,7 +32,7 @@ This guide explains how to use the `build-configs.sh` script from the `tools/lin
 
 ## How It Works
 - The script auto-detects the repository root.
-- It uses Docker Compose to launch a container with the repo mounted at `/code`.
+- It uses Podman Compose to launch a container with the repo mounted at `/code`.
 - Each configuration in `config/` is built using its own settings.
 - Output firmware and config files are packaged into zip files for distribution.
 
@@ -41,10 +41,10 @@ This guide explains how to use the `build-configs.sh` script from the `tools/lin
 ## Troubleshooting
 If you encounter errors, follow these steps:
 
-### 1. Docker Cannot Find Files or Configs
+### 1. Podman Cannot Find Files or Configs
 - **Symptom:** Errors like `cp: cannot stat .../Configuration*.h: No such file or directory` or missing configs.
 - **Solution:**
-  - Ensure your `docker-compose.yml` has the correct absolute path for the repo root:
+  - Ensure your `podman-compose.yml` has the correct absolute path for the repo root:
     ```yaml
     volumes:
       - /home/stephen/CR6Community-Marlin_TB:/code
@@ -57,12 +57,12 @@ If you encounter errors, follow these steps:
     ```
   - Check inside the container:
     ```bash
-    docker-compose -f docker/docker-compose.yml run --rm marlin bash
+    podman-compose -f podman/podman-compose.yml run --rm marlin bash
     ls -l /code/config/<config-name>/Configuration*.h
     ```
 
 ### 2. File Permissions
-- **Symptom:** Files exist but are not readable in Docker.
+- **Symptom:** Files exist but are not readable in podman.
 - **Solution:**
   - Ensure files and directories are at least `rw-r--r--` and owned by your user.
   - Avoid symlinks that point outside the repo root.
@@ -91,8 +91,8 @@ If you encounter errors, follow these steps:
 ---
 
 ## Notes
-- If you move the repository, update the absolute path in `docker-compose.yml`.
-- For portability, add a comment in `docker-compose.yml` to remind users to update the path if they clone the repo elsewhere.
+- If you move the repository, update the absolute path in `podman-compose.yml`.
+- For portability, add a comment in `podman-compose.yml` to remind users to update the path if they clone the repo elsewhere.
 - Always run the script from `tools/linux/build/` for consistent results.
 
 ---
@@ -100,7 +100,7 @@ If you encounter errors, follow these steps:
 ## Support
 If you encounter issues not covered here, please provide:
 - The exact error message
-- The output of `ls -l` for the relevant config folder (both on host and in Docker)
-- The relevant section of your `docker-compose.yml`
+- The output of `ls -l` for the relevant config folder (both on host and in Podman)
+- The relevant section of your `podman-compose.yml`
 
 This will help others assist you more quickly.
