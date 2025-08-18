@@ -1,4 +1,3 @@
-
 #!/bin/bash
 # ============================================================================
 # CR6Community-Marlin_TB Multi-Config Build Script
@@ -137,6 +136,7 @@ echo ""
 build_config() {
     local config_name="$1"
     local config_dir="$REPO_ROOT/config/$config_name"
+    local container_config_dir="/code/config/$config_name"
     
 
     echo "=== Building $config_name ==="
@@ -167,16 +167,17 @@ build_config() {
         echo "ERROR: platformio-environment.txt not found in $config_dir"
         return 1
     fi
-    
+
+    if [ -z "$platform_env" ]; then
+        echo "ERROR: platformio-environment.txt in $config_dir is empty or invalid."
+        return 1
+    fi
+
     echo "Platform environment: $platform_env"
     
     # Check for no-autobuild flag
     if [ -f "$config_dir/no-autobuild.txt" ] && [ "$config_name" != "$SINGLE_BUILD" ]; then
-        echo "Skipping $config_name (marked no-autobuild)"[InternetShortcut]
-URL=https://github.com/CR6Community/CR-6-touchscreen
-IconFile=https://github.com/favicon.ico
-IconIndex=0
-EOF
+        echo "Skipping $config_name (marked no-autobuild)"
         return 0
     fi
     
@@ -215,68 +216,93 @@ EOF
         BUILD_OUT_FILE="$build_output_dir/platformio-build.log"
         echo "[DEBUG] Invoking docker-compose for $config_name, output will be logged to $BUILD_OUT_FILE"
 
-        # Write the build script to a temp file for robust execution
-        BUILD_SCRIPT="$build_output_dir/docker-build-script.sh"
-cat > "$BUILD_SCRIPT" <<EOF
-            set -ex
-            echo 'DEBUG: Entered container, PWD='"$(pwd)"'
-            yellow\ncd /code\necho 'DEBUG: Listing files in $config_dir'\nls -l '$config_dir'\necho 'DEBUG: Listing Marlin/ before copy'\nls -l Marlin/\necho 'DEBUG: Copying $config_dir/Configuration*.h to Marlin/'\ncp $config_dir/Configuration*.h Marlin/\necho 'DEBUG: Listing Marlin/ after copy'\nls -l Marlin/\necho 'Updating platformio.ini default_envs to: '$PLATFORM_ENV\nsed -i 's/^default_envs = .*/default_envs = '$PLATFORM_ENV'/' platformio.ini\necho 'Building firmware for platform: '$PLATFORM_ENV\nplatformio run -e $PLATFORM_ENV --target clean\nplatformio run -e $PLATFORM_ENV\necho 'Build completed successfully'\nEOF
-            chmod +x "$BUILD_SCRIPT"
-            docker-compose -f "$SCRIPT_DIR/docker/docker-compose.yml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash "$BUILD_SCRIPT" &> "$BUILD_OUT_FILE"
+    # Write the build script to a temp file in $REPO_ROOT for robust execution (always mounted in container)
+    BUILD_SCRIPT="$REPO_ROOT/docker-build-script.sh"
+    cat > "$BUILD_SCRIPT" <<EOF
+set -ex
+echo 'DEBUG: Entered container, PWD='" $(pwd)"
+cd /code
+echo 'DEBUG: Listing files in $container_config_dir'
+ls -l "$container_config_dir"
+echo 'DEBUG: Listing Marlin/ before copy'
+ls -l Marlin/
+echo 'DEBUG: Copying $container_config_dir/Configuration*.h to Marlin/'
+cp "$container_config_dir"/Configuration*.h Marlin/
+echo 'DEBUG: Listing Marlin/ after copy'
+ls -l Marlin/
+echo "Updating platformio.ini default_envs to: \$PLATFORM_ENV"
+sed -i "s/^default_envs = .*/default_envs = \$PLATFORM_ENV/" platformio.ini
+echo "Building firmware for platform: \$PLATFORM_ENV"
+if [ -z "\$PLATFORM_ENV" ]; then
+    echo "ERROR: PLATFORM_ENV is not set. Aborting build."
+    exit 2
+fi
+platformio run -e "\$PLATFORM_ENV" --target clean
+platformio run -e "\$PLATFORM_ENV"
+echo 'Build completed successfully'
+EOF
+        chmod +x "$BUILD_SCRIPT"
+        sync
+        if [ ! -f "$BUILD_SCRIPT" ]; then
+            echo "ERROR: Build script $BUILD_SCRIPT was not created!"
+            return 1
+        fi
+    docker-compose -f "$SCRIPT_DIR/docker/docker-compose.yml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash "/code/docker-build-script.sh" &> "$BUILD_OUT_FILE"
+        rm -f "$BUILD_SCRIPT"
 
-            BUILD_RESULT=$?
-            echo "[DEBUG] Docker build finished for $config_name with exit code $BUILD_RESULT"
-            cat "$BUILD_OUT_FILE"
-            if [ $BUILD_RESULT -ne 0 ]; then
-                echo "ERROR: Build failed for $config_name. See $BUILD_OUT_FILE for details."
-                return 1
-            fi
+        BUILD_RESULT=$?
+        echo "[DEBUG] Docker build finished for $config_name with exit code $BUILD_RESULT"
+        cat "$BUILD_OUT_FILE"
+        if [ $BUILD_RESULT -ne 0 ]; then
+            echo "ERROR: Build failed for $config_name. See $BUILD_OUT_FILE for details."
+            return 1
+        fi
 
+        # Copy the most recent firmware*.bin file (handles timestamped names)
+        local firmware_file=$(ls -1t "$REPO_ROOT/.pio/build/$platform_env"/firmware*.bin 2>/dev/null | head -n1)
+        if [ -z "$firmware_file" ]; then
+            echo "ERROR: No firmware binary found for $config_name. See $BUILD_OUT_FILE for build output."
+            return 1
+        fi
 
-            # Copy the most recent firmware*.bin file (handles timestamped names)
-            local firmware_file=$(ls -1t "$REPO_ROOT/.pio/build/$platform_env"/firmware*.bin 2>/dev/null | head -n1)
-            if [ -z "$firmware_file" ]; then
-                echo "ERROR: No firmware binary found for $config_name. See $BUILD_OUT_FILE for build output."
-                return 1
-            fi
-
-            cp "$firmware_file" "$firmware_dir/"
-            echo "Firmware copied: $(basename "$firmware_file")"
-
-            else
-            echo "DRY RUN: Would build $config_name with platform $platform_env"
-            fi
-
-            # Copy configuration files
-            cp "$config_dir"/*.h "$config_copy_dir/" 2>/dev/null || true
-
-            if [ "$has_touchscreen" = true ]; then
-                if [ "$TOUCHSCREEN_AVAILABLE" = true ] && [ "$DRY_RUN" != "true" ]; then
-                    echo "Creating DWIN_SET.zip from touchscreen firmware..."
-                    # Create ZIP file of DWIN_SET folder
-                    local dwin_zip="$display_dir/DWIN_SET.zip"
-                    (cd "$(dirname "$DWIN_SET_PATH")" && zip -r "$(basename "$dwin_zip")" "$(basename "$DWIN_SET_PATH")")
-                    mv "$(dirname "$DWIN_SET_PATH")/DWIN_SET.zip" "$dwin_zip"
-                    echo "Display firmware packaged: DWIN_SET.zip"
-                elif [ "$DRY_RUN" = "true" ]; then
-                    echo "DRY RUN: Would create DWIN_SET.zip from $DWIN_SET_PATH"
-                else
-                    echo "Creating URL shortcut for touchscreen firmware download..."
-                    # Create URL shortcut file
-                    cat > "$display_dir/CR-6-Touchscreen-Download.url" << EOF
-            [InternetShortcut]
-            URL=https://github.com/CR6Community/CR-6-touchscreen
-            IconFile=https://github.com/favicon.ico
-            IconIndex=0
-        echo "Created download link: CR-6-Touchscreen-Download.url"
+        cp "$firmware_file" "$firmware_dir/"
+        echo "Firmware copied: $(basename "$firmware_file")"
+    else
+        echo "DRY RUN: Would build $config_name with platform $platform_env"
     fi
-else
-    # Configuration excludes touchscreen - copy the no-touchscreen.txt file to explain
-    if [ -f "$config_dir/no-touchscreen.txt" ] && [ "$DRY_RUN" != "true" ]; then
-        cp "$config_dir/no-touchscreen.txt" "$display_dir/"
-        echo "Copied no-touchscreen.txt to Display Firmware folder"
-    elif [ "$DRY_RUN" = "true" ]; then
-        echo "DRY RUN: Would copy no-touchscreen.txt to Display Firmware folder"
+
+    # Copy configuration files
+    cp "$config_dir"/*.h "$config_copy_dir/" 2>/dev/null || true
+
+    if [ "$has_touchscreen" = true ]; then
+        if [ "$TOUCHSCREEN_AVAILABLE" = true ] && [ "$DRY_RUN" != "true" ]; then
+            echo "Creating DWIN_SET.zip from touchscreen firmware..."
+            # Create ZIP file of DWIN_SET folder
+            local dwin_zip="$display_dir/DWIN_SET.zip"
+            (cd "$(dirname "$DWIN_SET_PATH")" && zip -r "$(basename "$dwin_zip")" "$(basename "$DWIN_SET_PATH")")
+            mv "$(dirname "$DWIN_SET_PATH")/DWIN_SET.zip" "$dwin_zip"
+            echo "Display firmware packaged: DWIN_SET.zip"
+        elif [ "$DRY_RUN" = "true" ]; then
+            echo "DRY RUN: Would create DWIN_SET.zip from $DWIN_SET_PATH"
+        else
+            echo "Creating URL shortcut for touchscreen firmware download..."
+            # Create URL shortcut file
+            cat > "$display_dir/CR-6-Touchscreen-Download.url" <<EOF
+[InternetShortcut]
+URL=https://github.com/CR6Community/CR-6-touchscreen
+IconFile=https://github.com/favicon.ico
+IconIndex=0
+EOF
+            echo "Created download link: CR-6-Touchscreen-Download.url"
+        fi
+    else
+        # Configuration excludes touchscreen - copy the no-touchscreen.txt file to explain
+        if [ -f "$config_dir/no-touchscreen.txt" ] && [ "$DRY_RUN" != "true" ]; then
+            cp "$config_dir/no-touchscreen.txt" "$display_dir/"
+            echo "Copied no-touchscreen.txt to Display Firmware folder"
+        elif [ "$DRY_RUN" = "true" ]; then
+            echo "DRY RUN: Would copy no-touchscreen.txt to Display Firmware folder"
+        fi
     fi
     
     if [ "$DRY_RUN" != "true" ]; then
@@ -293,30 +319,30 @@ else
     fi
     
     if [ "$DRY_RUN" != "true" ]; then
-        # Add repository URL shortcut at ZIP root level
-        cat > "$OUTPUT_DIR/CR6Community-Marlin-Repository.url" << EOF
+    # Add repository URL shortcut at ZIP root level
+    cat > "$build_output_dir/CR6Community-Marlin-Repository.url" << EOF
 [InternetShortcut]
 URL=https://github.com/Thinkersbluff/CR6Community-Marlin_TB
 IconFile=https://github.com/favicon.ico
 IconIndex=0
 EOF
-        
-        # Create ZIP file including both the build directory and the URL file
-        local zip_file="$OUTPUT_DIR/$RELEASE_NAME-$config_name-$TIMESTAMP.zip"
-        (cd "$OUTPUT_DIR" && zip -r "$(basename "$zip_file")" "$(basename "$build_output_dir")" "CR6Community-Marlin-Repository.url")
-        
-        # Generate SHA256
-        local sha256=$(sha256sum "$zip_file" | cut -d' ' -f1)
-        echo "$sha256  $(basename "$zip_file")" >> "$OUTPUT_DIR/checksums.txt"
-        
-        echo "Created: $(basename "$zip_file")"
-        echo "SHA256: $sha256"
+
+    # Create ZIP file with all contents of build_output_dir at the root
+    local zip_file="$OUTPUT_DIR/$RELEASE_NAME-$config_name-$TIMESTAMP.zip"
+    (cd "$build_output_dir" && zip -r "$zip_file" .)
+
+    # Generate SHA256
+    local sha256=$(sha256sum "$zip_file" | cut -d' ' -f1)
+    echo "$sha256  $(basename "$zip_file")" >> "$OUTPUT_DIR/checksums.txt"
+
+    echo "Created: $(basename "$zip_file")"
+    echo "SHA256: $sha256"
     fi
     
     echo "Completed: $config_name"
     echo ""
+    echo "Build output available in: $build_output_dir"
 }
-
 
 # Backup user's original Marlin/Configuration*.h files
 ORIG_CONFIG_H="$REPO_ROOT/Marlin/Configuration.h"
@@ -327,7 +353,7 @@ ORIG_CONFIG_ADV_H_BAK="$REPO_ROOT/Marlin/Configuration_adv.h.userbak"
 cp "$ORIG_CONFIG_H" "$ORIG_CONFIG_H_BAK"
 cp "$ORIG_CONFIG_ADV_H" "$ORIG_CONFIG_ADV_H_BAK"
 
-# Main build loopBTT
+# Main build loop
 if [ -n "$SINGLE_BUILD" ]; then
     echo "Building single configuration: $SINGLE_BUILD"
     build_config "$SINGLE_BUILD"
@@ -343,16 +369,3 @@ echo "Restoring user's original Marlin/Configuration*.h files..."
 cp "$ORIG_CONFIG_H_BAK" "$ORIG_CONFIG_H"
 cp "$ORIG_CONFIG_ADV_H_BAK" "$ORIG_CONFIG_ADV_H"
 rm -f "$ORIG_CONFIG_H_BAK" "$ORIG_CONFIG_ADV_H_BAK"
-
-echo ""
-echo "=== Build Summary ==="
-if [ -f "$OUTPUT_DIR/checksums.txt" ]; then
-    echo "Built packages:"
-    cat "$OUTPUT_DIR/checksums.txt"
-else
-    echo "No packages built (dry run or errors occurred)"
-fi
-
-echo ""
-echo "Build script completed!"
-echo "Output directory: $OUTPUT_DIR"
