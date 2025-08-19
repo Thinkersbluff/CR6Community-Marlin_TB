@@ -1,18 +1,31 @@
-# Build & Test Documentation (Windows)
 
-This document provides comprehensive build and test instructions for Windows users, including Docker Desktop setup, PowerShell scripts, permission management, and troubleshooting.
+# Build & Test Documentation (Windows 10/11)
+
+This document provides users with basic instructions and workflows for configuring this repository and building CR6Community Firmware on a Windows 10 or 11 platform.
+
+> **Note:** If you use both Windows and Linux/macOS on the same computer to maintain this repository, see also the [DUAL_BOOT_GUIDELINES.md](../DUAL_BOOT_GUIDELINES.md).
 
 ## Table of Contents
+- [Script Usage Guidelines](#script-usage-guidelines)
+- [Containerized (Docker Desktop) Environment](#containerized-docker-desktop-environment)
+- [Why Docker Desktop on Windows?](#why-docker-desktop-on-windows)
+- [Build Methods](#build-methods)
+- [Windows Build Scripts](#windows-build-scripts)
+- [Permission Management](#permission-management)
+- [Testing Infrastructure](#testing-infrastructure)
+- [Configuration Management](#configuration-management)
+- [Makefile Targets](#makefile-targets)
+- [Continuous Integration](#continuous-integration)
+- [Build Tools and Scripts](#build-tools-and-scripts)
+- [Focused Development Workflow](#focused-development-workflow)
+- [Troubleshooting](#troubleshooting)
+- [Performance Notes](#performance-notes)
+- [Security Guidelines](#security-guidelines)
 
-> **Note:** If you use both Windows and Linux on the same computer, see [DUAL_BOOT_GUIDELINES.md](../DUAL_BOOT_GUIDELINES.md).
-
-
-## Quick Start
- - Install Docker Desktop and start it before running any Docker commands
- - Use PowerShell or Command Prompt
- - Make sure your repository is in a shared drive (e.g., C:\Users\YourName\CR6Community-Marlin_TB)
+---
 
 ## Script Usage Guidelines
+← [ToC](#table-of-contents)
 
 **Golden Rule: Always run scripts from their current location in the repository structure.**
 
@@ -28,17 +41,23 @@ cd tools\windows\build
 cd tools\windows\vscode
 ```
 
-## Docker Environment
+## Containerized (Docker Desktop) Environment
+← [ToC](#table-of-contents)
 
 ### Install Docker Desktop
 - Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - Start Docker Desktop from the Start menu
 - Use PowerShell or Command Prompt for Docker commands
-- Ensure your project directory is within a shared drive (e.g., C:\Users\YourName\CR6Community-Marlin_TB)
+- Ensure your project directory is within a shared drive (e.g., `C:\Users\YourName\CR6Community-Marlin_TB`)
 - Use the configuration files in `tools/windows/build/docker/`
-- If you encounter permission errors, comment out the `user:` line in `docker-compose.yml`
+
+## Why Docker Desktop on Windows?
+← [ToC](#table-of-contents)
+
+While Podman is used for containerization on Linux and macOS, Docker Desktop is currently recommended for Windows because it is more mature and stable on this platform. Podman Desktop for Windows is still evolving and may not provide the same level of integration or reliability as Docker Desktop, especially for complex development workflows. If Podman Desktop becomes equally robust on Windows in the future, this recommendation may change.
 
 ## Build Methods
+← [ToC](#table-of-contents)
 
 ### 1. Docker-based Building (Recommended)
 
@@ -46,14 +65,17 @@ cd tools\windows\vscode
 ```powershell
 cd tools\windows\build\docker
 # Build CR6 SE v4.5.3 configuration
-...Windows-specific build example...
+docker compose run --rm marlin powershell -Command "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb; platformio run -e STM32F103RET6_creality"
 ```
 
 #### Interactive Docker Session
 ```powershell
 cd tools\windows\build\docker
 # Get shell inside container
-...Windows-specific shell example...
+docker compose run --rm marlin powershell
+# Inside container, you can run any build commands:
+platformio run -e STM32F103RET6_creality
+./buildroot/bin/build_example config/cr6-se-v4.5.2-mb
 ```
 
 ### 2. Local PlatformIO Building
@@ -69,39 +91,101 @@ cd tools\windows\build\docker
 3. Build using PlatformIO IDE or command line
 
 ## Windows Build Scripts
-...Windows PowerShell build scripts and usage...
+← [ToC](#table-of-contents)
+
+PowerShell build scripts are provided in `tools/windows/build/`. Example usage:
+```powershell
+cd tools\windows\build
+./Run-ExampleConfigBuilds.ps1 -ReleaseName "test-build"
+```
 
 ## Permission Management
-...Windows-specific permission management and troubleshooting...
+← [ToC](#table-of-contents)
+
+- Ensure your repository is on a Docker Desktop shared drive (e.g., `C:\Users\YourName\CR6Community-Marlin_TB`).
+- If you see "permission denied" errors, check Docker Desktop's "Resources > File Sharing" settings.
+- Windows file permissions are less strict, but Docker Desktop may not be able to access files outside shared drives.
+- If you see "file path too long" errors, enable long path support in Windows 10/11:
+	- Open Group Policy Editor (`gpedit.msc`)
+	- Navigate to Local Computer Policy > Computer Configuration > Administrative Templates > System > Filesystem
+	- Enable "Enable Win32 long paths"
 
 ## Testing Infrastructure
-...Windows-specific testing infrastructure...
+← [ToC](#table-of-contents)
+
+The repository supports automated testing across 50+ hardware platforms. See the main README for supported platforms and test execution instructions.
 
 ## Configuration Management
-...Windows configuration management...
+← [ToC](#table-of-contents)
+
+Configuration directories are in `config/`. Each contains:
+- `Configuration.h` - Main Marlin configuration
+- `Configuration_adv.h` - Advanced settings
+- `platformio-environment.txt` - PlatformIO environment specification
 
 ## Makefile Targets
-...Windows makefile targets and usage...
+← [ToC](#table-of-contents)
+
+### Setup Targets
+```powershell
+# (If using Make for Windows, or adapt to PowerShell scripts as needed)
+make setup-local-docker          # Build Docker development environment
+```
+
+### Testing Targets
+```powershell
+make tests-single-local          # Run single test locally
+make tests-single-local-docker   # Run single test in Docker
+make tests-all-local            # Run all tests locally  
+make tests-all-local-docker     # Run all tests in Docker
+make tests-single-ci            # Run single test (CI mode)
+```
 
 ## Continuous Integration
-...Windows CI instructions...
+← [ToC](#table-of-contents)
+
+See `.github/workflows/test-builds.yml` for CI details. Matrix tests run on all supported platforms using Docker Desktop and PlatformIO.
 
 ## Build Tools and Scripts
-...Windows build tools and scripts...
+← [ToC](#table-of-contents)
+
+Core build tools are in `buildroot/bin/`:
+```powershell
+build_all_examples      # Build all configuration examples
+build_example          # Build specific example
+run_tests              # Core test runner script
+use_example_configs    # Apply example configuration
+restore_configs        # Restore original configuration
+```
 
 ## Focused Development Workflow
-...Windows-focused workflow...
+← [ToC](#table-of-contents)
+
+For CR6-specific development, use the supported configurations in `config/` and test using the provided PowerShell scripts and Docker commands.
 
 ## Troubleshooting
-...Windows troubleshooting...
+← [ToC](#table-of-contents)
+
+- **Permission denied errors:** Ensure your repo is on a Docker Desktop shared drive and Docker Desktop has access.
+- **File path too long:** Enable long path support in Windows.
+- **PlatformIO not found:** Ensure Python and PlatformIO are installed and in your PATH.
+- **Line ending issues:** Use a `.gitattributes` file to enforce consistent line endings.
 
 ## Performance Notes
-...Windows performance notes...
+← [ToC](#table-of-contents)
+- Single platform test: ~2-3 minutes
+- All platform tests: ~2-3 hours
+- Docker container build: ~5-10 minutes (first time)
+- RAM: ~2GB recommended for Docker builds
+- Disk: ~5GB for complete environment
+- Network: Initial setup downloads ~500MB
 
----
+## Security Guidelines
+← [ToC](#table-of-contents)
 
-*For Linux instructions, see [BUILD_AND_TEST_LINUX.md](BUILD_AND_TEST_LINUX.md).*
+For Windows users, GPG key management is essential for secure Docker and package installations. Please review [SECURITY.md](SECURITY.md) for:
+- How to verify and manage GPG keys
+- Best practices for key safety
+- Troubleshooting common GPG-related issues
 
----
-
-*For Linux instructions, see [BUILD_AND_TEST_LINUX.md](BUILD_AND_TEST_LINUX.md).*
+Proper key management helps prevent build failures and protects your system from untrusted packages.

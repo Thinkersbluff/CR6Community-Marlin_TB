@@ -12,7 +12,10 @@ If you find issues with this code on your printer, please advise Thinkersbluff, 
 
 <details>
 <summary><strong>Where are the Downloads?</strong></summary>
-To download a pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release. 
+
+To download a pre-release "bugfix" version of the pre-compiled firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see [the LATEST RELEASE FILES folder](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/tree/debug_e-steps/LATEST%20RELEASE%20FILES). 
+To download the formally released firmware.bin for a CR6-SE or CR6-MAX printer in stock configuration, see the Assets section of the latest Release. 
+
  
 If your printer is a CR6-SE or CR-6-MAX in stock condition, you will see a .zip file in the Assets section of the latest Release, whose name best describes your printer.
 Download and extract that file, read any included notes, and flash the included firmware to your printer.

@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  # The main image: this doesn't run any particular command, but is mainly used
+  # for running tests locally
+  marlin:
+    image: marlin-dev
+    build:
+      dockerfile: Dockerfile
+      context: .
+    working_dir: /code
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - /home/stephen/CR6Community-Marlin_TB:/code
+      - platformio-cache:/home/user/.platformio
+    environment:
+      HOME: /home/user
+
+volumes:
+  # This volume holds installed libraries for PlatformIO. If this is deleted you
+  # will have to download all the dependencies again, which can be a very slow
+  # process
+  platformio-cache:

@@ -8,12 +8,13 @@ services:
       dockerfile: Dockerfile
       context: .
     working_dir: /code
-    user: "${UID:-1000}:${GID:-1000}"
+   # user: "${UID:-1000}:${GID:-1000}"
+    user: "0:0"
     volumes:
-    - ../../..:/code
-    - platformio-cache:/home/user/.platformio
+      - /home/stephen/CR6Community-Marlin_TB:/code
+      - platformio-cache:/home/user/.platformio
     environment:
-    - HOME=/home/user
+      HOME: /home/user
 
 volumes:
   # This volume holds installed libraries for PlatformIO. If this is deleted you

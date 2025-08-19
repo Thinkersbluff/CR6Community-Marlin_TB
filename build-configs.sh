@@ -247,7 +247,7 @@ EOF
             echo "ERROR: Build script $BUILD_SCRIPT was not created!"
             return 1
         fi
-    podman-compose -f "$SCRIPT_DIR/podman/compose.yaml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash "/code/podman-build-script.sh" &> "$BUILD_OUT_FILE"
+    podman-compose -f "$SCRIPT_DIR/compose.yaml" run --rm -e PLATFORM_ENV="$platform_env" marlin bash "/code/podman-build-script.sh" &> "$BUILD_OUT_FILE"
         rm -f "$BUILD_SCRIPT"
 
         BUILD_RESULT=$?
