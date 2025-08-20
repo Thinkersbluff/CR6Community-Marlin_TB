@@ -1,4 +1,6 @@
-#
+# pylint: skip-file
+# mypy: ignore-errors
+# pyright: reportMissingImports=false
 # generic_create_variant.py
 #
 # Copy one of the variants from buildroot/platformio/variants into
