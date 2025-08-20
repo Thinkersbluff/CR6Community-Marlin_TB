@@ -296,10 +296,9 @@ class ConfiguratorApp(tk.Tk):
         logging.info('keyword_entry created')
         self.keyword_entry.pack(side='left', padx=5)
         logging.info('keyword_entry packed')
-        self.keyword_apply_button = tk.Button(self.filter_frame, text='Apply', command=self.apply_keyword_filter)
-        logging.info('keyword_apply_button created')
-        self.keyword_apply_button.pack(side='left', padx=5)
-        logging.info('keyword_apply_button packed')
+        # Bind filter to key release for live filtering
+        self.keyword_entry.bind('<KeyRelease>', lambda e: self.apply_keyword_filter())
+        logging.info('keyword_entry bound to KeyRelease for live filtering')
         self.view_in_context_button = tk.Button(self.filter_frame, text='View in Context', command=self.view_in_context)
         logging.info('view_in_context_button created')
         self.view_in_context_button.pack(side='left', padx=5)
