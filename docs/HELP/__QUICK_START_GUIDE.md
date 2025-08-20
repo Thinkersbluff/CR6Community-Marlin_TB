@@ -37,7 +37,7 @@ Step-by-step instructions follow, below.
 ### Step-by-step Instructions:
 See!?
 
-To just copy everything you need to your hard drive:
+1. To just copy everything you need to your hard drive:
 
 - Go to: [github.com/Thinkersbluff/CR6Community-Marlin_TB](https://github.com/Thinkersbluff/CR6Community-Marlin_TB)
 - Click the green Code button
@@ -48,6 +48,13 @@ To just copy everything you need to your hard drive:
 - Open the folder: CR6Community-Marlin_TB-main\tools\configurator
 - Open README.md in that folder for the next steps
 💡 If Python, pip, or PlatformIO aren’t installed yet, you’ll also need them, to build the firmware.
+
+2. To make a copy of the repository that you can keep up to date with the online version:
+
+1. Install git on your system
+2. Use git to clone this repository directly to your computer. 
+
+This option allows you to easily keep your local copy up to date with the latest changes by running a simple git pull command in a terminal window. 
 
 ## 3. Install/Activate the Build Environment
 ### As a Firmware User:
@@ -90,6 +97,9 @@ Recommended VSCode extensions for Developers include:
  - GitHub Respositories
  - GitHub Co-Pilot and 
  - GitHub Co-Pilot Chat
+
+
+**NOTE:** IF you do plan to make changes to the repository contents that you would like to share with us, upstream, please fork the repository to your own GitHub account, and use PRs to submit recommended changes to us.
 
 ---
 

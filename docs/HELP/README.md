@@ -52,6 +52,7 @@ Alternatively, you can open a Terminal window (Command or Powershell on Windows,
 The _BUILD_HELP documentation is there as a resource for you.
 If you cannot find the info there - or if you find one of our famous 'mistake' Easter Eggs - please drop us a comment in Discussions or raise an Issue and we will do our best to make it better.
 
+
 ### TL;DR This is NOT My First GitHub/VSCode Rodeo!
 
 If you are very comfortable with CLIs and IDEs, git, etc.., you probably skipped straight past the first section. You may not have bothered reading this at all...
