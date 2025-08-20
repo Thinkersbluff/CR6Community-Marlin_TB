@@ -1,5 +1,5 @@
 # flash_cards.py (C) Thinkersbluff, 2025
-#
+'''Parses flash cards from flash_cards.json.'''
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,7 @@ import json
 import os
 
 def load_flash_cards(json_path=None):
+    '''Load flash cards from a JSON file.'''
     if json_path is None:
         json_path = os.path.join(os.path.dirname(__file__), 'flash_cards.json')
     with open(json_path, 'r', encoding='utf-8') as f:

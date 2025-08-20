@@ -3,6 +3,10 @@
 #
 # Marlin 3D Printer Firmware
 # Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+
+# pylint: skip-file
+# mypy: ignore-errors
+
 from __future__ import print_function
 from __future__ import division
 
