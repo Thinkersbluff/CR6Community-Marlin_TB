@@ -21,7 +21,7 @@ This repository includes:
 There are also a whole lot of "other" files that you can ignore, while you get started.  If you need them, we will introduce you to them as we go.
 ---
 # Quick-Start Workflows:
-These are the key steps we recommend you follow, in the best order:
+These are the key steps we recommend you follow, in this order:
 
 ## 1. Decide whether you want to customize this firmware
 No need to suffer the endless pain & confusion that is the life of a professional Software Developer (":wink:") if you don't need to know anything about compiling!  You may have much simpler alternatives.
@@ -46,9 +46,6 @@ To just copy everything you need to your hard drive:
 - Open the folder: CR6Community-Marlin_TB-main\tools\configurator
 - Open README.md in that folder for the next steps
 💡 If Python, pip, or PlatformIO aren’t installed yet, you’ll also need them, to build the firmware.
-
-To make a linked copy you can keep up to date with the online repository:
-
 
 ## 3. Install/Activate the Build Environment
 ### As a Firmware User:
@@ -108,4 +105,4 @@ There are also these guidelines which are important to all of our users:
 
 Honest!  
 Don't skip 'em!!
-You may suffer regrets if you skip those!!!
+You may suffer more than regrets if you skip those!!!
