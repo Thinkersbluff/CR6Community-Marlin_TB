@@ -49,7 +49,7 @@ Optionally:
 Linux/macOS: Install platformio and python on your platform and run the Bash shell scripts in a local terminal.
 
 Windows: Install WSL2 and create your own docker-based build environment 
-OR Use the Powershell scripts located at ./tools/windows/build
+OR Use the Powershell scripts located at ./tools/windows_developers/build
 
 ## 4. Customize and build your own firmware.bin(s)
 

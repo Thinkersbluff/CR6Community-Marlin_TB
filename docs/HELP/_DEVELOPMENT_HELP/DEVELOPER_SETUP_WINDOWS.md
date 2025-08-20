@@ -161,7 +161,7 @@ platformio run -e STM32F103RET6_creality
 ## Windows Build Scripts
 ← [ToC](#table-of-contents)
 
-PowerShell build scripts are provided in `tools/windows/build/`. Example usage:
+PowerShell build scripts are provided in `tools/windows_developers/build/`. Example usage:
 ```powershell
 cd tools\windows\build
 ./Run-ExampleConfigBuilds.ps1 -ReleaseName "test-build"

@@ -10,7 +10,7 @@ Linux equivalent of the Windows `Run-ExampleConfigBuilds.ps1` script. Builds all
 **Usage:**
 ```bash
 # Run from this directory
-cd tools/linux/build
+cd tools/linux_developers/build
 ./build-configs.sh
 
 # Or run with parameters
@@ -36,11 +36,11 @@ Wrapper script for running PowerShell scripts on Linux.
 **Usage:**
 ```bash
 # Run PowerShell script from repository root
-./run-powershell.sh ../windows/build/Run-ExampleConfigBuilds.ps1 -ReleaseName test
+./run-powershell.sh ../windows_developers/build/Run-ExampleConfigBuilds.ps1 -ReleaseName test
 
 # Other PowerShell scripts
-./run-powershell.sh ../windows/build/Generate-ConfigExample.ps1 -Name my-config
-./run-powershell.sh ../windows/build/Invoke-PioBuild.ps1 -ConfigName cr6-se-v4.5.3-mb
+./run-powershell.sh ../windows_developers/build/Generate-ConfigExample.ps1 -Name my-config
+./run-powershell.sh ../windows_developers/build/Invoke-PioBuild.ps1 -ConfigName cr6-se-v4.5.3-mb
 ```
 
 ## Container Configuration
@@ -90,13 +90,13 @@ Built packages are organized in `.pio/build-output/`:
 
 1. **Setup podman environment:**
    ```bash
-   cd ./tools/linux/build/podman # navigate to this folder
+   cd ./tools/linux_developers/build/podman # navigate to this folder
    podman-compose build
    ```
 
 2. **Test with a single build:**
    ```bash
-   cd ..  # Back to tools/linux/build
+   cd ..  # Back to tools/linux_developers/build
    ./build-configs.sh test-build cr6-se-v4.5.3-mb
    ```
 

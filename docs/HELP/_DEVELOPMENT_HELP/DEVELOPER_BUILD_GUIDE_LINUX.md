@@ -6,7 +6,7 @@ Linux platform users who just want to customize the firmware for their own print
 
 
 ## Overview
-This guide explains how to use the `build-configs.sh` script from the `tools/linux/build` directory to build and package multiple Marlin firmware configurations using a containerized build environment. It also includes a troubleshooting section based on real-world issues and solutions.
+This guide explains how to use the `build-configs.sh` script from the `tools/linux_developers/build` directory to build and package multiple Marlin firmware configurations using a containerized build environment. It also includes a troubleshooting section based on real-world issues and solutions.
 
 ---
 
@@ -21,7 +21,7 @@ This guide explains how to use the `build-configs.sh` script from the `tools/lin
 1. **Open a terminal.**
 2. **Navigate to the build directory:**
    ```bash
-   cd /home/stephen/CR6Community-Marlin_TB/tools/linux/build
+   cd /home/stephen/CR6Community-Marlin_TB/tools/linux_developers/build
    ```
 3. **Run the build script:**
    ```bash
@@ -98,7 +98,7 @@ If you encounter errors, follow these steps:
 ## Notes
 - If you move the repository, update the absolute path in `compose.yaml`.
 - For portability, add a comment in `compose.yaml` to remind users to update the path if they clone the repo elsewhere.
-- Always run the script from `tools/linux/build/` for consistent results.
+- Always run the script from `tools/linux_developers/build/` for consistent results.
 
 ---
 

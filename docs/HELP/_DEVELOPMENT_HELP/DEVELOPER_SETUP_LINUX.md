@@ -52,7 +52,7 @@ All scripts in this repository are designed to work when you navigate to their d
 ### Examples:
 ```bash
 # Build scripts - navigate to your platform's build directory
-cd tools/linux/build
+cd tools/linux_developers/build
 ./build-configs.sh
 
 # VS Code tools - navigate to your platform's vscode directory
@@ -70,7 +70,7 @@ sudo apt update && sudo apt install -y podman podman-compose
 
 Alternatively, you can use the shell script 'get-podman.sh', as follows:
 ``` bash
-cd ./tools/linux/build/podman # navigate to this directory
+cd ./tools/linux_developers/build/podman # navigate to this directory
 sudo sh get-podman.sh
 ```
 The get-podman.sh script can install Podman and podman-compose on Debian, Ubuntu, Fedora, CentOS, RHEL, and openSUSE systems.
@@ -83,7 +83,7 @@ The get-podman.sh script can install Podman and podman-compose on Debian, Ubuntu
 
 #### Build Specific Configuration
 ```bash
-cd tools/linux/build/podman
+cd tools/linux_developers/build/podman
 # Build CR6 SE v4.5.3 configuration
 # Example:
 podman-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs config/cr6-se-v4.5.3-mb && platformio run -e STM32F103RET6_creality"
@@ -91,7 +91,7 @@ podman-compose run --rm marlin bash -c "./buildroot/bin/use_example_configs conf
 
 #### Interactive Podman Session
 ```bash
-cd tools/linux/build/podman
+cd tools/linux_developers/build/podman
 # Get shell inside container
 podman-compose run --rm marlin bash
 # Inside container, you can run any build commands:
@@ -114,41 +114,41 @@ platformio run -e STM32F103RET6_creality
 ## Linux Build Scripts
 ← [ToC](#table-of-contents)
 
-The Linux build script (`tools/linux/build/build-configs.sh`) can build all or specific configuration examples. The script automatically detects the repository root and can be run from any directory within the repository.
+The Linux build script (`tools/linux_developers/build/build-configs.sh`) can build all or specific configuration examples. The script automatically detects the repository root and can be run from any directory within the repository.
 
 **Basic usage (run from repository root):**
 ```bash
-./tools/linux/build/build-configs.sh
+./tools/linux_developers/build/build-configs.sh
 ```
 
-**Basic usage (run from tools/linux/build directory):**
+**Basic usage (run from tools/linux_developers/build directory):**
 ```bash
-cd tools/linux/build && ./build-configs.sh
+cd tools/linux_developers/build && ./build-configs.sh
 ```
 
 **Build with custom release name:**
 ```bash
-./tools/linux/build/build-configs.sh v2.1.3.2
+./tools/linux_developers/build/build-configs.sh v2.1.3.2
 ```
 
 **Build single configuration:**
 ```bash
-./tools/linux/build/build-configs.sh test-build cr6-se-v4.5.3-mb
+./tools/linux_developers/build/build-configs.sh test-build cr6-se-v4.5.3-mb
 ```
 
 **Dry run (test without building):**
 ```bash
-./tools/linux/build/build-configs.sh test-build cr6-se-v4.5.3-mb true
+./tools/linux_developers/build/build-configs.sh test-build cr6-se-v4.5.3-mb true
 ```
 
 **Custom touchscreen path:**
 ```bash
-./tools/linux/build/build-configs.sh v2.1.3.2 "" "" ../path/to/CR-6-Touchscreen
+./tools/linux_developers/build/build-configs.sh v2.1.3.2 "" "" ../path/to/CR-6-Touchscreen
 ```
 
 **All parameters:**
 ```bash
-./tools/linux/build/build-configs.sh release-name cr6-se-v4.5.3-mb false ../CR-6-Touchscreen
+./tools/linux_developers/build/build-configs.sh release-name cr6-se-v4.5.3-mb false ../CR-6-Touchscreen
 ```
 
 ## Permission Management

@@ -10,7 +10,7 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
     Write-FatalError "Unable to find git command"
 }
 
-# Set root directory - PowerShell scripts are now in tools/windows/build/
+# Set root directory - PowerShell scripts are now in tools/windows_developers/build/
 $Script:RootDir = Join-Path $PSScriptRoot "../../.."
 Push-Location $Script:RootDir
 

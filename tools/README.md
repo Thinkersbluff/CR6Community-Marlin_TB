@@ -30,7 +30,7 @@ cd build
 ./build-configs.sh
 
 # For running PowerShell scripts via Docker
-./run-powershell.sh ../../../tools/windows/build/Run-ExampleConfigBuilds.ps1 -ReleaseName test
+./run-powershell.sh ../../../tools/windows_developers/build/Run-ExampleConfigBuilds.ps1 -ReleaseName test
 ```
 
 ### Windows Users

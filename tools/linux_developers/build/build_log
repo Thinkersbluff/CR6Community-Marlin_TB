@@ -43,7 +43,7 @@
 2025-08-20 01:21:12 [DEBUG] Starting podman build for btt-skr-cr6-with-btt-tft (platform_env: STM32F103RE_btt_USB)
 2025-08-20 01:21:12 [DEBUG] Invoking podman-compose for btt-skr-cr6-with-btt-tft, output will be logged to /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-btt-skr-cr6-with-btt-tft-2025-08-20-01-21/platformio-build.log
 2025-08-20 01:21:12 [DEBUG] podman build finished for btt-skr-cr6-with-btt-tft with exit code 0
-2025-08-20 01:21:12 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux/build/podman/compose.yaml']
+2025-08-20 01:21:12 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux_developers/build/podman/compose.yaml']
 2025-08-20 01:21:12 ERROR: No firmware binary found for btt-skr-cr6-with-btt-tft. See /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-btt-skr-cr6-with-btt-tft-2025-08-20-01-21/platformio-build.log for build output.
 2025-08-20 01:21:12 === Building btt-skr-cr6-with-stock-creality-tft-biqu-h2 ===
 2025-08-20 01:21:12 Skipping btt-skr-cr6-with-stock-creality-tft-biqu-h2 (marked no-autobuild)
@@ -56,7 +56,7 @@
 2025-08-20 01:21:12 [DEBUG] Starting podman build for btt-skr-cr6-with-stock-creality-tft (platform_env: STM32F103RE_btt_USB)
 2025-08-20 01:21:12 [DEBUG] Invoking podman-compose for btt-skr-cr6-with-stock-creality-tft, output will be logged to /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-btt-skr-cr6-with-stock-creality-tft-2025-08-20-01-21/platformio-build.log
 2025-08-20 01:21:12 [DEBUG] podman build finished for btt-skr-cr6-with-stock-creality-tft with exit code 0
-2025-08-20 01:21:12 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux/build/podman/compose.yaml']
+2025-08-20 01:21:12 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux_developers/build/podman/compose.yaml']
 2025-08-20 01:21:12 ERROR: No firmware binary found for btt-skr-cr6-with-stock-creality-tft. See /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-btt-skr-cr6-with-stock-creality-tft-2025-08-20-01-21/platformio-build.log for build output.
 2025-08-20 01:21:12 === Building cr10-smart-btt-skr-cr6-with-btt-tft ===
 2025-08-20 01:21:12 Skipping cr10-smart-btt-skr-cr6-with-btt-tft (marked no-autobuild)
@@ -72,7 +72,7 @@
 2025-08-20 01:21:13 [DEBUG] Starting podman build for cr6-max-btt-skr-cr6-with-btt-tft (platform_env: STM32F103RE_btt_USB)
 2025-08-20 01:21:13 [DEBUG] Invoking podman-compose for cr6-max-btt-skr-cr6-with-btt-tft, output will be logged to /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-max-btt-skr-cr6-with-btt-tft-2025-08-20-01-21/platformio-build.log
 2025-08-20 01:21:13 [DEBUG] podman build finished for cr6-max-btt-skr-cr6-with-btt-tft with exit code 0
-2025-08-20 01:21:13 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux/build/podman/compose.yaml']
+2025-08-20 01:21:13 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux_developers/build/podman/compose.yaml']
 2025-08-20 01:21:13 ERROR: No firmware binary found for cr6-max-btt-skr-cr6-with-btt-tft. See /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-max-btt-skr-cr6-with-btt-tft-2025-08-20-01-21/platformio-build.log for build output.
 2025-08-20 01:21:13 === Building cr6-max-btt-skr-cr6-with-stock-creality-tft ===
 2025-08-20 01:21:13 [DEBUG] Hashing base Configuration*.h before overwrite...
@@ -81,7 +81,7 @@
 2025-08-20 01:21:13 [DEBUG] Starting podman build for cr6-max-btt-skr-cr6-with-stock-creality-tft (platform_env: STM32F103RE_btt_USB)
 2025-08-20 01:21:13 [DEBUG] Invoking podman-compose for cr6-max-btt-skr-cr6-with-stock-creality-tft, output will be logged to /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-max-btt-skr-cr6-with-stock-creality-tft-2025-08-20-01-21/platformio-build.log
 2025-08-20 01:21:13 [DEBUG] podman build finished for cr6-max-btt-skr-cr6-with-stock-creality-tft with exit code 0
-2025-08-20 01:21:13 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux/build/podman/compose.yaml']
+2025-08-20 01:21:13 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux_developers/build/podman/compose.yaml']
 2025-08-20 01:21:13 ERROR: No firmware binary found for cr6-max-btt-skr-cr6-with-stock-creality-tft. See /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-max-btt-skr-cr6-with-stock-creality-tft-2025-08-20-01-21/platformio-build.log for build output.
 2025-08-20 01:21:13 === Building cr6-max-stock-mb ===
 2025-08-20 01:21:13 [DEBUG] Hashing base Configuration*.h before overwrite...
@@ -90,7 +90,7 @@
 2025-08-20 01:21:14 [DEBUG] Starting podman build for cr6-max-stock-mb (platform_env: STM32F103RET6_creality)
 2025-08-20 01:21:14 [DEBUG] Invoking podman-compose for cr6-max-stock-mb, output will be logged to /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-max-stock-mb-2025-08-20-01-21/platformio-build.log
 2025-08-20 01:21:14 [DEBUG] podman build finished for cr6-max-stock-mb with exit code 0
-2025-08-20 01:21:14 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux/build/podman/compose.yaml']
+2025-08-20 01:21:14 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux_developers/build/podman/compose.yaml']
 2025-08-20 01:21:14 ERROR: No firmware binary found for cr6-max-stock-mb. See /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-max-stock-mb-2025-08-20-01-21/platformio-build.log for build output.
 2025-08-20 01:21:14 === Building cr6-se-v4.5.2-mb-no-watchdog ===
 2025-08-20 01:21:14 Skipping cr6-se-v4.5.2-mb-no-watchdog (marked no-autobuild)
@@ -101,7 +101,7 @@
 2025-08-20 01:21:14 [DEBUG] Starting podman build for cr6-se-v4.5.2-mb (platform_env: STM32F103RET6_creality)
 2025-08-20 01:21:14 [DEBUG] Invoking podman-compose for cr6-se-v4.5.2-mb, output will be logged to /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-se-v4.5.2-mb-2025-08-20-01-21/platformio-build.log
 2025-08-20 01:21:14 [DEBUG] podman build finished for cr6-se-v4.5.2-mb with exit code 0
-2025-08-20 01:21:14 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux/build/podman/compose.yaml']
+2025-08-20 01:21:14 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux_developers/build/podman/compose.yaml']
 2025-08-20 01:21:14 ERROR: No firmware binary found for cr6-se-v4.5.2-mb. See /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-se-v4.5.2-mb-2025-08-20-01-21/platformio-build.log for build output.
 2025-08-20 01:21:14 === Building cr6-se-v4.5.3-mb ===
 2025-08-20 01:21:14 [DEBUG] Hashing base Configuration*.h before overwrite...
@@ -110,7 +110,7 @@
 2025-08-20 01:21:15 [DEBUG] Starting podman build for cr6-se-v4.5.3-mb (platform_env: STM32F103RET6_creality)
 2025-08-20 01:21:15 [DEBUG] Invoking podman-compose for cr6-se-v4.5.3-mb, output will be logged to /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-se-v4.5.3-mb-2025-08-20-01-21/platformio-build.log
 2025-08-20 01:21:15 [DEBUG] podman build finished for cr6-se-v4.5.3-mb with exit code 0
-2025-08-20 01:21:15 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux/build/podman/compose.yaml']
+2025-08-20 01:21:15 CRITICAL:podman_compose:missing files: ['/mnt/c/Users/BadBa/RepoClones/tools/linux_developers/build/podman/compose.yaml']
 2025-08-20 01:21:15 ERROR: No firmware binary found for cr6-se-v4.5.3-mb. See /mnt/c/Users/BadBa/RepoClones/.pio/build-output/test-build-cr6-se-v4.5.3-mb-2025-08-20-01-21/platformio-build.log for build output.
 2025-08-20 01:21:15 === Building ender-3-pro-v427-board-bltouch ===
 2025-08-20 01:21:15 Skipping ender-3-pro-v427-board-bltouch (marked no-autobuild)

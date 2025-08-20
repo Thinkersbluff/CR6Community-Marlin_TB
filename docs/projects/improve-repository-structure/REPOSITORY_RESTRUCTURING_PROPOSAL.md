@@ -18,10 +18,10 @@
 - **Extensible structure** - easy to add new platforms or functions
 
 **Implemented Structure:**
-- `tools/linux/build/` - Native bash scripts and Docker configuration
+- `tools/linux_developers/build/` - Native bash scripts and Docker configuration
 - `tools/linux/test/` - Linux testing utilities
 - `tools/linux/vscode/` - VS Code tools for Linux/macOS
-- `tools/windows/build/` - PowerShell scripts and Windows tools
+- `tools/windows_developers/build/` - PowerShell scripts and Windows tools
 - `tools/windows/test/` - Windows testing utilities (future)
 - `tools/windows/vscode/` - Windows VS Code tools (future)
 - `tools/analysis/` - Python-based cross-platform analysis toolsProposed for:** New restructuring branch  
