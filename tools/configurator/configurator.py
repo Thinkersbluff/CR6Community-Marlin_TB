@@ -75,7 +75,7 @@ class ConfiguratorApp(tk.Tk):
         logging.info('picklist_frame created')
         self.picklist_frame.pack(side='top', fill='x', padx=10, pady=(10,0))
         logging.info('picklist_frame packed')
-        self.picklist_label = tk.Label(self.picklist_frame, text='Select printer configuration example:', font=('Arial', 10, 'bold'), anchor='w', justify='left')
+        self.picklist_label = tk.Label(self.picklist_frame, text='Select target printer configuration:', font=('Arial', 10, 'bold'), anchor='w', justify='left')
         logging.info('picklist_label created')
         self.picklist_label.pack(side='left', anchor='w')
         logging.info('picklist_label packed')
@@ -86,6 +86,8 @@ class ConfiguratorApp(tk.Tk):
         logging.info('example_menu packed')
         self.example_menu.bind('<<ComboboxSelected>>', lambda e: self.on_example_select(self.selected_example.get()))
         logging.info('example_menu bind complete')
+        self.example_desc_label = tk.Label(self.picklist_frame, text='', font=('Arial', 10), fg="grey", anchor='w', justify='left')
+        self.example_desc_label.pack(side='left', padx=(10,0))
 
         # Main content frame
         self.content_frame = tk.Frame(self)
@@ -98,7 +100,7 @@ class ConfiguratorApp(tk.Tk):
         logging.info('default_envs_frame created')
         self.default_envs_frame.pack(fill='x', padx=10, pady=2)
         logging.info('default_envs_frame packed')
-        self.default_envs_label = tk.Label(self.default_envs_frame, text='Current default_envs:', font=('Arial', 10, 'bold'), fg='purple', anchor='w', justify='left')
+        self.default_envs_label = tk.Label(self.default_envs_frame, text='Current "default_envs" in /Marlin/platformio.ini:', font=('Arial', 10, 'bold'), fg='purple', anchor='w', justify='left')
         logging.info('default_envs_label created')
         self.default_envs_label.pack(side='left', padx=(0,10))
         logging.info('default_envs_label packed')
@@ -108,7 +110,7 @@ class ConfiguratorApp(tk.Tk):
         self.default_envs_entry.pack(side='left', padx=(0,10))
         logging.info('default_envs_entry packed')
         self.example_env_value = tk.StringVar()
-        self.example_env_label = tk.Label(self.default_envs_frame, textvariable=self.example_env_value, font=('Arial', 10), fg='gray', anchor='w', justify='left')
+        self.example_env_label = tk.Label(self.default_envs_frame, textvariable=self.example_env_value, font=('Arial', 10, 'bold'), fg='gray', anchor='w', justify='left')
         logging.info('example_env_label created')
         self.example_env_label.pack(side='left', padx=(0,10))
         logging.info('example_env_label packed')
@@ -116,6 +118,10 @@ class ConfiguratorApp(tk.Tk):
         logging.info('copy_env_button created')
         self.copy_env_button.pack(side='left', padx=(0,10))
         logging.info('copy_env_button packed')
+
+        # Update colour of example description label text
+        env_fg = self.example_env_label.cget("fg")
+        self.example_desc_label.config(fg=env_fg)
 
         # Main row frame
         self.main_row_frame = tk.Frame(self.content_frame)
@@ -218,31 +224,57 @@ class ConfiguratorApp(tk.Tk):
         logging.info('editor_frame created')
         self.editor_frame.pack(side='left', fill='both', expand=True, padx=10, pady=5)
         logging.info('editor_frame packed')
-                # Config file selection dropdown
+        
+
+        # --- File picklist and OK checkboxes in a horizontal subframe ---
+        self.file_and_ok_frame = tk.Frame(self.editor_frame)
+        self.file_and_ok_frame.pack(side='top', anchor='w', pady=(8,2), padx=2)
+
         self.config_files = [
             os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration.h')),
             os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration_adv.h'))
         ]
         self.config_file_label = tk.Label(
-            self.editor_frame,
+            self.file_and_ok_frame,
             text="Select file to edit:",
             font=('Arial', 10, 'bold'),
             anchor='w'
         )
-        self.config_file_label.pack(fill='x', padx=2, pady=(8,2))
+        self.config_file_label.pack(side='left')
+
+        # Move Save File button below and left-aligned with the label
+        self.save_file_below_frame = tk.Frame(self.editor_frame)
+        self.save_file_below_frame.pack(anchor='w', padx=2, pady=(0, 2))
+        self.save_file_button_below = tk.Button(self.save_file_below_frame, text='Save File', command=self.save_with_prompt)
+        self.save_file_button_below.pack(side='left')
 
         self.config_file_names = [os.path.basename(f) for f in self.config_files]
         self.selected_config_file = tk.StringVar(value="")
         self.config_file_menu = ttk.Combobox(
-            self.editor_frame,
+            self.file_and_ok_frame,
             textvariable=self.selected_config_file,
             values=self.config_file_names,
             state='readonly',
             width=20
         )
-        self.config_file_menu.pack(fill='x', padx=2, pady=2)
+        self.config_file_menu.pack(side='left', padx=(5, 20))
         self.config_file_menu.bind('<<ComboboxSelected>>', lambda e: self.on_config_file_select())
         self.opened_config_path = self.config_files[0]  # Track currently opened file
+
+        # OK checkboxes
+        self.config_h_ok_var = tk.BooleanVar(value=False)
+        self.config_adv_ok_var = tk.BooleanVar(value=False)
+        self.ok_checks_frame = tk.Frame(self.file_and_ok_frame)
+        self.ok_checks_frame.pack(side='left', padx=(0, 10), anchor='n')
+        self.config_h_ok_check = tk.Checkbutton(self.ok_checks_frame, text="Configuration.h OK", variable=self.config_h_ok_var)
+        self.config_h_ok_check.pack(side='top', anchor='w', pady=2)
+        self.config_adv_ok_check = tk.Checkbutton(self.ok_checks_frame, text="Configuration_adv.h OK", variable=self.config_adv_ok_var)
+        self.config_adv_ok_check.pack(side='top', anchor='w', pady=2)
+        # Attach trace to OK checkboxes to update button color on toggle
+        self.config_h_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
+        self.config_adv_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
+
+        # --- Rest of the editor frame below ---
         self.current_file_label = tk.Label(self.editor_frame, text='', font=('Arial', 10, 'bold'), fg='darkgreen', anchor='w', justify='left')
         logging.info('current_file_label created')
         self.current_file_label.pack(fill='x', padx=2, pady=2)
@@ -251,6 +283,8 @@ class ConfiguratorApp(tk.Tk):
         logging.info('edit_label created')
         self.edit_label.pack(anchor='w')
         logging.info('edit_label packed')
+
+        self.unsaved_edits = False
 
         # Controls subframe
         self.controls_frame = tk.Frame(self.editor_frame)
@@ -269,18 +303,6 @@ class ConfiguratorApp(tk.Tk):
         logging.info('load_selected_button created')
         self.load_selected_button.pack(side='left', padx=5)
         logging.info('load_selected_button packed')
-        self.save_edit_button = tk.Button(self.controls_frame, text='Save Edit', command=self.save_edit)
-        logging.info('save_edit_button created')
-        self.save_edit_button.pack(side='left', padx=15)
-        logging.info('save_edit_button packed')
-        self.save_file_button = tk.Button(self.controls_frame, text='Save File', command=self.save_with_prompt)
-        logging.info('save_file_button created')
-        self.save_file_button.pack(side='left', padx=5)
-        logging.info('save_file_button packed')
-        self.build_firmware_button = tk.Button(self.controls_frame, text='Build Firmware', command=self.build_firmware)
-        logging.info('build_firmware_button created')
-        self.build_firmware_button.pack(side='left', fill='x', padx=15)
-        logging.info('build_firmware_button packed')
 
         # Keyword filter subframe
         self.filter_frame = tk.Frame(self.editor_frame)
@@ -312,6 +334,21 @@ class ConfiguratorApp(tk.Tk):
         )
         self.hide_comments_check.pack(side='left', padx=5)
 
+        # Edit buttons subframe
+        self.edit_buttons_frame = tk.Frame(self.editor_frame)
+        self.edit_buttons_frame.pack(side='top', anchor='w', fill='x', pady=(8, 0))
+        self.save_edit_button = tk.Button(self.edit_buttons_frame, text='Save Edit', command=self.save_edit)
+        logging.info('save_edit_button created')
+        self.save_edit_button.pack(side='left', padx=5)
+        logging.info('save_edit_button packed')
+    # Removed original Save File button from edit_buttons_frame (now below file label)
+        self.build_firmware_button = tk.Button(self.edit_buttons_frame, text='Build Firmware', command=self.build_firmware)
+        logging.info('build_firmware_button created')
+        env_fg = self.example_env_label.cget("fg")
+        self.build_firmware_button.config(bg=env_fg, fg="white")
+        self.build_firmware_button.pack(side='right', fill='x', padx=15)
+        logging.info('build_firmware_button packed')
+
         # Canvas and scrollbar
         self.canvas = tk.Canvas(self.editor_frame)
         logging.info('canvas created')
@@ -334,12 +371,12 @@ class ConfiguratorApp(tk.Tk):
         self.base_lines = []
 
     def on_config_file_select(self):
-        '''Handle config file dropdown selection.'''
+        '''Handle config file dropdown selection: only set the file to be loaded, do not load it.'''
         selected_name = self.selected_config_file.get()
         idx = self.config_file_names.index(selected_name)
         self.opened_config_path = self.config_files[idx]
         self.edit_label.config(text=f'Edit Marlin/{selected_name} (filtered by keyword):')
-        self.load_config_file(self.opened_config_path)
+        # Do NOT load the file here; require user to use a Load button.
 
     def copy_env_to_platformio(self):
         '''Copy the example environment value to platformio.ini.'''
@@ -397,6 +434,7 @@ class ConfiguratorApp(tk.Tk):
         max_lines = 200  # Limit for testing large files
         for idx, line in enumerate(lines_to_display[:max_lines]):
             entry = tk.Entry(self.lines_frame, width=120)
+            entry.bind('<KeyRelease>', self._on_entry_edit)
             entry.insert(0, line["content"])
             entry.pack(fill='x', padx=2, pady=1)
             self.modified_entries.append(entry)
@@ -421,6 +459,9 @@ class ConfiguratorApp(tk.Tk):
                 logging.warning('Could not scroll to highlighted line: %s', e)
         else:
             self.after(10, lambda: self.canvas.yview_moveto(0))
+
+    def _on_entry_edit(self, event):
+        self.unsaved_edits = True
 
     def apply_keyword_filter(self):
         '''Filter displayed lines based on keywords, text input, and hide comments option.'''
@@ -473,20 +514,30 @@ class ConfiguratorApp(tk.Tk):
         self.show_lines(highlight_line_num=line_num, scroll_to_index=10)
 
     def load_other_file(self):
-        '''Load a different configuration file.'''
+        '''Load a different configuration file, only if a file is selected in the dropdown.'''
         logging.info('load_other_file called')
+        selected_name = self.selected_config_file.get()
+        if not selected_name:
+            messagebox.showwarning('Select File', 'Please select which file to edit before loading.')
+            return
+        initialdir = os.path.dirname(MARLIN_CONFIG_PATH)
         file_path = filedialog.askopenfilename(
             title='Load Configuration File',
-            filetypes=[('Header Files', '*.h'), ('All Files', '*.*')],
-            initialdir=os.path.dirname(MARLIN_CONFIG_PATH)
+            filetypes=[('Header Files', '*.h')],
+            initialdir=initialdir
         )
         if file_path:
             self.load_config_file(file_path)
 
     def load_config_file(self, file_path=None, error_message=None):
-        '''Load the specified configuration file.'''
+        '''Load the specified configuration file, only if a file is selected.'''
         if file_path is None:
-            file_path = self.opened_config_path if hasattr(self, 'opened_config_path') else self.config_files[0]
+            selected_name = self.selected_config_file.get()
+            if not selected_name:
+                messagebox.showwarning('Select File', 'Please select which file to edit before loading.')
+                return
+            idx = self.config_file_names.index(selected_name)
+            file_path = self.config_files[idx]
         logging.info('load_config_file called with file_path: %s', file_path)
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -504,12 +555,22 @@ class ConfiguratorApp(tk.Tk):
             messagebox.showerror('Error', msg)
 
     def load_base_config(self):
-        '''Load the selected config file into the editor, only if a config example is selected.'''
+        '''Load the selected config file into the editor, only if a file is selected.'''
         logging.info('load_base_config called')
-        self.load_config_file(self.opened_config_path, error_message='Failed to load base Marlin configuration file.')
+        selected_name = self.selected_config_file.get()
+        if not selected_name:
+            messagebox.showwarning('Select File', 'Please select which file to edit before loading.')
+            return
+        idx = self.config_file_names.index(selected_name)
+        file_path = self.config_files[idx]
+        self.load_config_file(file_path, error_message='Failed to load base Marlin configuration file.')
 
     def load_example_dialog(self):
-        '''Load an example configuration file.'''
+        '''Load an example configuration file, only if a file is selected.'''
+        selected_name = self.selected_config_file.get()
+        if not selected_name:
+            messagebox.showwarning('Select File', 'Please select which file to edit before loading.')
+            return
         current_example = self.selected_example.get()
         if not current_example or current_example not in example_folders:
             messagebox.showwarning('Select Example', 'Please select a printer configuration example before loading an example config.')
@@ -526,6 +587,10 @@ class ConfiguratorApp(tk.Tk):
         Save edits from displayed lines into self.base_lines and self.lines, marking edited lines.
         Only lines currently displayed and changed will be updated and marked as edited.
         """
+        if not self.unsaved_edits:
+            logging.info('save_edit called but no unsaved edits (self.unsaved_edits=%r)', self.unsaved_edits)
+            messagebox.showinfo('No Edits', 'There are no unsaved edits to save.')
+            return
         logging.info('save_edit called')
         if not self.base_lines or not self.modified_entries or not self.displayed_indices:
             messagebox.showwarning('No file loaded', 'No file is loaded or no lines are displayed.')
@@ -543,26 +608,50 @@ class ConfiguratorApp(tk.Tk):
                 if self.lines[idx]['content'] != entry_val:
                     self.lines[idx]['content'] = entry_val
                     self.lines[idx]['edited'] = True
-        messagebox.showinfo('Edits Saved', 'Your edits have been saved to the full file. Use Save to write the complete file.')
+        messagebox.showinfo('Edits Saved', 'Your edits have been saved to the full file. Use Save File to write the complete file.')
         logging.info('Edits saved to lines')
 
     def save_with_prompt(self):
-        '''Prompt user to save changes to base config or as a new file.'''
+        '''Prompt user to save changes to the currently selected file or as a new file.'''
         logging.info('save_with_prompt called')
-        result = messagebox.askquestion('Save', 'Update base file (Marlin/Configuration.h)?\nChoose No to Save As elsewhere.', icon='question')
+        selected_name = self.selected_config_file.get()
+        if not selected_name:
+            messagebox.showwarning('No File Selected', 'Please select a file for editing before saving.')
+            return
+        result = messagebox.askquestion(
+            'Save',
+            f'Update file (Marlin/{selected_name})?\nChoose No to Save As elsewhere.',
+            icon='question'
+        )
         if result == 'yes':
             self.save_base_config()
         else:
             self.save_as_config()
 
     def save_base_config(self):
-        '''Save changes to the currently opened config file.'''
+        '''Save changes to the currently selected config file.'''
         logging.info('save_base_config called')
+        selected_name = self.selected_config_file.get()
+        if not selected_name:
+            messagebox.showwarning('No File Selected', 'Please select a file for editing before saving.')
+            return
+        idx = self.config_file_names.index(selected_name)
+        file_path = self.config_files[idx]
         try:
             content = '\n'.join(line['content'] for line in self.lines)
-            with open(self.opened_config_path, 'w', encoding='utf-8') as f:
+            with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            messagebox.showinfo('Saved', f'Configuration updated: {self.opened_config_path}')
+            messagebox.showinfo('Saved', f'Configuration updated: {file_path}')
+            # Reset file picklist and clear editor after saving
+            self.selected_config_file.set("")
+            self.opened_config_path = None
+            self.edit_label.config(text='Edit Marlin/(select file) (filtered by keyword):')
+            self.current_file_label.config(text='')
+            self.lines = []
+            self.base_lines = []
+            self.modified_entries = []
+            self.displayed_indices = []
+            self.show_lines()
         except Exception as e:
             messagebox.showerror('Error', f'Failed to save: {e}')
 
@@ -573,8 +662,8 @@ class ConfiguratorApp(tk.Tk):
             title='Save Configuration As...',
             defaultextension='.h',
             filetypes=[('Header Files', '*.h'), ('All Files', '*.*')],
-            initialdir=os.path.dirname(self.opened_config_path),
-            initialfile=os.path.basename(self.opened_config_path)
+            initialdir=os.path.dirname(self.opened_config_path) if self.opened_config_path else '',
+            initialfile=os.path.basename(self.opened_config_path) if self.opened_config_path else ''
         )
         if file_path:
             config_dir_abs = os.path.abspath(CONFIG_DIR)
@@ -587,6 +676,16 @@ class ConfiguratorApp(tk.Tk):
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write(content)
                 messagebox.showinfo('Saved', f'Configuration saved as {file_path}')
+                # Reset file picklist and clear editor after saving
+                self.selected_config_file.set("")
+                self.opened_config_path = None
+                self.edit_label.config(text='Edit Marlin/(select file) (filtered by keyword):')
+                self.current_file_label.config(text='')
+                self.lines = []
+                self.base_lines = []
+                self.modified_entries = []
+                self.displayed_indices = []
+                self.show_lines()
             except Exception as e:
                 messagebox.showerror('Error', f'Failed to save: {e}')
 
@@ -669,10 +768,10 @@ class ConfiguratorApp(tk.Tk):
                 with open(env_file, 'r', encoding='utf-8') as f:
                     example_env_value = f.readline().strip()
             except Exception:
-                example_env_value = '(Could not read platformio-environment.txt)'
+                example_env_value = '(Could not read platfobrmio-environment.txt)'
         else:
             example_env_value = '(not set)'
-        self.example_env_value.set(f'Example env: {example_env_value}')
+        self.example_env_value.set(f'Target printer\'s required env: {example_env_value}')
 
         # Color logic for default_envs_label
         if not folder or example_env_value == '(not set)':
@@ -684,6 +783,23 @@ class ConfiguratorApp(tk.Tk):
         else:
             self.default_envs_label.config(fg='red')
             self.example_env_label.config(fg='red')
+
+        # Update Build Firmware button colour based on new logic
+        self.update_build_firmware_button_colour()
+        # sync Example Description label colour
+        self.example_desc_label.config(fg=self.example_env_label.cget("fg"))
+
+    def update_build_firmware_button_colour(self):
+        # 1. Default env label must be green
+        env_is_green = self.example_env_label.cget("fg") == "green"
+        # 2. Both OK boxes checked
+        config_h_ok = self.config_h_ok_var.get()
+        config_adv_ok = self.config_adv_ok_var.get()
+        if env_is_green and config_h_ok and config_adv_ok:
+            # Use the env label color (green)
+            self.build_firmware_button.config(bg=self.example_env_label.cget("fg"), fg="white")
+        else:
+            self.build_firmware_button.config(bg="red", fg="white")
 
     def update_flash_card_keywords(self):
         '''Update flash card keywords UI with checkboxes for selection.'''
@@ -706,14 +822,34 @@ class ConfiguratorApp(tk.Tk):
             tk.Label(self.keywords_frame, text='No keywords for this objective.', font=('Arial', 10), fg='gray').pack(anchor='w')
 
     def on_example_select(self, value):
-        '''Handle selection of a printer configuration example.'''
         self.selected_example.set(value)
         self.update_default_envs_label()
-		# Optionally refresh UI or load config file here
+        # Update description label
+        desc_path = os.path.join(CONFIG_DIR, value, 'description.txt')
+        desc_text = ''
+        if os.path.isfile(desc_path):
+            with open(desc_path, 'r', encoding='utf-8') as f:
+                desc_text = f.readline().strip()
+        self.example_desc_label.config(text=desc_text)
+        self.update_build_firmware_button_colour()
 
     def build_firmware(self):
         '''Verify readiness and prompt user before running firmware build.'''
         logging.info('build_firmware called')
+        unmet = []
+        # 1. Default env label must be green
+        if self.example_env_label.cget("fg") != "green":
+            unmet.append("PlatformIO default_envs must match the example environment (label must be green)")
+        # 2. Both OK boxes checked
+        if not self.config_h_ok_var.get():
+            unmet.append("You must confirm ./Marlin/Configuration.h is ready (check 'Configuration.h OK')")
+        if not self.config_adv_ok_var.get():
+            unmet.append("You must confirm ./Marlin/Configuration_adv.h is ready (check 'Configuration_adv.h OK')")
+        if unmet:
+            msg = "Cannot build firmware. Please satisfy the following before building:\n\n" + "\n".join(unmet)
+            messagebox.showerror("Build Firmware - Requirements Not Met", msg)
+            return
+
         # 1. Check that base config file is ready (file exists and has content)
         try:
             with open(MARLIN_CONFIG_PATH, 'r', encoding='utf-8') as f:
@@ -753,7 +889,15 @@ class ConfiguratorApp(tk.Tk):
                 example_env_value = ''
 
         # Compose summary for user
-        summary = f"Base config: {MARLIN_CONFIG_PATH}\nPrinter config: {selected}\nPlatformIO default_envs: {env_value}\nTarget env: {example_env_value}\n\nProceed with build?"
+        config_adv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration_adv.h'))
+        summary = (
+            f"Base config: {MARLIN_CONFIG_PATH}"
+            f"\nBase config (adv): {config_adv_path}"
+            f"\nPrinter config: {selected}"
+            f"\nPlatformIO default_envs: {env_value}"
+            f"\nTarget env: {example_env_value}"
+            f"\n\nProceed with build?"
+        )
         result = messagebox.askquestion('Build Firmware', summary, icon='question')
         if result != 'yes':
             logging.info('User aborted firmware build')
@@ -770,6 +914,13 @@ class ConfiguratorApp(tk.Tk):
         except Exception as e:
             logging.error('Build failed: %s', e)
             messagebox.showerror('Error', f'Failed to start build: {e}')
+    # Ensure Build Firmware button color updates if checkboxes are toggled
+    def _on_ok_checkbox_toggle(self, *args):
+        self.update_build_firmware_button_colour()
+
+        # Attach trace to OK checkboxes to update button color on toggle
+        self.config_h_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
+        self.config_adv_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
 
 if __name__ == "__main__":
     app = ConfiguratorApp()
