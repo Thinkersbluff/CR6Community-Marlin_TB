@@ -763,7 +763,7 @@ class ConfiguratorApp(tk.Tk):
         # Run build command
         try:
             repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
-            build_script = os.path.join(repo_root, 'tools', 'build', 'auto_build.py')
+            build_script = os.path.join(repo_root, 'tools', 'configurator', 'auto_build.py')
             build_cmd = [sys.executable, build_script, 'build']
             logging.info('Running build command: %s in %s', build_cmd, repo_root)
             subprocess.Popen(build_cmd, cwd=repo_root)
