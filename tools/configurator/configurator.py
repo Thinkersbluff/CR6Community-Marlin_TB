@@ -1,4 +1,8 @@
 # Marlin Configuration Tool (C) Thinkersbluff, 2025
+'''A gui-based app for configuring and building Marlin firmware'''
+#
+# pylint: disable=too-many-instance-attributes, too-many-public-methods
+# pylint: disable=line-too-long
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,11 +26,11 @@
 #      (e.g., sudo apt install python3-tk).
 #
 # Recommended workflow:
-# 
+#
 # 1. Plan your edits, according to:
 #  - Which printer configuration you wish to target with your build
 #  - Whether you plan to modify an existing configuration or start from one of the examples in ./config
-#  - Whether you need to create multiple variants of configuration file or just one 
+#  - Whether you need to create multiple variants of configuration file or just one
 #        (e,g, how many CR6 printer configurations you wish to target and where will you store those files)
 #
 # 2. Launch the tool, from the .tools/configurator directory:
@@ -36,11 +40,12 @@
 # 2. Select one objective at a time and review the flash card
 # 3. Filter the display by selecting the recommended keywords
 # 4. Modify the configuration settings as needed.
-# 5. Save your changes 
+# 5. Save your changes
 # 6. Copy the platformio.txt field to Platformio.ini
 # 7. Build your customized firmware. (See BUILD_AND_TEST.md for guideance)
 #
 #
+
 
 import os
 import sys
@@ -49,27 +54,36 @@ from tkinter import ttk, filedialog, messagebox, simpledialog
 import json
 import logging
 import subprocess
+import webbrowser
 # Import flash card logic
 from flash_cards import load_flash_cards
 
 # Setup logging to file
-logging.basicConfig(filename='configurator_debug.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(
+    filename='configurator_debug.log',
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s %(message)s'
+)
 
-CONFIG_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../config'))
-MARLIN_CONFIG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration.h'))
+base_dir = os.path.dirname(__file__)
+CONFIG_DIR = os.path.abspath(os.path.join(base_dir, '../../config'))
+MARLIN_CONFIG_PATH = os.path.abspath(os.path.join(base_dir, '../../Marlin/Configuration.h'))
 
 # Find all example folders containing 'cr6' in their name
-example_folders = [f for f in os.listdir(CONFIG_DIR) if os.path.isdir(os.path.join(CONFIG_DIR, f)) and 'cr6' in f]
+example_folders = [
+    f for f in os.listdir(CONFIG_DIR)
+    if os.path.isdir(os.path.join(CONFIG_DIR, f)) and 'cr6' in f
+]
 
 class ConfiguratorApp(tk.Tk):
     '''Main application class for the Marlin Configurator GUI.'''
-    def __init__(self):
+    def __init__(self): # pylint: disable=too-many-statements
         logging.info('ConfiguratorApp __init__ started')
         super().__init__()
         logging.info('Tkinter __init__ started')
         self.title('Marlin Configurator')
         self.geometry('1280x1024')
-        
+
         # Picklist frame
         self.picklist_frame = tk.Frame(self, bd=1, relief='groove')
         logging.info('picklist_frame created')
@@ -207,7 +221,7 @@ class ConfiguratorApp(tk.Tk):
         logging.info('workflow_data loaded')
         self.workflow_step = 0
         self.workflow_completed = [False] * len(self.workflow_data)
-        for i, step in enumerate(self.workflow_data):
+        for step in self.workflow_data:
             cb = tk.Checkbutton(self.workflow_frame, text=step['step'], variable=tk.BooleanVar(value=False), font=('Arial', 12), anchor='w', justify='left')
             logging.info('workflow checkbox created for step: %s', step["step"])
             cb.pack(fill='x', pady=(2,0), anchor='w')
@@ -218,13 +232,13 @@ class ConfiguratorApp(tk.Tk):
             desc_label.pack(fill='x', pady=(0,8), anchor='w')
             logging.info('workflow desc_label packed for step: %s', step["step"])
             self.workflow_desc_labels.append(desc_label)
-            
+
     # Editor frame
         self.editor_frame = tk.Frame(self.main_row_frame, bd=1, relief='groove')
         logging.info('editor_frame created')
         self.editor_frame.pack(side='left', fill='both', expand=True, padx=10, pady=5)
         logging.info('editor_frame packed')
-        
+
 
         # --- File picklist and OK checkboxes in a horizontal subframe ---
         self.file_and_ok_frame = tk.Frame(self.editor_frame)
@@ -334,6 +348,8 @@ class ConfiguratorApp(tk.Tk):
         )
         self.hide_comments_check.pack(side='left', padx=5)
 
+        self.keyword_vars = []
+
         # Edit buttons subframe
         self.edit_buttons_frame = tk.Frame(self.editor_frame)
         self.edit_buttons_frame.pack(side='top', anchor='w', fill='x', pady=(8, 0))
@@ -341,7 +357,7 @@ class ConfiguratorApp(tk.Tk):
         logging.info('save_edit_button created')
         self.save_edit_button.pack(side='left', padx=5)
         logging.info('save_edit_button packed')
-    # Removed original Save File button from edit_buttons_frame (now below file label)
+        # Removed original Save File button from edit_buttons_frame (now below file label)
         self.build_firmware_button = tk.Button(self.edit_buttons_frame, text='Build Firmware', command=self.build_firmware)
         logging.info('build_firmware_button created')
         env_fg = self.example_env_label.cget("fg")
@@ -407,8 +423,15 @@ class ConfiguratorApp(tk.Tk):
                 f.writelines(new_lines)
             messagebox.showinfo('Copied', f'platformio.ini updated with env: {env_value}')
             self.update_default_envs_label()
-        except Exception as e:
+        except FileNotFoundError as e:
+            messagebox.showerror('Error', f'File not found: {e}')
+            logging.error('File not found in copy_env_to_platformio: %s', e)
+        except PermissionError as e:
+            messagebox.showerror('Error', f'Permission denied: {e}')
+            logging.error('Permission denied in copy_env_to_platformio: %s', e)
+        except Exception as e:  # pylint: disable=broad-exception-caught
             messagebox.showerror('Error', f'Failed to copy env: {e}')
+            logging.exception('Unexpected error in copy_env_to_platformio')
         self.update_default_envs_label()
         logging.info('update_default_envs_label called')
 
@@ -455,12 +478,12 @@ class ConfiguratorApp(tk.Tk):
                     self.after(10, lambda: self.canvas.yview_moveto(frac))
                 else:
                     self.after(10, lambda: self.canvas.yview_moveto(0))
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 logging.warning('Could not scroll to highlighted line: %s', e)
         else:
             self.after(10, lambda: self.canvas.yview_moveto(0))
 
-    def _on_entry_edit(self, event):
+    def _on_entry_edit(self, event):  # pylint: disable=unused-argument
         self.unsaved_edits = True
 
     def apply_keyword_filter(self):
@@ -550,9 +573,18 @@ class ConfiguratorApp(tk.Tk):
             self.show_lines()
             self.current_file_label.config(text=file_path)
             self.opened_config_path = file_path
-        except Exception as e:
+        except FileNotFoundError as e:
+            msg = error_message if error_message else f'File not found: {e}'
+            messagebox.showerror('Error', msg)
+            logging.error('File not found in load_config_file: %s', e)
+        except PermissionError as e:
+            msg = error_message if error_message else f'Permission denied: {e}'
+            messagebox.showerror('Error', msg)
+            logging.error('Permission denied in load_config_file: %s', e)
+        except Exception as e:  # pylint: disable=broad-exception-caught
             msg = error_message if error_message else f'Failed to load: {e}'
             messagebox.showerror('Error', msg)
+            logging.exception('Unexpected error in load_config_file')
 
     def load_base_config(self):
         '''Load the selected config file into the editor, only if a file is selected.'''
@@ -652,8 +684,12 @@ class ConfiguratorApp(tk.Tk):
             self.modified_entries = []
             self.displayed_indices = []
             self.show_lines()
-        except Exception as e:
+        except PermissionError as e:
+            messagebox.showerror('Error', f'Permission denied: {e}')
+            logging.error('Permission denied in save_base_config: %s', e)
+        except Exception as e:  # pylint: disable=broad-exception-caught
             messagebox.showerror('Error', f'Failed to save: {e}')
+            logging.exception('Unexpected error in save_base_config')
 
     def save_as_config(self):
         '''Save changes to a new configuration file/location.'''
@@ -686,8 +722,12 @@ class ConfiguratorApp(tk.Tk):
                 self.modified_entries = []
                 self.displayed_indices = []
                 self.show_lines()
-            except Exception as e:
+            except PermissionError as e:
+                messagebox.showerror('Error', f'Permission denied: {e}')
+                logging.error('Permission denied in save_as_config: %s', e)
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 messagebox.showerror('Error', f'Failed to save: {e}')
+                logging.exception('Unexpected error in save_as_config')
 
     def on_objective_select(self, value):
         '''Handle selection of an objective flash card.'''
@@ -740,10 +780,10 @@ class ConfiguratorApp(tk.Tk):
         self.update_flash_card_keywords()
 
     def open_docs_link(self, url):
+        '''Open the documentation link in a web browser.'''
         logging.info('open_docs_link called with url: %s', url)
-        import webbrowser
         webbrowser.open(url)
-        
+
     def update_default_envs_label(self):
         '''Update the default_envs label and example_env label based on selected example.'''
         logging.info('update_default_envs_label called')
@@ -755,7 +795,7 @@ class ConfiguratorApp(tk.Tk):
                     if line.strip().startswith('default_envs'):
                         env_value = line.strip().split('=',1)[-1].strip()
                         break
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             env_value = '(Could not read platformio.ini)'
         self.default_envs_value.set(env_value)
 
@@ -767,7 +807,7 @@ class ConfiguratorApp(tk.Tk):
             try:
                 with open(env_file, 'r', encoding='utf-8') as f:
                     example_env_value = f.readline().strip()
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 example_env_value = '(Could not read platfobrmio-environment.txt)'
         else:
             example_env_value = '(not set)'
@@ -790,6 +830,7 @@ class ConfiguratorApp(tk.Tk):
         self.example_desc_label.config(fg=self.example_env_label.cget("fg"))
 
     def update_build_firmware_button_colour(self):
+        '''Update the Build Firmware button colour based on current state.'''
         # 1. Default env label must be green
         env_is_green = self.example_env_label.cget("fg") == "green"
         # 2. Both OK boxes checked
@@ -822,6 +863,7 @@ class ConfiguratorApp(tk.Tk):
             tk.Label(self.keywords_frame, text='No keywords for this objective.', font=('Arial', 10), fg='gray').pack(anchor='w')
 
     def on_example_select(self, value):
+        '''Handle selection of a configuration example (i.e. target printer).'''
         self.selected_example.set(value)
         self.update_default_envs_label()
         # Update description label
@@ -857,7 +899,7 @@ class ConfiguratorApp(tk.Tk):
             if not config_content:
                 messagebox.showerror('Error', 'Base configuration file is empty!')
                 return
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             messagebox.showerror('Error', f'Base configuration file not found or unreadable: {e}')
             return
 
@@ -876,7 +918,7 @@ class ConfiguratorApp(tk.Tk):
                     if line.strip().startswith('default_envs'):
                         env_value = line.strip().split('=',1)[-1].strip()
                         break
-        except Exception:
+        except Exception:  # pylint: disable=broad-exception-caught
             env_value = ''
         folder = selected
         example_env_value = ''
@@ -885,7 +927,7 @@ class ConfiguratorApp(tk.Tk):
             try:
                 with open(env_file, 'r', encoding='utf-8') as f:
                     example_env_value = f.readline().strip()
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 example_env_value = ''
 
         # Compose summary for user
@@ -911,11 +953,12 @@ class ConfiguratorApp(tk.Tk):
             logging.info('Running build command: %s in %s', build_cmd, repo_root)
             subprocess.Popen(build_cmd, cwd=repo_root)
             messagebox.showinfo('Build Started', 'Firmware build started in background. Check terminal or logs for output.')
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-exception-caught
             logging.error('Build failed: %s', e)
             messagebox.showerror('Error', f'Failed to start build: {e}')
     # Ensure Build Firmware button color updates if checkboxes are toggled
-    def _on_ok_checkbox_toggle(self, *args):
+    def _on_ok_checkbox_toggle(self, *args):  # pylint: disable=unused-argument
+        '''Update the Build Firmware button colour based on current state.'''
         self.update_build_firmware_button_colour()
 
         # Attach trace to OK checkboxes to update button color on toggle
