@@ -1,5 +1,10 @@
 # Guidebook: Building Marlin Firmware with `build-configs.sh`
 
+This guide is specifically directed toward Linus platform users in the class/category of DEVELOPER.  
+
+Linux platform users who just want to customize the firmware for their own printer(s) should instead reference the guide JUST_BUILD_IT_GUIDE_LINUX.md.
+
+
 ## Overview
 This guide explains how to use the `build-configs.sh` script from the `tools/linux/build` directory to build and package multiple Marlin firmware configurations using a containerized build environment. It also includes a troubleshooting section based on real-world issues and solutions.
 
@@ -47,13 +52,13 @@ If you encounter errors, follow these steps:
   - Ensure your `compose.yaml` has the correct absolute path for the repo root:
     ```yaml
     volumes:
-      - /home/stephen/CR6Community-Marlin_TB:/code
+      - .:/code
       - platformio-cache:/home/user/.platformio
     ```
-  - Make sure you run the script from `tools/linux/build/`.
+  - Make sure you run the script from the root of the repository.
   - Confirm the files exist on your host:
     ```bash
-    ls /home/stephen/CR6Community-Marlin_TB/config/<config-name>/Configuration*.h
+    ls /home/<user name>/CR6Community-Marlin_TB/config/<config-name>/Configuration*.h
     ```
   - Check inside the container:
     ```bash
@@ -99,8 +104,9 @@ If you encounter errors, follow these steps:
 
 ## Support
 If you encounter issues not covered here, please provide:
-- The exact error message
-- The output of `ls -l` for the relevant config folder (both on host and in Podman)
+- The exact error message you received
+- The `build_log` file from your build attempt (found in the build output directory or inside the relevant ZIP file)
+- The ZIP file produced for the failed configuration (if available)
 - The relevant section of your `compose.yaml`
 
-This will help others assist you more quickly.
+Including the `build_log` and ZIP file will help others diagnose and assist you much more quickly.

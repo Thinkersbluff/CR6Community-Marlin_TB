@@ -90,7 +90,7 @@ Built packages are organized in `.pio/build-output/`:
 
 1. **Setup podman environment:**
    ```bash
-   cd podman
+   cd ./tools/linux/build/podman # navigate to this folder
    podman-compose build
    ```
 
@@ -102,7 +102,7 @@ Built packages are organized in `.pio/build-output/`:
 
 3. **Build all configurations:**
    ```bash
-   ./build-configs.sh v2.1.3.2
+   ./build-configs.sh test-build
    ```
 
 For more detailed information, see the main [BUILD_AND_TEST.md](../../../docs/development/repo_guidelines/BUILD_AND_TEST.md) documentation.

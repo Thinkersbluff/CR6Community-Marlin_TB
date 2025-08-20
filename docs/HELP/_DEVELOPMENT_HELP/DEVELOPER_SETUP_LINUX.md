@@ -5,20 +5,40 @@ This document provides users with basic instructions and workflows for configuri
 > **Note:** If you use both Linux and Windows on the same computer to maintain this repository, see also the [DUAL_BOOT_GUIDELINES.md](../DUAL_BOOT_GUIDELINES.md).
 
 ## Table of Contents
-- [Script Usage Guidelines](#script-usage-guidelines)
-- [Containerized (Podman) Environment](#containerized-podman-environment)
-- [Build Methods](#build-methods)
-- [Linux Build Scripts](#linux-build-scripts)
-- [Permission Management](#permission-management)
-- [Testing Infrastructure](#testing-infrastructure)
-- [Configuration Management](#configuration-management)
-- [Makefile Targets](#makefile-targets)
-- [Continuous Integration](#continuous-integration)
-- [Build Tools and Scripts](#build-tools-and-scripts)
-- [Focused Development Workflow](#focused-development-workflow)
-- [Troubleshooting](#troubleshooting-podman--platformio)
-- [Performance Notes](#performance-notes)
-- [Security Guidelines](#security-guidelines)
+- [Build \& Test Documentation (Linux)](#build--test-documentation-linux)
+  - [Table of Contents](#table-of-contents)
+  - [Script Usage Guidelines](#script-usage-guidelines)
+    - [Examples:](#examples)
+  - [Containerized (Podman) Environment](#containerized-podman-environment)
+    - [Install Podman and Podman Compose](#install-podman-and-podman-compose)
+  - [Build Methods](#build-methods)
+    - [1. Container-based Building, using Podman (Recommended)](#1-container-based-building-using-podman-recommended)
+      - [Build Specific Configuration](#build-specific-configuration)
+      - [Interactive Podman Session](#interactive-podman-session)
+    - [2. Local PlatformIO Building](#2-local-platformio-building)
+      - [Requirements](#requirements)
+      - [Process](#process)
+  - [Linux Build Scripts](#linux-build-scripts)
+  - [Permission Management](#permission-management)
+    - [Preventing Permission Issues](#preventing-permission-issues)
+    - [Diagnosing Permission Problems](#diagnosing-permission-problems)
+    - [Fixing Permission Issues](#fixing-permission-issues)
+      - [Method 1: Fix Ownership (Quick Fix)](#method-1-fix-ownership-quick-fix)
+      - [Method 2: Clean and Rebuild](#method-2-clean-and-rebuild)
+      - [Method 3: Reset PlatformIO Environment](#method-3-reset-platformio-environment)
+      - [Method 4: Podman User Mapping (Permanent Solution)](#method-4-podman-user-mapping-permanent-solution)
+  - [Testing Infrastructure](#testing-infrastructure)
+  - [Configuration Management](#configuration-management)
+  - [Makefile Targets](#makefile-targets)
+    - [Setup Targets](#setup-targets)
+    - [Testing Targets](#testing-targets)
+  - [Continuous Integration](#continuous-integration)
+  - [Build Tools and Scripts](#build-tools-and-scripts)
+  - [Focused Development Workflow](#focused-development-workflow)
+  - [Troubleshooting (Podman \& PlatformIO)](#troubleshooting-podman--platformio)
+    - [Common Issues \& Solutions](#common-issues--solutions)
+  - [Performance Notes](#performance-notes)
+  - [Security Guidelines](#security-guidelines)
 
 ---
 
@@ -43,11 +63,18 @@ cd tools/linux/vscode
 ← [ToC](#table-of-contents)
 
 ### Install Podman and Podman Compose
+You can use apt to install both of these apps on a Debian/Ubuntu system:
 ```bash
 sudo apt update && sudo apt install -y podman podman-compose
 ```
 
-### Use the configuration files in `tools/linux/build/podman/`.
+Alternatively, you can use the shell script 'get-podman.sh', as follows:
+``` bash
+cd ./tools/linux/build/podman # navigate to this directory
+sudo sh get-podman.sh
+```
+The get-podman.sh script can install Podman and podman-compose on Debian, Ubuntu, Fedora, CentOS, RHEL, and openSUSE systems.
+
 
 ## Build Methods
 ← [ToC](#table-of-contents)

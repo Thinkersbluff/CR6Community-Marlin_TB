@@ -35,6 +35,7 @@ This document provides users with basic instructions and workflows for configuri
   - [Build Tools and Scripts](#build-tools-and-scripts)
   - [Focused Development Workflow](#focused-development-workflow)
   - [Troubleshooting](#troubleshooting)
+      - [AWK strftime Error When Running Build Scripts](#awk-strftime-error-when-running-build-scripts)
   - [Performance Notes](#performance-notes)
   - [Security Guidelines](#security-guidelines)
   - [Appendix](#appendix)
@@ -263,6 +264,46 @@ For CR6-specific development, use the supported configurations in `config/` and 
        wsl --set-default-version 2
        ```
   - After updating, Docker Desktop should recognize your WSL as up to date.
+
+#### AWK strftime Error When Running Build Scripts
+
+**Symptom:**  
+You encounter an error similar to:
+```
+awk: line 2: function strftime never defined
+```
+
+**Cause:**  
+The version of `awk` available in your WSL2 Linux environment does not support the `strftime` function, which is required by the build scripts for timestamped logging. This is often due to using an outdated or unsupported Linux distribution (such as Ubuntu 18.04 or Debian Buster) in WSL2, which may no longer have access to up-to-date package repositories.
+
+**Solution:**  
+You need to upgrade your WSL2 Linux distribution to a supported and up-to-date version (such as Ubuntu 22.04 or later).  
+Do not run `apt-get` commands inside the Docker container terminal. Instead, perform the upgrade in your WSL2 terminal.
+
+**To upgrade your WSL2 Ubuntu distribution:**
+
+1. **Edit the Release Upgrade Configuration:**
+    ```sh
+    sudo nano /etc/update-manager/release-upgrades
+    ```
+    - Find the line:  
+       `Prompt=lts`
+    - Change it to:  
+       `Prompt=normal`
+    - Save and exit (Ctrl+O, Enter, Ctrl+X).
+
+2. **Run the Upgrade Command:**
+    ```sh
+    sudo do-release-upgrade
+    ```
+    - Follow the prompts to upgrade to the latest Ubuntu release.
+
+**Important Notes:**
+- **LTS vs. Non-LTS:** LTS versions (e.g., 20.04, 22.04) are stable and supported for 5 years. Non-LTS versions (e.g., 22.10) are supported for only 9 months. For most users, LTS is recommended for stability.
+- **Next LTS Release:** If you are already on an LTS version (e.g., 22.04), you will need to wait for the next LTS release (e.g., 24.04) to upgrade, unless you set `Prompt=normal` to allow non-LTS upgrades.
+
+**After upgrading, re-run your build script.**  
+This will ensure your environment has access to up-to-date packages (including `gawk`), and the required `strftime` function will be available.
 
 ## Performance Notes
 ← [ToC](#table-of-contents)
