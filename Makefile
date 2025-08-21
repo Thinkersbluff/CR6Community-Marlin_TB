@@ -34,19 +34,19 @@ tests-single-local:
 
 tests-single-local-podman:
 	@if ! test -n "$(TEST_TARGET)" ; then echo "***ERROR*** Set TEST_TARGET=<your-module> or use make tests-all-local-podman" ; return 1; fi
-	podman-compose -f tools/linux_developers/build/podman/podman-compose.yml run --rm marlin $(MAKE) tests-single-local TEST_TARGET=$(TEST_TARGET) VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD) ONLY_TEST="$(ONLY_TEST)"
+	podman-compose -f ./compose.yaml run --rm marlin $(MAKE) tests-single-local TEST_TARGET=$(TEST_TARGET) VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD) ONLY_TEST="$(ONLY_TEST)"
 .PHONY: tests-single-local-podman
 
 tests-all-local:
 	export PATH=./buildroot/bin/:./buildroot/tests/:${PATH} \
 	  && export VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) \
-	  && for TEST_TARGET in $$(./tools/linux/test/get_test_targets.py) ; do echo "Running tests for $$TEST_TARGET" ; run_tests . $$TEST_TARGET ; done
+	  && for TEST_TARGET in $$(./tools/linux_developers/test/get_test_targets.py) ; do echo "Running tests for $$TEST_TARGET" ; run_tests . $$TEST_TARGET ; done
 .PHONY: tests-all-local
 
 tests-all-local-podman:
-	podman-compose -f tools/linux_developers/build/podman/compose.yaml run --rm marlin $(MAKE) tests-all-local VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD)
+	podman-compose -f ./compose.yaml run --rm marlin $(MAKE) tests-all-local VERBOSE_PLATFORMIO=$(VERBOSE_PLATFORMIO) GIT_RESET_HARD=$(GIT_RESET_HARD)
 .PHONY: tests-all-local-podman
 
 setup-local-podman:
-	podman-compose -f tools/linux_developers/build/podman/compose.yaml build
+	podman-compose -f ./compose.yaml build
 .PHONY: setup-local-podman
