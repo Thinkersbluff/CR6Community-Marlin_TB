@@ -1,66 +1,58 @@
-# Quick Start: Build Your Own Firmware (for <Windows (10, 11))
+# JUST_BUILD_LINUX.md
 
-This guide will help you create a custom firmware file for your 3D printer(s), using our easy-to-use Configurator tool.  
-**No programming or GitHub experience required!**
+# Marlin Configurator: Quick Start Guide for Linux
 
----
-
-## 1. What You Need
-
-- A computer running Windows 10 or 11, Python, and Platformio
-- A copy (a.k.a "clone") of the repository (see step#2)
-- An SD card and SD card reader
-- Internet access
+This guide will help you quickly build Marlin firmware using the Marlin Configurator tool on Linux. It is designed for non-developers and new users. If you are a developer, see the DEVELOPER_BUILD_LINUX.md document instead.
 
 ---
 
-## 2. "Download ZIP" the Repository to a Local Hard Drive
+## 1. Prerequisites
 
-- Go to: [github.com/Thinkersbluff/CR6Community-Marlin_TB](https://github.com/Thinkersbluff/CR6Community-Marlin_TB)
-- Click the green Code button
-- Select Download ZIP
-- Open your Downloads folder
-- Right-click the file CR6Community-Marlin_TB-main.zip → choose Extract All…
-- Choose where you want to keep the project (e.g., D:\Firmware)
-- Open the folder: CR6Community-Marlin_TB-main\tools\configurator
+- **Python 3** (with Tkinter)
+- **PlatformIO** (for building Marlin)
+- **pip** (Python package manager)
+- **PyYAML** (for automated testing, optional)
 
----
+### Install Required Packages
 
-## 3. Install Python (if not already installed)
+Open a terminal and run:
 
-- Download Python 3.x from [python.org](https://www.python.org/downloads/).
-- During installation, make sure to check the box: **"Add Python to PATH"** (Windows only).
-
----
-
-## 4. Download the Platformio Tool
-
-
-
----
-
-## 5. Launch the Firmware Tool
-
-Double-click `configurator.py` 
-
-OR: 
-
-Open a terminal window (WindowsKey+R, type cmd, press Enter)
-In the terminal window, navigate to the root folder of your copy of the repository.
-Then, in the window, enter:
-
+```sh
+sudo apt update
+sudo apt install python3 python3-tk python3-pip git
+pip3 install --user platformio
+pip3 install --user pyyaml
 ```
+
+If you use a different Linux distribution, use your package manager (e.g., `dnf`, `yum`, `zypper`, or `pacman`) to install Python 3 and Tkinter.
+
+---
+
+## 2. Download the Repository from GitHub
+
+Clone the repository (or download and extract the ZIP):
+
+```sh
+git clone https://github.com/<your-marlin-repo>.git
+cd <your-marlin-repo>
+```
+
+---
+
+## 3. Launch the Configurator Tool
+
+From the repository root, run:
+
+```sh
 cd ./tools/configurator
-python configurator.py
+python3 configurator.py
 ```
 
-The Configurator application should open on your screen.
- - If it does not, see Troubleshooting, below.
- - If it does, proceed to step 6.
+If you see an error about Tkinter, make sure `python3-tk` is installed.
 
 ---
 
-## 6. Use the Tool to Build Firmware
+## 4. Use the Tool to Build Firmware
 
 1. Read-through the process checklist displayed in the app.
 2. [Optionally] Tick the boxes as you work your way through the process.
@@ -106,7 +98,7 @@ The Configurator application should open on your screen.
 
 ---
 
-## 7. Flash the Firmware to Your Printer
+## 5. Flash the Firmware to Your Printer
 
 1. Insert your SD card into your computer.
 2. Copy the `firmware.bin` file to the root of the SD card.
@@ -117,21 +109,19 @@ The Configurator application should open on your screen.
 
 ---
 
-## 8. Troubleshooting
+## 6. Troubleshooting
 
-- **The tool won’t open:**  
-  If there is a file configurator_debug.log, open that in a text editor like Notepad and look for clues.
-  Make sure Python 3 and Tkinter are installed. Try running from a terminal/command prompt.
-- **No firmware.bin file is created:**  
-  Check for error messages in the tool. Make sure you have write permissions to the folder.
-- **Security warning (macOS):**  
-  Go to System Preferences > Security & Privacy and allow the app to run.
-- **Other issues:**  
-  See the [FAQ](../FAQ.md) or ask for help on the community forum.
+- **The tool won’t open:**
+  - Check for a `configurator_debug.log` file and review it.
+  - Make sure Python 3 and Tkinter are installed. Try running from a terminal.
+- **No firmware.bin file is created:**
+  - Check for error messages in the tool. Make sure you have write permissions.
+- **Other issues:**
+  - See the [FAQ](../FAQ.md) or ask for help on the community forum.
 
 ---
 
-## 9. Need More Help?
+## 7. Need More Help?
 
 - See the [FAQ](../FAQ.md)
 - Visit the [community support forum](https://community.cr6.com)
