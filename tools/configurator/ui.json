@@ -6,7 +6,7 @@
     },
     {
       "step": "2. Select target printer from picklist",
-      "description": "Choose the applicable printer configuration from the dropdown menu"
+      "description": "Choose the target printer configuration from the dropdown menu. If the default environment text is RED, click 'copy env to platformio.ini'."
     },
     {
       "step": "3. Select and review objectives",
@@ -14,23 +14,23 @@
     },
     {
       "step": "Load the file you need to edit",
-      "description": "Choose whether to load the base configuration file, a configuration example file, or browse and select another file."
+      "description": "Select either Configuration.h or Configuration_adv.h to edit. Choose whether to load the base configuration file, a configuration example file, or browse and select another file."
     },
     {
       "step": "Filter and modify settings",
-      "description": "Find and edit the configuration settings as needed. Start with Keywords from flash card"
+      "description": "Find and edit the relevant configuration settings. Start with Keywords from flash card. Hide Comments and type keywords, to filter the displayed lines. View in Context to understand a line in context."
     },
     {
       "step": "Save your changes",
-      "description": "Either Overwrite the Base file directly, or Browse and SaveAs, elsewhere."
+      "description": "Save Edit, to commit your changes.  Save File to either: Overwrite the Base file directly, or Browse and SaveAs, elsewhere."
     },
     {
-      "step": "Copy platformio.txt field",
-      "description": "Copy the platformio.txt field, from your chosen target platform folder,to Platformio.ini."
+      "step": "Verify that the platformio environment and both Configuration*.h files are 'Ready' to Build",
+      "description": "You must check the boxes for Configuration.h OK and Configuration_adv.h OK and must ensure the platformio environment is set up correctly, before the Build Firmware button will turn green."
     },
     {
       "step": "Build your customized firmware",
-      "description": "Build your customized firmware as described in BUILD_AND_TEST.md."
+      "description": "When the Build Firmware button is green, click it to build your firmware. A popup message will ask you to confirm the build parameters. A window will open to show you the build process.  A build.log file will be created and stored with each individual build. The location of the bin file will be reported in that terminal window."
     }
   ]
 }
