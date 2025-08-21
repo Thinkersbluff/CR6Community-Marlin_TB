@@ -48,5 +48,6 @@ tests-all-local-podman:
 .PHONY: tests-all-local-podman
 
 setup-local-podman:
-	podman-compose -f ./compose.yaml build
+	podman build -t marlin-dev -f Dockerfile .
+	podman run --rm -it -v $(PWD):/workspace -w /workspace marlin-dev /bin/bash
 .PHONY: setup-local-podman
