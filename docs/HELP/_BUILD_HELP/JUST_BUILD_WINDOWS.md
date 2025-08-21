@@ -33,13 +33,19 @@ This guide will help you create a custom firmware file for your 3D printer(s), u
 
 ---
 
-## 4. Download the Platformio Tool
+## 4. Install the Platformio Client Tool
 
+This is the tool that actually builds your firmware.bin file.
 
+- Go to [platformio.org](https://platformio.org/install/cli) and follow the instructions for Windows to install the PlatformIO Core (CLI) tool.
 
+**NOTE:** You do NOT need the full PlatformIO IDE—just the command-line tool (Core).
+
+If you have trouble, see the troubleshooting tips on the PlatformIO website.
 ---
 
-## 5. Launch the Firmware Tool
+## 5. Launch the Configurator Application
+Either:
 
 Double-click `configurator.py` 
 
