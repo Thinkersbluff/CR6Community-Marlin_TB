@@ -39,6 +39,10 @@ This document provides users with basic instructions and workflows for configuri
     - [Common Issues \& Solutions](#common-issues--solutions)
   - [Performance Notes](#performance-notes)
   - [Security Guidelines](#security-guidelines)
+- [Adding Automated Testing Support](#adding-automated-testing-support)
+  - [Why?](#why)
+  - [Installation Instructions](#installation-instructions)
+  - [Usage](#usage)
 
 ---
 
@@ -335,3 +339,40 @@ For Linux users, GPG key management is essential for secure Docker and package i
 - Troubleshooting common GPG-related issues
 
 Proper key management helps prevent build failures and protects your system from untrusted packages.
+
+---
+
+
+# Adding Automated Testing Support
+← [ToC](#table-of-contents)
+
+To enable automated test extraction and local test runs (such as extracting build targets from GitHub Actions workflows), you need to install the PyYAML package for Python into your WSL2 environment.
+
+## Why?
+Some developer scripts (e.g., `get_test_targets.py`) require the ability to parse YAML files, which is not supported by Python's standard library. The `yaml` module is provided by the third-party package PyYAML.
+
+## Installation Instructions
+Most developer scripts (such as test target extraction) are intended to be run locally, so installing PyYAML on your host system is usually sufficient. For our Windows developers, that is your WSL2 environment.
+
+1. **Install PyYAML using pip:**
+  ```bash
+  pip install pyyaml
+  ```
+  If you use a local virtual environment for this work, activate it first, to ensure the package is installed and used in the correct environment. 
+
+1. **Verify installation:**
+  ```bash
+  python -c "import yaml; print(yaml.__version__)"
+  ```
+  This should print the installed PyYAML version without error.
+
+1. **Troubleshooting:**
+  - If you see `ModuleNotFoundError: No module named 'yaml'`, ensure you installed PyYAML in the correct Python environment.
+  - For system-wide install (not recommended for all users):
+    ```bash
+    sudo pip install pyyaml
+    ```
+
+## Usage
+- Any script that uses `import yaml` (such as `tools/linux_developers/test/get_test_targets.py`) requires PyYAML to be installed.
+- If you use VS Code and see a Pylance warning about `yaml` not being resolved, installing PyYAML will fix it.

@@ -1,4 +1,3 @@
-
 # Build & Test Documentation (Windows 10/11)
 
 
@@ -38,6 +37,7 @@ This document provides users with basic instructions and workflows for configuri
       - [AWK strftime Error When Running Build Scripts](#awk-strftime-error-when-running-build-scripts)
   - [Performance Notes](#performance-notes)
   - [Security Guidelines](#security-guidelines)
+  - 
   - [Appendix](#appendix)
     - [Why Docker Desktop on Windows?](#why-docker-desktop-on-windows)
     - [Checking WSL Integration in Docker Desktop](#checking-wsl-integration-in-docker-desktop)
@@ -323,6 +323,46 @@ For Windows users, GPG key management is essential for secure Docker and package
 - Troubleshooting common GPG-related issues
 
 Proper key management helps prevent build failures and protects your system from untrusted packages.
+
+---
+
+## Adding Automated Testing Support
+← [ToC](#table-of-contents)
+
+To enable automated test extraction and local test runs (such as extracting build targets from GitHub Actions workflows), you need to install the PyYAML package for Python.
+
+### Where to Install PyYAML
+
+If you are running Python scripts (such as `get_test_targets.py`) from WSL2 (Ubuntu), you only need to install PyYAML in your WSL2 environment. This will allow you to run Python test scripts directly from WSL2, regardless of Docker.
+
+You do NOT need to install PyYAML in the container unless you plan to run those Python scripts inside the container itself. For most developer workflows, installing PyYAML in WSL2 is sufficient and recommended.
+
+### Installation Instructions (WSL2)
+
+1. **Install PyYAML using pip:**
+   ```bash
+   pip install pyyaml
+   ```
+   If you use a virtual environment, activate it first.
+
+2. **Verify installation:**
+   ```bash
+   python -c "import yaml; print(yaml.__version__)"
+   ```
+   This should print the installed PyYAML version without error.
+
+3. **Troubleshooting:**
+   - If you see `ModuleNotFoundError: No module named 'yaml'`, ensure you installed PyYAML in the correct Python environment in WSL2.
+   - For system-wide install (not recommended for all users):
+     ```bash
+     sudo pip install pyyaml
+     ```
+
+### Usage
+- Any script that uses `import yaml` (such as `tools/linux_developers/test/get_test_targets.py`) requires PyYAML to be installed in WSL2.
+- If you use VS Code and see a Pylance warning about `yaml` not being resolved, installing PyYAML in WSL2 will fix it.
+
+---
 
 ## Appendix
 ← [ToC](#table-of-contents)

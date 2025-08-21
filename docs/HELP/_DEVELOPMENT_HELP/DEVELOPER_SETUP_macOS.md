@@ -5,20 +5,45 @@ This document provides users with basic instructions and workflows for configuri
 > **Note:** If you use both macOS and Windows on the same computer to maintain this repository, see also the [DUAL_BOOT_GUIDELINES.md](../DUAL_BOOT_GUIDELINES.md).
 
 ## Table of Contents
-- [Script Usage Guidelines](#script-usage-guidelines)
-- [Containerized (Podman) Environment](#containerized-podman-environment)
-- [Build Methods](#build-methods)
-- [macOS Build Scripts](#macos-build-scripts)
-- [Permission Management](#permission-management)
-- [Testing Infrastructure](#testing-infrastructure)
-- [Configuration Management](#configuration-management)
-- [Makefile Targets](#makefile-targets)
-- [Continuous Integration](#continuous-integration)
-- [Build Tools and Scripts](#build-tools-and-scripts)
-- [Focused Development Workflow](#focused-development-workflow)
-- [Troubleshooting (Podman & PlatformIO)](#troubleshooting-podman--platformio)
-- [Performance Notes](#performance-notes)
-- [Security Guidelines](#security-guidelines)
+- [Build \& Test Documentation (macOS)](#build--test-documentation-macos)
+  - [Table of Contents](#table-of-contents)
+  - [Script Usage Guidelines](#script-usage-guidelines)
+    - [Examples:](#examples)
+  - [Containerized (Podman) Environment](#containerized-podman-environment)
+    - [Install Podman and Podman Compose](#install-podman-and-podman-compose)
+    - [Use the configuration files in `tools/macos/build/podman/`.](#use-the-configuration-files-in-toolsmacosbuildpodman)
+  - [Build Methods](#build-methods)
+    - [1. Container-based Building, using Podman (Recommended)](#1-container-based-building-using-podman-recommended)
+      - [Build Specific Configuration](#build-specific-configuration)
+      - [Interactive Podman Session](#interactive-podman-session)
+    - [2. Local PlatformIO Building](#2-local-platformio-building)
+      - [Requirements](#requirements)
+      - [Process](#process)
+  - [macOS Build Scripts](#macos-build-scripts)
+  - [Permission Management](#permission-management)
+    - [Preventing Permission Issues](#preventing-permission-issues)
+    - [Diagnosing Permission Problems](#diagnosing-permission-problems)
+    - [Fixing Permission Issues](#fixing-permission-issues)
+      - [Method 1: Fix Ownership (Quick Fix)](#method-1-fix-ownership-quick-fix)
+      - [Method 2: Clean and Rebuild](#method-2-clean-and-rebuild)
+      - [Method 3: Reset PlatformIO Environment](#method-3-reset-platformio-environment)
+      - [Method 4: Podman User Mapping (Permanent Solution)](#method-4-podman-user-mapping-permanent-solution)
+  - [Testing Infrastructure](#testing-infrastructure)
+  - [Configuration Management](#configuration-management)
+  - [Makefile Targets](#makefile-targets)
+    - [Setup Targets](#setup-targets)
+    - [Testing Targets](#testing-targets)
+  - [Continuous Integration](#continuous-integration)
+  - [Build Tools and Scripts](#build-tools-and-scripts)
+  - [Focused Development Workflow](#focused-development-workflow)
+  - [Troubleshooting (Podman \& PlatformIO)](#troubleshooting-podman--platformio)
+    - [Common Issues \& Solutions](#common-issues--solutions)
+  - [Performance Notes](#performance-notes)
+  - [Security Guidelines](#security-guidelines)
+- [Adding Automated Testing Support](#adding-automated-testing-support)
+  - [Why?](#why)
+  - [Installation Instructions](#installation-instructions)
+  - [Usage](#usage)
 
 ---
 
@@ -302,7 +327,7 @@ For CR6-specific development, use the supported configurations in `config/` and 
 
 ## Performance Notes
 ← [ToC](#table-of-contents)
-← [ToC](#table-of-contents)
+
 - Single platform test: ~2-3 minutes
 - All platform tests: ~2-3 hours
 - Podman container build: ~5-10 minutes (first time)
@@ -320,3 +345,39 @@ For macOS users, GPG key management is essential for secure Podman and package i
 - Troubleshooting common GPG-related issues
 
 Proper key management helps prevent build failures and protects your system from untrusted packages.
+
+---
+
+
+# Adding Automated Testing Support
+← [ToC](#table-of-contents)
+
+To enable automated test extraction and local test runs (such as extracting build targets from GitHub Actions workflows), you need to install the PyYAML package for Python.
+
+## Why?
+Some developer scripts (e.g., `get_test_targets.py`) require the ability to parse YAML files, which is not supported by Python's standard library. The `yaml` module is provided by the third-party package PyYAML.
+
+## Installation Instructions
+
+1. **Install PyYAML using pip:**
+  ```bash
+  pip install pyyaml
+  ```
+  If you use a local virtual environment for this work, activate it first, to ensure the package is installed and used in the correct environment.  
+
+2. **Verify installation:**
+  ```bash
+  python -c "import yaml; print(yaml.__version__)"
+  ```
+  This should print the installed PyYAML version without error.
+
+3. **Troubleshooting:**
+  - If you see `ModuleNotFoundError: No module named 'yaml'`, ensure you installed PyYAML in the correct Python environment.
+  - For system-wide install (not recommended for all users):
+    ```bash
+    sudo pip install pyyaml
+    ```
+
+## Usage
+- Any script that uses `import yaml` (such as `tools/linux_developers/test/get_test_targets.py`) requires PyYAML to be installed.
+- If you use VS Code and see a Pylance warning about `yaml` not being resolved, installing PyYAML will fix it.

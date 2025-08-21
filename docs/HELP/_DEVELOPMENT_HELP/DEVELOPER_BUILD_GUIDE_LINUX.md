@@ -110,3 +110,5 @@ If you encounter issues not covered here, please provide:
 - The relevant section of your `compose.yaml`
 
 Including the `build_log` and ZIP file will help others diagnose and assist you much more quickly.
+
+---
