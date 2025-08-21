@@ -37,7 +37,10 @@ This document provides users with basic instructions and workflows for configuri
       - [AWK strftime Error When Running Build Scripts](#awk-strftime-error-when-running-build-scripts)
   - [Performance Notes](#performance-notes)
   - [Security Guidelines](#security-guidelines)
-  - 
+  - [Adding Automated Testing Support](#adding-automated-testing-support)
+    - [Where to Install PyYAML](#where-to-install-pyyaml)
+    - [Installation Instructions (WSL2)](#installation-instructions-wsl2)
+    - [Usage](#usage)
   - [Appendix](#appendix)
     - [Why Docker Desktop on Windows?](#why-docker-desktop-on-windows)
     - [Checking WSL Integration in Docker Desktop](#checking-wsl-integration-in-docker-desktop)
