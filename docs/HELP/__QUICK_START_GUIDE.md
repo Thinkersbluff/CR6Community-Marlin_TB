@@ -31,8 +31,8 @@ See!?
 
 2. To make a copy of the repository that you can keep up to date with the online version:
 
-1. Install git on your system
-2. Use git to clone this repository directly to your computer. 
+ - Install git on your system
+ - Use git to clone this repository directly to your computer. 
 
 This option allows you to easily keep your local copy up to date with the latest changes by running a simple git pull command in a terminal window. 
 
@@ -96,5 +96,5 @@ There are also these guidelines which are important to all of our users:
 - [_GUIDELINES_FOR_ALL_USERS](_GUIDELINES_FOR_ALL_USERS)
 
 Honest!  
-Don't skip 'em!!
+Don't skip 'em!!  
 You may suffer more than regrets if you skip those!!!
