@@ -25,12 +25,12 @@
       "description": "Save Edit, to commit your changes.  Save File to either: Overwrite the Base file directly, or Browse and SaveAs, elsewhere."
     },
     {
-      "step": "Verify that the platformio environment and both Configuration*.h files are 'Ready' to Build",
-      "description": "You must check the boxes for Configuration.h OK and Configuration_adv.h OK and must ensure the platformio environment is set up correctly, before the Build Firmware button will turn green."
+      "step": "Confirm Build Firmware button is 'green'",
+      "description": "Check the boxes for Configuration.h OK and Configuration_adv.h OK and ensure the platformio environment is green."
     },
     {
       "step": "Build your customized firmware",
-      "description": "When the Build Firmware button is green, click it to build your firmware. A popup message will ask you to confirm the build parameters. A window will open to show you the build process.  A build.log file will be created and stored with each individual build. The location of the bin file will be reported in that terminal window."
+      "description": "When the Build Firmware button is green, click it to build your firmware. The location of the bin file will be reported in that terminal window."
     }
   ]
 }

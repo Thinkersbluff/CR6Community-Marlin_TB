@@ -1,5 +1,6 @@
 # Marlin Configuration Tool (C) Thinkersbluff, 2025
 '''A gui-based app for configuring and building Marlin firmware'''
+APP_VERSION = "v1.0.0"
 #
 # pylint: disable=too-many-instance-attributes, too-many-public-methods
 # pylint: disable=line-too-long
@@ -81,7 +82,7 @@ class ConfiguratorApp(tk.Tk):
         logging.info('ConfiguratorApp __init__ started')
         super().__init__()
         logging.info('Tkinter __init__ started')
-        self.title('Marlin Configurator')
+        self.title(f"Marlin Configurator {APP_VERSION}")
         self.geometry('1280x1024')
 
         # Picklist frame
@@ -142,10 +143,24 @@ class ConfiguratorApp(tk.Tk):
         logging.info('main_row_frame created')
         self.main_row_frame.pack(fill='both', expand=True)
         logging.info('main_row_frame packed')
-        self.workflow_frame = tk.Frame(self.main_row_frame)
+
+        # Create a containing frame for the workflow area
+        self.workflow_outer_frame = tk.Frame(self.main_row_frame, width=400)
+        self.workflow_outer_frame.pack(side='left', fill='y', padx=10, pady=10)
+        self.workflow_outer_frame.pack_propagate(False)
+        # Create a Canvas and a Scrollbar for the workflow area
+        self.workflow_canvas = tk.Canvas(self.workflow_outer_frame, width=400, borderwidth=0, highlightthickness=0)
+        self.workflow_scrollbar = tk.Scrollbar(self.workflow_outer_frame, orient='vertical', command=self.workflow_canvas.yview)
+        self.workflow_canvas.configure(yscrollcommand=self.workflow_scrollbar.set)
+        # Pack containing frame and scrollbar side by side
+        self.workflow_canvas.pack(side='left', fill='both', expand=True)
+        self.workflow_scrollbar.pack(side='right', fill='y')
+        # Create a frame inside the canvas to hold your workflow widgets
+        self.workflow_frame = tk.Frame(self.workflow_canvas, width=380)
+        self.workflow_frame_id = self.workflow_canvas.create_window((0, 0), window=self.workflow_frame, anchor='nw')
         logging.info('workflow_frame created')
-        self.workflow_frame.pack(side='left', fill='y', padx=10, pady=10)
-        logging.info('workflow_frame packed')
+        self.workflow_frame.bind('<Configure>', lambda e: self.workflow_canvas.configure(scrollregion=self.workflow_canvas.bbox('all')))
+
         self.workflow_checkboxes = []
         self.workflow_desc_labels = []
 
@@ -155,7 +170,7 @@ class ConfiguratorApp(tk.Tk):
         logging.info('flash_cards loaded')
 
      # Flash card frame
-        self.flash_frame = tk.Frame(self.main_row_frame, bd=1, relief='groove', width=500)
+        self.flash_frame = tk.Frame(self.main_row_frame, bd=1, relief='groove', width=420)
         logging.info('flash_frame created')
         self.flash_frame.pack(side='left', fill='y', padx=10, pady=5)
         self.flash_frame.pack_propagate(False)
@@ -171,34 +186,34 @@ class ConfiguratorApp(tk.Tk):
         logging.info('objective_menu bind complete')
 
         # Flash card display area
-        self.flash_card_display_frame = tk.Frame(self.flash_frame, bd=1, relief='ridge', width=500)
+        self.flash_card_display_frame = tk.Frame(self.flash_frame, bd=1, relief='ridge', width=400)
         logging.info('flash_card_display_frame created')
         self.flash_card_display_frame.pack(fill='x', padx=10, pady=(8,0))
         self.flash_card_display_frame.pack_propagate(True)
         logging.info('flash_card_display_frame packed')
 
 
-        self.flash_card_desc_label = tk.Label(self.flash_card_display_frame, text='Description:', font=('Arial', 10), fg='black', justify='left', wraplength=460, anchor='w')
+        self.flash_card_desc_label = tk.Label(self.flash_card_display_frame, text='Description:', font=('Arial', 10), fg='black', justify='left', wraplength=380, anchor='w')
         logging.info('flash_card_desc_label created')
         self.flash_card_desc_label.pack(fill='x')
         logging.info('flash_card_desc_label packed')
-        self.flash_card_files_label = tk.Label(self.flash_card_display_frame, text='Files to Edit:', font=('Arial', 10), fg='black', justify='left', wraplength=460, anchor='w')
+        self.flash_card_files_label = tk.Label(self.flash_card_display_frame, text='Files to Edit:', font=('Arial', 10), fg='black', justify='left', wraplength=380, anchor='w')
         logging.info('flash_card_files_label created')
         self.flash_card_files_label.pack(fill='x')
         logging.info('flash_card_files_label packed')
-        self.flash_card_instructions_label = tk.Label(self.flash_card_display_frame, text='Instructions:', font=('Arial', 10), fg='black', justify='left', wraplength=460, anchor='w')
+        self.flash_card_instructions_label = tk.Label(self.flash_card_display_frame, text='Instructions:', font=('Arial', 10), fg='black', justify='left', wraplength=380, anchor='w')
         logging.info('flash_card_instructions_label created')
         self.flash_card_instructions_label.pack(fill='x')
         logging.info('flash_card_instructions_label packed')
-        self.flash_card_related_label = tk.Label(self.flash_card_display_frame, text='Related Topics:', font=('Arial', 10), fg='black', justify='left', wraplength=460, anchor='w')
+        self.flash_card_related_label = tk.Label(self.flash_card_display_frame, text='Related Topics:', font=('Arial', 10), fg='black', justify='left', wraplength=380, anchor='w')
         logging.info('flash_card_related_label created')
         self.flash_card_related_label.pack(fill='x')
         logging.info('flash_card_related_label packed')
-        self.flash_card_docs_label = tk.Label(self.flash_card_display_frame, text='More Info:', font=('Arial', 10), fg='blue', justify='left', wraplength=460, anchor='w', cursor='hand2')
+        self.flash_card_docs_label = tk.Label(self.flash_card_display_frame, text='More Info:', font=('Arial', 10), fg='blue', justify='left', wraplength=380, anchor='w', cursor='hand2')
         logging.info('flash_card_docs_label created')
         self.flash_card_docs_label.pack(fill='x')
         logging.info('flash_card_docs_label packed')
-        self.flash_card_warnings_label = tk.Label(self.flash_card_display_frame, text='Warnings:', font=('Arial', 10), fg='red', justify='left', wraplength=460, anchor='w')
+        self.flash_card_warnings_label = tk.Label(self.flash_card_display_frame, text='Warnings:', font=('Arial', 10), fg='red', justify='left', wraplength=380, anchor='w')
         logging.info('flash_card_warnings_label created')
         self.flash_card_warnings_label.pack(fill='x')
         logging.info('flash_card_warnings_label packed')
@@ -221,17 +236,32 @@ class ConfiguratorApp(tk.Tk):
         logging.info('workflow_data loaded')
         self.workflow_step = 0
         self.workflow_completed = [False] * len(self.workflow_data)
+
         for step in self.workflow_data:
-            cb = tk.Checkbutton(self.workflow_frame, text=step['step'], variable=tk.BooleanVar(value=False), font=('Arial', 12), anchor='w', justify='left')
-            logging.info('workflow checkbox created for step: %s', step["step"])
-            cb.pack(fill='x', pady=(2,0), anchor='w')
-            logging.info('workflow checkbox packed for step: %s', step["step"])
+            cb = tk.Checkbutton(
+                self.workflow_frame,
+                text=step['step'],
+                variable=tk.BooleanVar(value=False),
+                font=('Arial', 10),
+                anchor='w',
+                justify='left',
+                wraplength=390  #  to match frame width
+            )
+            cb.pack(fill='x', expand=True, pady=(0,0), anchor='w')
             self.workflow_checkboxes.append(cb)
-            desc_label = tk.Label(self.workflow_frame, text=step.get('description', ''), font=('Arial', 9), anchor='w', justify='left', wraplength=260, fg='gray')
-            logging.info('workflow desc_label created for step: %s', step["step"])
-            desc_label.pack(fill='x', pady=(0,8), anchor='w')
-            logging.info('workflow desc_label packed for step: %s', step["step"])
+            desc_label = tk.Label(
+                self.workflow_frame,
+                text=step.get('description', ''),
+                font=('Arial', 9),
+                anchor='w',
+                justify='left',
+                wraplength=390,  #  to match frame width
+                fg='gray'
+            )
+            desc_label.pack(fill='x', expand=True, pady=(0,8), anchor='w')
             self.workflow_desc_labels.append(desc_label)
+
+        self.workflow_frame.bind('<Configure>', self._on_workflow_configure)
 
     # Editor frame
         self.editor_frame = tk.Frame(self.main_row_frame, bd=1, relief='groove')
@@ -365,26 +395,43 @@ class ConfiguratorApp(tk.Tk):
         self.build_firmware_button.pack(side='right', fill='x', padx=15)
         logging.info('build_firmware_button packed')
 
-        # Canvas and scrollbar
-        self.canvas = tk.Canvas(self.editor_frame)
-        logging.info('canvas created')
-        self.scrollbar = tk.Scrollbar(self.editor_frame, orient='vertical', command=self.canvas.yview)
-        logging.info('scrollbar created')
-        self.canvas.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.pack(side='right', fill='y')
-        logging.info('scrollbar packed')
-        self.canvas.pack(side='left', fill='both', expand=True)
-        logging.info('canvas packed')
-        self.lines_frame = tk.Frame(self.canvas)
+        # Editor Canvas and scrollbar
+        self.editor_canvas = tk.Canvas(self.editor_frame)
+        logging.info('editor_frame canvas created')
+        self.editor_scrollbar = tk.Scrollbar(self.editor_frame, orient='vertical', command=self.editor_canvas.yview)
+        logging.info('editor_frame scrollbar created')
+        self.editor_canvas.configure(yscrollcommand=self.editor_scrollbar.set)
+        self.editor_scrollbar.pack(side='right', fill='y')
+        logging.info('editor_frame scrollbar packed')
+        self.editor_canvas.pack(side='left', fill='both', expand=True)
+        logging.info('editor_frame canvas packed')
+        self.lines_frame = tk.Frame(self.editor_canvas)
         logging.info('lines_frame created')
-        self.lines_frame_id = self.canvas.create_window((0, 0), window=self.lines_frame, anchor='nw')
+        self.lines_frame_id = self.editor_canvas.create_window((0, 0), window=self.lines_frame, anchor='nw')
         logging.info('lines_frame_id created')
+
+        self.editor_canvas.bind_all('<MouseWheel>', self._on_editor_mousewheel)
+        self.editor_canvas.bind_all('<Button-4>', self._on_editor_mousewheel)
+        self.editor_canvas.bind_all('<Button-5>', self._on_editor_mousewheel)
 
         # Initialize editor state variables
         self.modified_entries = []
         self.displayed_indices = []
         self.lines = []
         self.base_lines = []
+
+    def _on_workflow_configure(self, event):  # pylint: disable=unused-argument
+        self.workflow_canvas.configure(scrollregion=self.workflow_canvas.bbox('all'))
+        # Optionally, keep the frame width in sync with the canvas
+        self.workflow_canvas.itemconfig(self.workflow_frame_id, width=self.workflow_canvas.winfo_width())
+
+        # Optional: Mousewheel scrolling for workflow
+
+    def _on_editor_mousewheel(self, event):
+        if event.num == 5 or event.delta == -120:
+            self.editor_canvas.yview_scroll(1, 'units')
+        elif event.num == 4 or event.delta == 120:
+            self.editor_canvas.yview_scroll(-1, 'units')
 
     def on_config_file_select(self):
         '''Handle config file dropdown selection: only set the file to be loaded, do not load it.'''
@@ -466,7 +513,7 @@ class ConfiguratorApp(tk.Tk):
             if highlight_line_num is not None and line.get('line_num', idx) == highlight_line_num:
                 entry.config(bg='yellow')
         self.lines_frame.update_idletasks()
-        self.canvas.config(scrollregion=self.canvas.bbox(self.lines_frame_id))
+        self.editor_canvas.config(scrollregion=self.editor_canvas.bbox(self.lines_frame_id))
         self.update_idletasks()
         # Scroll so that the highlighted line is in the desired position
         if highlight_line_num is not None:
@@ -475,13 +522,13 @@ class ConfiguratorApp(tk.Tk):
                 if scroll_to_index is not None:
                     total = len(lines_to_display[:max_lines])
                     frac = max(0, min(1, (idx - scroll_to_index) / max(1, total)))
-                    self.after(10, lambda: self.canvas.yview_moveto(frac))
+                    self.after(10, lambda: self.editor_canvas.yview_moveto(frac))
                 else:
                     self.after(10, lambda: self.canvas.yview_moveto(0))
             except Exception as e:  # pylint: disable=broad-exception-caught
                 logging.warning('Could not scroll to highlighted line: %s', e)
         else:
-            self.after(10, lambda: self.canvas.yview_moveto(0))
+            self.after(10, lambda: self.editor_canvas.yview_moveto(0))
 
     def _on_entry_edit(self, event):  # pylint: disable=unused-argument
         self.unsaved_edits = True

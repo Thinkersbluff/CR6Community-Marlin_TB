@@ -67,7 +67,7 @@
             "Save File to upload the modified configuration."
         ],
         "related_settings": [],
-        "docs_link": "https://marlinfw.org/docs/configuration/configuration.html#temperature-sensors",
-        "warnings": "Incorrect thermistor type value will cause inaccurate readings and Marlin may shut down the printer."
+        "docs_link": "https://marlinfw.org/docs/configuration/configuration.html#motor-direction",
+        "warnings": "Incorrect motor direction value will cause the printer to behave unexpectedly."
     }
 ]

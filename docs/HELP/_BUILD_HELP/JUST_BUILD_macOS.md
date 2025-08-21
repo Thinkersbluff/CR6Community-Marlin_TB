@@ -105,7 +105,9 @@ If you see an error about Tkinter, make sure it is installed (see above).
 **WARNING:** Even if you do not need to make any changes to either of the Configuration*.h files, you will still need to Load them both and Save them both, to overwrite the base files, if you used the Load Examples button!
 15. When you have checked both of the "OK" boxes AND the correct environment has been loaded into platformio.ini (ref step 4, above), th**e Build Firmware button will turn green and become available for use.
 16. As long as you have platformio installed, clicking **Build Firmware** will now open a new "tk" window where you can watch reports on the build process progress.
-17. Wait for the process to finish. The tool will tell you where your new `firmware.bin` file is saved.
+17. Wait for the process to finish.
+    - If it ends with SUCCESS, proceed to step 18.
+    - If it ends with FAIL, examine the file platformio-build.log and the terminal window, for clues.
 18. Navigate to the .pio/build/<environment name> folder and locate the most recent firmware*.bin file.
 
 ---
