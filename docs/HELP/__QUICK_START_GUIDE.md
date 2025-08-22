@@ -55,6 +55,7 @@ OR Use the Powershell scripts located at ./tools/windows_developers/build
 
 ### As a Firmware User
 If you prefer using GUI-based apps, you may find [**the CR6Community Marlin Configurator desktop gui app**](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/tools/configurator) to be exactly the tool you need.
+NOTE: Don't just download the tool by itself. Clone the repository, navigate to the tool. Then run it, per the README.
 
 If you prefer Command-Line Interfaces, you can install platformio and python locally and edit/run build-single.sh in a bash window.
 ---
