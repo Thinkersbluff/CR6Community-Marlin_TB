@@ -31,7 +31,7 @@ Version 6.2 of the motherboard firmware works with [the refactored v1.1.x displa
  
 If you are upgrading from Creality stock firmware to CR6Community v6.2, you should install the display firmware first for the most seamless experience as you then flash the motherboard.    
 
-If you encounter problems installing the display firmware, try looking for help [here in the documentation:](https://github.com/CR6Community/CR-6-touchscreen)
+If you encounter problems installing the display firmware, try looking for help [here in the documentation:](https://cr6community-support-team.gitbook.io/cr6comm-touchscreen-refactored-firmware-docs/))
 </details>
 
 <details>
