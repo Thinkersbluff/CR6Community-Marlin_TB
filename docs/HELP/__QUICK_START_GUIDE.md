@@ -93,7 +93,7 @@ For more detailed help - refer to the appropriate guide specific to your operati
 
 There are also these guidelines which are important to all of our users:
 
-- [_GUIDELINES_FOR_ALL_USERS](_GUIDELINES_FOR_ALL_USERS)
+- [_GUIDELINES_FOR_ALL_USERS](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/tree/main/docs/HELP/GUIDELINES_FOR_ALL_USERS)
 
 Honest!  
 Don't skip 'em!!  
