@@ -22,16 +22,11 @@ logging.basicConfig(
 APP_VERSION = "v1.0.0"
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIGURATOR_PATH = os.path.join(APP_DIR, "configurator.py")
+
 LICENSE_PATH = os.path.join(APP_DIR, "LICENSE")
-README_FILES = [
-    ("README (User Guide)", os.path.join(APP_DIR, "README.md")),
-    ("README (Developer Notes)", os.path.join(APP_DIR, "README_DEV.md")),
-]
 FLASH_CARDS_PATH = os.path.join(APP_DIR, "flash_cards.json")
 CONFIG_PATH = os.path.join(APP_DIR, "config.json")
-
-
-
 WORKFLOW_PATH = os.path.join(APP_DIR, "workflow.json")
 
 def edit_workflow():
@@ -210,25 +205,23 @@ def prompt_for_repo_root():
 def launch_configurator():
     logging.info('launch_configurator called')
     configurator_path = os.path.join(APP_DIR, "configurator.py")
-    repo_root = get_repo_root()
-    if not os.path.isfile(configurator_path):
-        logging.error(f"Configurator app not found at {configurator_path}")
-        messagebox.showerror("Error", "Configurator app not found.")
-        return
+    # repo_root = get_repo_root()
+    # if not os.path.isfile(configurator_path):
+      #  logging.error(f"Configurator app not found at {configurator_path}")
+      #  messagebox.showerror("Error", "Configurator app not found.")
+      #  return
     # Default to current working directory if repo_root is blank
-    if not repo_root:
-        logging.warning('repo_root not set in config.json, defaulting to current working directory')
-        repo_root = os.getcwd()
-    if not os.path.isdir(repo_root):
-        logging.warning(f'repo_root {repo_root} is not a directory, prompting user')
-        repo_root = prompt_for_repo_root()
-        if not repo_root or not os.path.isdir(repo_root):
-            logging.error('Repository root not set or not found after prompt. Aborting launch.')
-            messagebox.showerror("Error", "Repository root not set or not found. Please fix config.json.")
-            return
-    # Change directory to repo_root before launching
-    logging.info(f'Changing directory to repo_root: {repo_root}')
-    os.chdir(repo_root)
+    # if not repo_root:
+      #  logging.warning('repo_root not set in config.json, defaulting to current working directory')
+      #  repo_root = os.getcwd()
+   # if not os.path.isdir(repo_root):
+    #    logging.warning(f'repo_root {repo_root} is not a directory, prompting user')
+    #    repo_root = prompt_for_repo_root()
+    #    if not repo_root or not os.path.isdir(repo_root):
+    #        logging.error('Repository root not set or not found after prompt. Aborting launch.')
+    #        messagebox.showerror("Error", "Repository root not set or not found. Please fix config.json.")
+    #        return
+        
     logging.info(f'Launching configurator: {configurator_path}')
     os.system(f'"{sys.executable}" "{configurator_path}"')
 
@@ -244,7 +237,7 @@ def main_menu():
     tk.Frame(root, height=2, bd=0, relief="sunken", bg="#888").pack(fill="x", padx=10, pady=8)    
     tk.Button(root, text="Add/Delete/Modify Flash Cards", width=32, command=FlashCardEditor).pack(pady=6)
     tk.Button(root, text="Edit Workflow Checklist", width=32, command=edit_workflow).pack(pady=6)
-    tk.Button(root, text="Set Repository Root", width=32, command=prompt_for_repo_root_menu).pack(pady=6)
+    # tk.Button(root, text="Set Repository Root", width=32, command=prompt_for_repo_root_menu).pack(pady=6)
     tk.Frame(root, height=2, bd=0, relief="sunken", bg="#888").pack(fill="x", padx=10, pady=8)
     tk.Button(root, text="Display License", width=32, command=display_license).pack(pady=6)
     tk.Button(root, text="Exit", width=10, command=root.destroy).pack(pady=2)
