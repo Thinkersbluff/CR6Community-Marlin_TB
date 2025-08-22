@@ -1,0 +1,36 @@
+{
+  "workflow": [
+    {
+      "step": "1. Plan your session.",
+      "description": "Review the workflow. Research/review the relevant Marlin Configuration guidelines."
+    },
+    {
+      "step": "2. Select target printer from picklist",
+      "description": "Choose the target printer configuration from the dropdown menu. \nIf the default environment text is RED, click 'copy env to platformio.ini'."
+    },
+    {
+      "step": "3. Select and review objectives",
+      "description": "Select one objective at a time and review the flash card for keywords and background info. Take note of which file requires editing."
+    },
+    {
+      "step": "4. Load the file you need to edit",
+      "description": "Select either Configuration.h or Configuration_adv.h to edit. \nChoose whether to load the base configuration file, a configuration example file, or browse and select another file."
+    },
+    {
+      "step": "5. Filter and modify settings",
+      "description": "Find and edit the relevant configuration settings. \nStart with Keywords from the flash card. \nHide Comments and type keywords, to filter the displayed lines. \nView in Context to understand a line in context."
+    },
+    {
+      "step": "6. Save your changes",
+      "description": "Save Edit, to commit your changes. \nSave File to either: Overwrite the Base file directly, or Browse and SaveAs, elsewhere."
+    },
+    {
+      "step": "7. Confirm Build Firmware button is 'green'",
+      "description": "Check the boxes for Configuration.h OK and Configuration_adv.h OK and ensure the platformio environment is green."
+    },
+    {
+      "step": "8. Build your customized firmware",
+      "description": "When the Build Firmware button is green, click it to build your firmware. The location of the bin file will be reported in that terminal window."
+    }
+  ]
+}

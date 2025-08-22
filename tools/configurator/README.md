@@ -344,18 +344,16 @@ If you're automating PlatformIO tasks or launching services, the init system (e.
 - **Issue:** Downloaded firmware files are not appearing.
   - **Solution:** Check your internet connection and ensure you have write permissions in the download directory. Try changing the download location in the configurator settings.
 
-For more troubleshooting tips, visit the [CR6Community forums](https://community.cr6.com).
 
 ---
 
 ## 📚 Getting Help
 
 - For help with the configurator tool, visit the [CR6Community GitHub repository](https://github.com/CR6Community/CR6Community-Marlin_TB/issues).
-- For 3D printing and firmware questions, check the [CR6Community forums](https://community.cr6.com).
 
 ---
 
 Happy printing! 🖨️
 
 
-Need "More input?” – <a href="./README_tldr-not.md" title="Input overload initiated!">🤖 <strong>Johnny 5!</strong></a>
+Need "More input?” – <a href="README_tldr-not.md" title="Input overload initiated!">🤖 <strong>Johnny 5!</strong></a>

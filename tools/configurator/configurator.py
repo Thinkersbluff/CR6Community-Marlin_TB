@@ -1,6 +1,5 @@
 # Marlin Configuration Tool (C) Thinkersbluff, 2025
 '''A gui-based app for configuring and building Marlin firmware'''
-APP_VERSION = "v1.0.0"
 #
 # pylint: disable=too-many-instance-attributes, too-many-public-methods
 # pylint: disable=line-too-long
@@ -58,6 +57,8 @@ import subprocess
 import webbrowser
 # Import flash card logic
 from flash_cards import load_flash_cards
+
+APP_VERSION = "v1.0.0"
 
 # Setup logging to file
 logging.basicConfig(
@@ -230,8 +231,8 @@ class ConfiguratorApp(tk.Tk):
         self.update_flash_card_display()
         logging.info('update_flash_card_display called after all flash card widgets created')
 
-        ui_json_path = os.path.join(os.path.dirname(__file__), 'ui.json')
-        with open(ui_json_path, 'r', encoding='utf-8') as f:
+        workflow_json_path = os.path.join(os.path.dirname(__file__), 'workflow.json')
+        with open(workflow_json_path, 'r', encoding='utf-8') as f:
             self.workflow_data = json.load(f)["workflow"]
         logging.info('workflow_data loaded')
         self.workflow_step = 0
