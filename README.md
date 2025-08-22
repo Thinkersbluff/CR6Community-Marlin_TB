@@ -44,7 +44,7 @@ To make customizing the firmware 'accessible' for the rest of us, Thinkersbluff 
  - See the quick-start guide, to get started.  
  - Let us know how we could do better, in the Discussions.
 
-For the latest guidance on how to build a customized firmware.bin file for your specific printer (e.g. with a higher max nozzle temperature), please read [./docs/quick-start/readme.md](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/docs/quick-start/readme.md)
+For the latest guidance on how to build a customized firmware.bin file for your specific printer (e.g. with a higher max nozzle temperature), please read [docs/HELP/__QUICK_START_GUIDE.md](https://github.com/Thinkersbluff/CR6Community-Marlin_TB/blob/main/docs/HELP/__QUICK_START_GUIDE.md)
 </details>
 
 <details>
