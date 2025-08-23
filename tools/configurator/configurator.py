@@ -105,9 +105,17 @@ def get_repo_root():
         data['repo_root'] = new_path
         with open(config_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
+        try:
+            root.destroy()
+        except Exception:
+            pass
         return new_path
     else:
         messagebox.showerror("Error", "Repository root not set. Exiting.")
+        try:
+            root.destroy()
+        except Exception:
+            pass
         sys.exit(1)
 
 REPO_ROOT = get_repo_root()
@@ -183,6 +191,11 @@ class ConfiguratorApp(tk.Tk):
         # Update colour of example description label text
         env_fg = self.example_env_label.cget("fg")
         self.example_desc_label.config(fg=env_fg)
+        # Ensure default envs display is populated now that widgets exist
+        try:
+            self.update_default_envs_label()
+        except Exception:
+            logging.exception('Failed to call update_default_envs_label during init')
 
         # Main row frame
         self.main_row_frame = tk.Frame(self.content_frame)
