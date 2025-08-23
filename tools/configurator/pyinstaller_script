@@ -1,7 +1,0 @@
-pyinstaller --onefile \
-  --add-data "flash_cards.json:." \
-  --add-data "workflow.json:." \
-  --add-data "config.json:." \
-  --add-data "LICENSE:." \
-  --add-data "configurator.py:." \
-  configurator_admin.py

@@ -67,15 +67,59 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s %(message)s'
 )
 
-base_dir = os.path.dirname(__file__)
-CONFIG_DIR = os.path.abspath(os.path.join(base_dir, '../../config'))
-MARLIN_CONFIG_PATH = os.path.abspath(os.path.join(base_dir, '../../Marlin/Configuration.h'))
+# Resolve file paths correctly, whether running as a PyInstaller bundle or as a local app
+def resource_path(relative_path):
+    '''Get the absolute path to a resource, handling PyInstaller bundling.'''
+    # If running as a PyInstaller bundle
+    if hasattr(sys, '_MEIPASS'):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.abspath(os.path.join(base_path, relative_path))
+
+# Helper to get repo_root from config.json
+
+def get_repo_root():
+    '''Get the repository root directory from config.json or prompt the user.'''
+    config_path = resource_path('config.json')
+    try:
+        with open(config_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            repo_root = data.get('repo_root', '')
+            if repo_root and os.path.isdir(repo_root):
+                return repo_root
+    except Exception:
+        pass
+    # Prompt user to select repo root if not set or invalid
+    root = tk.Tk()
+    root.withdraw()
+    messagebox.showinfo("Set Repository Root", "Please select the repository root directory.")
+    new_path = filedialog.askdirectory(title="Select Repository Root")
+    if new_path:
+        # Save to config.json for future runs
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        except Exception:
+            data = {}
+        data['repo_root'] = new_path
+        with open(config_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        return new_path
+    else:
+        messagebox.showerror("Error", "Repository root not set. Exiting.")
+        sys.exit(1)
+
+REPO_ROOT = get_repo_root()
+CONFIG_DIR = os.path.join(REPO_ROOT, 'config')
+MARLIN_CONFIG_PATH = os.path.join(REPO_ROOT, 'Marlin', 'Configuration.h')
 
 # Find all example folders containing 'cr6' in their name
 example_folders = [
     f for f in os.listdir(CONFIG_DIR)
     if os.path.isdir(os.path.join(CONFIG_DIR, f)) and 'cr6' in f
 ]
+example_folders.insert(0, 'Select example...')
 
 class ConfiguratorApp(tk.Tk):
     '''Main application class for the Marlin Configurator GUI.'''
@@ -95,12 +139,13 @@ class ConfiguratorApp(tk.Tk):
         logging.info('picklist_label created')
         self.picklist_label.pack(side='left', anchor='w')
         logging.info('picklist_label packed')
-        self.selected_example = tk.StringVar()
+        self.selected_example = tk.StringVar(value='Select example...')
         self.example_menu = ttk.Combobox(self.picklist_frame, textvariable=self.selected_example, values=example_folders, state='readonly', width=35 )
         logging.info('example_menu created')
         self.example_menu.pack(side='left', padx=(10,0), anchor='w')
+        self.example_menu.current(0)  # Explicitly select the placeholder
         logging.info('example_menu packed')
-        self.example_menu.bind('<<ComboboxSelected>>', lambda e: self.on_example_select(self.selected_example.get()))
+        self.example_menu.bind('<<ComboboxSelected>>', lambda e: self.on_example_select(e.widget.get()))
         logging.info('example_menu bind complete')
         self.example_desc_label = tk.Label(self.picklist_frame, text='', font=('Arial', 10), fg="grey", anchor='w', justify='left')
         self.example_desc_label.pack(side='left', padx=(10,0))
@@ -165,7 +210,6 @@ class ConfiguratorApp(tk.Tk):
         self.workflow_checkboxes = []
         self.workflow_desc_labels = []
 
-        self.selected_objective = tk.StringVar()
 
         self.flash_cards = load_flash_cards()
         logging.info('flash_cards loaded')
@@ -176,15 +220,21 @@ class ConfiguratorApp(tk.Tk):
         self.flash_frame.pack(side='left', fill='y', padx=10, pady=5)
         self.flash_frame.pack_propagate(False)
         logging.info('flash_frame packed')
+
+        self.selected_objective = tk.StringVar()
+
         objectives = [card['objective'] for card in self.flash_cards]
         if objectives:
             self.selected_objective.set(objectives[0])
+
+        # Define and pack 'select objective:' pulldown widget
         self.objective_menu = ttk.Combobox(self.flash_frame, textvariable=self.selected_objective, values=objectives, state='readonly', width=28,  font=('Arial', 10, 'bold'))
         logging.info('objective_menu created')
         self.objective_menu.pack(side='top', fill='x', padx=10, pady=(0,4))
         logging.info('objective_menu packed')
-        self.objective_menu.bind('<<ComboboxSelected>>', lambda e: self.on_objective_select(self.selected_objective.get()))
+        self.objective_menu.bind('<<ComboboxSelected>>', lambda e: self.on_objective_select(e.widget.get()))
         logging.info('objective_menu bind complete')
+
 
         # Flash card display area
         self.flash_card_display_frame = tk.Frame(self.flash_frame, bd=1, relief='ridge', width=400)
@@ -231,7 +281,7 @@ class ConfiguratorApp(tk.Tk):
         self.update_flash_card_display()
         logging.info('update_flash_card_display called after all flash card widgets created')
 
-        workflow_json_path = os.path.join(os.path.dirname(__file__), 'workflow.json')
+        workflow_json_path = resource_path('workflow.json')
         with open(workflow_json_path, 'r', encoding='utf-8') as f:
             self.workflow_data = json.load(f)["workflow"]
         logging.info('workflow_data loaded')
@@ -276,8 +326,8 @@ class ConfiguratorApp(tk.Tk):
         self.file_and_ok_frame.pack(side='top', anchor='w', pady=(8,2), padx=2)
 
         self.config_files = [
-            os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration.h')),
-            os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration_adv.h'))
+            os.path.join(REPO_ROOT, 'Marlin', 'Configuration.h'),
+            os.path.join(REPO_ROOT, 'Marlin', 'Configuration_adv.h')
         ]
         self.config_file_label = tk.Label(
             self.file_and_ok_frame,
@@ -303,7 +353,8 @@ class ConfiguratorApp(tk.Tk):
             width=20
         )
         self.config_file_menu.pack(side='left', padx=(5, 20))
-        self.config_file_menu.bind('<<ComboboxSelected>>', lambda e: self.on_config_file_select())
+        # Use the event widget value to be robust in frozen bundles
+        self.config_file_menu.bind('<<ComboboxSelected>>', lambda e: self.on_config_file_select(e.widget.get()))
         self.opened_config_path = self.config_files[0]  # Track currently opened file
 
         # OK checkboxes
@@ -379,6 +430,8 @@ class ConfiguratorApp(tk.Tk):
         )
         self.hide_comments_check.pack(side='left', padx=5)
 
+        logging.debug('init: keyword_vars=%r', getattr(self, 'keyword_vars', None))
+
         self.keyword_vars = []
 
         # Edit buttons subframe
@@ -434,21 +487,35 @@ class ConfiguratorApp(tk.Tk):
         elif event.num == 4 or event.delta == 120:
             self.editor_canvas.yview_scroll(-1, 'units')
 
-    def on_config_file_select(self):
+    def on_config_file_select(self, value=None):
         '''Handle config file dropdown selection: only set the file to be loaded, do not load it.'''
+        # Temporary debug: log incoming value and current StringVar
+        logging.info('on_config_file_select called with value: %s', value)
+        logging.debug('on_config_file_select: selected_config_file.get() before set = %s', self.selected_config_file.get())
+        if value:
+            # Ensure the StringVar is in sync with what the widget shows
+            self.selected_config_file.set(value)
+            logging.debug('on_config_file_select: selected_config_file.get() after set = %s', self.selected_config_file.get())
+
         selected_name = self.selected_config_file.get()
-        idx = self.config_file_names.index(selected_name)
-        self.opened_config_path = self.config_files[idx]
-        self.edit_label.config(text=f'Edit Marlin/{selected_name} (filtered by keyword):')
+        if selected_name in self.config_file_names:
+            idx = self.config_file_names.index(selected_name)
+            self.opened_config_path = self.config_files[idx]
+            self.edit_label.config(text=f'Edit Marlin/{selected_name} (filtered by keyword):')
+        else:
+            logging.warning('on_config_file_select: selected_name not in config_file_names: %s', selected_name)
         # Do NOT load the file here; require user to use a Load button.
 
     def copy_env_to_platformio(self):
         '''Copy the example environment value to platformio.ini.'''
         logging.info('copy_env_to_platformio called')
         folder = self.selected_example.get()
-        env_file = os.path.join(CONFIG_DIR, folder, 'platformio-environment.txt') if folder else None
-        ini_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../platformio.ini'))
-        if not folder or not os.path.isfile(env_file):
+        if not folder or folder == 'Select example...':
+            messagebox.showerror('Error', 'Please select a valid printer configuration example.')
+            return
+        env_file = os.path.join(CONFIG_DIR, folder, 'platformio-environment.txt')
+        ini_path = os.path.join(REPO_ROOT, 'platformio.ini')
+        if not os.path.isfile(env_file):
             messagebox.showerror('Error', 'No example environment value found.')
             return
         try:
@@ -542,7 +609,10 @@ class ConfiguratorApp(tk.Tk):
         keywords = [kw for kw, var in getattr(self, 'keyword_vars', []) if var.get()]
         filter_text = self.keyword_var.get().strip().lower()
         hide_comments = self.hide_comments_var.get()
+        # Promote to INFO so visible in frozen logs
+        logging.info('apply_keyword_filter: active_keywords=%r filter_text=%r hide_comments=%r base_lines=%d', keywords, filter_text, hide_comments, len(self.base_lines))
 
+        # Ensure we explicitly set 'match' on every base line so show_lines uses the filter
         for line in self.base_lines:
             match = True
             if keywords:
@@ -551,10 +621,22 @@ class ConfiguratorApp(tk.Tk):
                 match = match and (filter_text in line["content"].lower())
             if hide_comments:
                 stripped = line["content"].strip()
-                # Hide lines that start with // or * or /* are empty or only whitespace
+                # Hide lines that start with // or * or /* or are empty or only whitespace
                 if stripped.startswith("//") or stripped.startswith("*") or stripped.startswith("/*") or stripped == "":
                     match = False
             line['match'] = match
+
+        # Diagnostic summary: how many lines matched and a small sample of matched line numbers
+        try:
+            matched_indices = [ln.get('line_num') for ln in self.base_lines if ln.get('match')]
+            matched_count = len(matched_indices)
+            sample = matched_indices[:10]
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logging.exception('Error computing matched indices: %s', e)
+            matched_count = 0
+            sample = []
+        logging.info('apply_keyword_filter: matched_count=%d sample_line_nums=%r', matched_count, sample)
+
         self.show_lines()
 
     def view_in_context(self):
@@ -724,6 +806,11 @@ class ConfiguratorApp(tk.Tk):
             messagebox.showinfo('Saved', f'Configuration updated: {file_path}')
             # Reset file picklist and clear editor after saving
             self.selected_config_file.set("")
+            try:
+                # Ensure combobox display clears as well
+                self.config_file_menu.set("")
+            except Exception:
+                logging.debug('Could not clear config_file_menu display')
             self.opened_config_path = None
             self.edit_label.config(text='Edit Marlin/(select file) (filtered by keyword):')
             self.current_file_label.config(text='')
@@ -762,6 +849,10 @@ class ConfiguratorApp(tk.Tk):
                 messagebox.showinfo('Saved', f'Configuration saved as {file_path}')
                 # Reset file picklist and clear editor after saving
                 self.selected_config_file.set("")
+                try:
+                    self.config_file_menu.set("")
+                except Exception:
+                    logging.debug('Could not clear config_file_menu display')
                 self.opened_config_path = None
                 self.edit_label.config(text='Edit Marlin/(select file) (filtered by keyword):')
                 self.current_file_label.config(text='')
@@ -779,8 +870,11 @@ class ConfiguratorApp(tk.Tk):
 
     def on_objective_select(self, value):
         '''Handle selection of an objective flash card.'''
+        # Temporary debug: log both the incoming value and current StringVar for investigation
         logging.info('on_objective_select called with value: %s', value)
+        logging.debug('on_objective_select: selected_objective.get() before set = %s', self.selected_objective.get())
         self.selected_objective.set(value)
+        logging.debug('on_objective_select: selected_objective.get() after set = %s', self.selected_objective.get())
         # Only update widget contents, never recreate frames/widgets
         self.update_flash_card_display()
 
@@ -835,7 +929,7 @@ class ConfiguratorApp(tk.Tk):
     def update_default_envs_label(self):
         '''Update the default_envs label and example_env label based on selected example.'''
         logging.info('update_default_envs_label called')
-        ini_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../platformio.ini'))
+        ini_path = os.path.join(REPO_ROOT, 'platformio.ini')
         env_value = ""
         try:
             with open(ini_path, 'r', encoding='utf-8') as f:
@@ -845,24 +939,34 @@ class ConfiguratorApp(tk.Tk):
                         break
         except Exception:  # pylint: disable=broad-exception-caught
             env_value = '(Could not read platformio.ini)'
+            logging.info('Could not read platformio.ini for default_envs')
+        logging.debug('update_default_envs_label: platformio.ini default_envs = %s', env_value)
         self.default_envs_value.set(env_value)
+        self.default_envs_entry.update()
+        self.default_envs_label.update()
 
         # Get example env value if a folder is selected
         folder = self.selected_example.get()
         example_env_value = ''
-        env_file = os.path.join(CONFIG_DIR, folder, 'platformio-environment.txt') if folder else None
-        if folder and os.path.isfile(env_file):
-            try:
-                with open(env_file, 'r', encoding='utf-8') as f:
-                    example_env_value = f.readline().strip()
-            except Exception:  # pylint: disable=broad-exception-caught
-                example_env_value = '(Could not read platfobrmio-environment.txt)'
-        else:
+        if not folder or folder == 'Select example...':
             example_env_value = '(not set)'
-        self.example_env_value.set(f'Target printer\'s required env: {example_env_value}')
+        else:
+            env_file = os.path.join(CONFIG_DIR, folder, 'platformio-environment.txt')
+            if os.path.isfile(env_file):
+                try:
+                    with open(env_file, 'r', encoding='utf-8') as f:
+                        example_env_value = f.readline().strip()
+                except Exception:  # pylint: disable=broad-exception-caught
+                    example_env_value = '(Could not read platformio-environment.txt)'
+                # Normalize empty example env to explicit '(not set)'
+                if example_env_value == '':
+                    example_env_value = '(not set)'
+                logging.debug('update_default_envs_label: example folder=%s example_env_value=%s', folder, example_env_value)
+                self.example_env_value.set(f'Target printer\'s required env: {example_env_value}')
+                self.example_env_label.update()
 
         # Color logic for default_envs_label
-        if not folder or example_env_value == '(not set)':
+        if not folder or folder == 'Select example...' or example_env_value == '(not set)':
             self.default_envs_label.config(fg='purple')
             self.example_env_label.config(fg='gray')
         elif env_value == example_env_value:
@@ -871,11 +975,14 @@ class ConfiguratorApp(tk.Tk):
         else:
             self.default_envs_label.config(fg='red')
             self.example_env_label.config(fg='red')
+        self.default_envs_label.update()
+        self.example_env_label.update()
 
         # Update Build Firmware button colour based on new logic
         self.update_build_firmware_button_colour()
         # sync Example Description label colour
         self.example_desc_label.config(fg=self.example_env_label.cget("fg"))
+        self.example_desc_label.update()
 
     def update_build_firmware_button_colour(self):
         '''Update the Build Firmware button colour based on current state.'''
@@ -907,12 +1014,25 @@ class ConfiguratorApp(tk.Tk):
                 cb = tk.Checkbutton(self.keywords_frame, text=kw, variable=var, font=('Arial', 10), anchor='w', command=self.apply_keyword_filter)
                 cb.pack(anchor='w')
                 self.keyword_vars.append((kw, var))
+            logging.info('update_flash_card_keywords: keywords=%r keyword_vars_count=%d', keywords, len(self.keyword_vars))
         else:
             tk.Label(self.keywords_frame, text='No keywords for this objective.', font=('Arial', 10), fg='gray').pack(anchor='w')
 
     def on_example_select(self, value):
         '''Handle selection of a configuration example (i.e. target printer).'''
+        # Temporary debug: log incoming widget value and current StringVar for diagnosis in frozen build
+        logging.info('on_example_select called with value: %s', value)
+        logging.debug('on_example_select: selected_example.get() before set = %s', self.selected_example.get())
+
+        if value == 'Select example...':
+            # Do nothing or clear dependent fields
+            self.example_desc_label.config(text='')
+            self.update_default_envs_label()
+            self.build_firmware_button.config(state='disabled')
+            self.copy_env_button.config(state='disabled')
+            return
         self.selected_example.set(value)
+        logging.debug('on_example_select: selected_example.get() after set = %s', self.selected_example.get())
         self.update_default_envs_label()
         # Update description label
         desc_path = os.path.join(CONFIG_DIR, value, 'description.txt')
@@ -922,11 +1042,18 @@ class ConfiguratorApp(tk.Tk):
                 desc_text = f.readline().strip()
         self.example_desc_label.config(text=desc_text)
         self.update_build_firmware_button_colour()
+        self.build_firmware_button.config(state='normal')
+        self.copy_env_button.config(state='normal')
 
     def build_firmware(self):
         '''Verify readiness and prompt user before running firmware build.'''
         logging.info('build_firmware called')
         unmet = []
+        # 0. Must have a valid example selected
+        selected = self.selected_example.get()
+        if not selected or selected == 'Select example...':
+            messagebox.showerror('Error', 'No printer configuration example selected!')
+            return
         # 1. Default env label must be green
         if self.example_env_label.cget("fg") != "green":
             unmet.append("PlatformIO default_envs must match the example environment (label must be green)")
@@ -951,14 +1078,8 @@ class ConfiguratorApp(tk.Tk):
             messagebox.showerror('Error', f'Base configuration file not found or unreadable: {e}')
             return
 
-        # 2. Check that selected configuration matches target printer
-        selected = self.selected_example.get()
-        if not selected:
-            messagebox.showerror('Error', 'No printer configuration example selected!')
-            return
-
         # 3. Check that platformio default_env matches example env
-        ini_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../platformio.ini'))
+        ini_path = os.path.join(REPO_ROOT, 'platformio.ini')
         env_value = ''
         try:
             with open(ini_path, 'r', encoding='utf-8') as f:
@@ -979,7 +1100,7 @@ class ConfiguratorApp(tk.Tk):
                 example_env_value = ''
 
         # Compose summary for user
-        config_adv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Marlin/Configuration_adv.h'))
+        config_adv_path = os.path.join(REPO_ROOT, 'Marlin', 'Configuration_adv.h')
         summary = (
             f"Base config: {MARLIN_CONFIG_PATH}"
             f"\nBase config (adv): {config_adv_path}"
@@ -995,11 +1116,10 @@ class ConfiguratorApp(tk.Tk):
 
         # Run build command
         try:
-            repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
-            build_script = os.path.join(repo_root, 'tools', 'configurator', 'auto_build.py')
+            build_script = os.path.join(REPO_ROOT, 'tools', 'configurator', 'auto_build.py')
             build_cmd = [sys.executable, build_script, 'build']
-            logging.info('Running build command: %s in %s', build_cmd, repo_root)
-            subprocess.Popen(build_cmd, cwd=repo_root)
+            logging.info('Running build command: %s in %s', build_cmd, REPO_ROOT)
+            subprocess.Popen(build_cmd, cwd=REPO_ROOT)
             messagebox.showinfo('Build Started', 'Firmware build started in background. Check terminal or logs for output.')
         except Exception as e:  # pylint: disable=broad-exception-caught
             logging.error('Build failed: %s', e)
@@ -1008,10 +1128,6 @@ class ConfiguratorApp(tk.Tk):
     def _on_ok_checkbox_toggle(self, *args):  # pylint: disable=unused-argument
         '''Update the Build Firmware button colour based on current state.'''
         self.update_build_firmware_button_colour()
-
-        # Attach trace to OK checkboxes to update button color on toggle
-        self.config_h_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
-        self.config_adv_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
 
 if __name__ == "__main__":
     app = ConfiguratorApp()
