@@ -379,12 +379,6 @@ class ConfiguratorApp(tk.Tk):
         self.config_h_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
         self.config_adv_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
 
-        # Populate default_envs now that OK checkbox variables exist
-        try:
-            self.update_default_envs_label()
-        except Exception:
-            logging.exception('Failed to call update_default_envs_label during init')
-
         # --- Rest of the editor frame below ---
         self.current_file_label = tk.Label(self.editor_frame, text='', font=('Arial', 10, 'bold'), fg='darkgreen', anchor='w', justify='left')
         logging.info('current_file_label created')
@@ -463,6 +457,12 @@ class ConfiguratorApp(tk.Tk):
         self.build_firmware_button.config(bg=env_fg, fg="white")
         self.build_firmware_button.pack(side='right', fill='x', padx=15)
         logging.info('build_firmware_button packed')
+
+        # Populate default_envs now that OK checkbox variables exist
+        try:
+            self.update_default_envs_label()
+        except Exception:
+            logging.exception('Failed to call update_default_envs_label during init')
 
         # Editor Canvas and scrollbar
         self.editor_canvas = tk.Canvas(self.editor_frame)
