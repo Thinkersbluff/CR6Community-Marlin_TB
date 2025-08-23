@@ -188,3 +188,8 @@ compile_commands.json
 build/*
 !build/.gitkeep
 tools/configurator/configurator_debug.log
+
+# PyInstaller Build artifacts
+/tools/configurator/build/
+/tools/configurator/dist/
+/tools/configurator/*.spec

@@ -1,0 +1,9 @@
+export TCL_LIBRARY=/usr/share/tcltk/tcl8.6
+export TK_LIBRARY=/usr/share/tcltk/tk8.6
+pyinstaller configurator.spec  # or your pyinstaller command:
+
+#pyinstaller --onefile \
+ # --add-data "flash_cards.json:." \
+ # --add-data "workflow.json:." \
+#  --add-binary "/usr/lib/x86_64-linux-gnu/libpython3.12.so.1.0:." \
+#  configurator.py``
