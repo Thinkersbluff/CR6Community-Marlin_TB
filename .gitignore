@@ -193,3 +193,4 @@ tools/configurator/configurator_debug.log
 /tools/configurator/build/
 /tools/configurator/dist/
 /tools/configurator/*.spec
+/tools/configurator/config.json
