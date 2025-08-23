@@ -500,8 +500,30 @@ class ConfiguratorApp(tk.Tk):
         selected_name = self.selected_config_file.get()
         if selected_name in self.config_file_names:
             idx = self.config_file_names.index(selected_name)
-            self.opened_config_path = self.config_files[idx]
+            # Map selection to the repository path but DO NOT mutate opened_config_path here.
+            # opened_config_path must only be changed when a file is actually loaded (load_config_file).
+            mapped_path = self.config_files[idx]
+            logging.debug('on_config_file_select: selected maps to %s (will not set opened_config_path here)', mapped_path)
             self.edit_label.config(text=f'Edit Marlin/{selected_name} (filtered by keyword):')
+            # If an actual file is already opened, and its basename doesn't match the newly
+            # selected config, mark the edit label red to warn the user.
+            try:
+                actual_basename = os.path.basename(self.opened_config_path) if getattr(self, 'opened_config_path', None) else ''
+                if actual_basename and selected_name and actual_basename != selected_name:
+                    self.edit_label.config(fg='red')
+                    # Log the mismatch and resulting colour
+                    logging.info('edit_label colour change -> actual_basename=%s selected_name=%s edit_label_fg=%s', actual_basename, selected_name, self.edit_label.cget('fg'))
+                else:
+                    self.edit_label.config(fg='black')
+                    # Log the match and resulting colour
+                    logging.info('edit_label colour change -> actual_basename=%s selected_name=%s edit_label_fg=%s', actual_basename, selected_name, self.edit_label.cget('fg'))
+            except Exception:
+                # On any error, fall back to default colour
+                try:
+                    self.edit_label.config(fg='black')
+                    logging.debug('edit_label colour change Exception -> actual_basename=%s selected_name=%s edit_label_fg=%s', actual_basename, selected_name, self.edit_label.cget('fg'))
+                except Exception:
+                    pass
         else:
             logging.warning('on_config_file_select: selected_name not in config_file_names: %s', selected_name)
         # Do NOT load the file here; require user to use a Load button.
@@ -703,6 +725,20 @@ class ConfiguratorApp(tk.Tk):
             self.show_lines()
             self.current_file_label.config(text=file_path)
             self.opened_config_path = file_path
+            logging.info('load_config_file: opened_config_path set -> %s', self.opened_config_path)
+            # If the actual loaded filename differs from the selected target, highlight the edit label in red
+            try:
+                expected = self.selected_config_file.get()
+                actual = os.path.basename(file_path)
+                if expected and expected != actual:
+                    self.edit_label.config(fg='red')
+                    logging.info('load_config_file mismatch -> expected=%s actual=%s edit_label_fg=%s', expected, actual, self.edit_label.cget('fg'))
+                else:
+                    self.edit_label.config(fg='black')
+                    logging.info('load_config_file match -> expected=%s actual=%s edit_label_fg=%s', expected, actual, self.edit_label.cget('fg'))
+            except Exception:
+                # If anything goes wrong, leave default colouring
+                pass
         except FileNotFoundError as e:
             msg = error_message if error_message else f'File not found: {e}'
             messagebox.showerror('Error', msg)
@@ -739,7 +775,10 @@ class ConfiguratorApp(tk.Tk):
             return
         folder = simpledialog.askstring('Load Example', 'Enter example folder name:', initialvalue=current_example)
         if folder and folder in example_folders:
-            example_path = os.path.join(CONFIG_DIR, folder, 'Configuration.h')
+            # Determine which file the user currently has selected (Configuration.h or Configuration_adv.h)
+            target_file = selected_name if selected_name in self.config_file_names else 'Configuration.h'
+            example_path = os.path.join(CONFIG_DIR, folder, target_file)
+            logging.debug('load_example_dialog: loading example file %s from folder %s', target_file, folder)
             self.load_config_file(example_path)
         elif folder:
             messagebox.showerror('Error', f'Example folder not found: {folder}')
@@ -813,6 +852,10 @@ class ConfiguratorApp(tk.Tk):
                 logging.debug('Could not clear config_file_menu display')
             self.opened_config_path = None
             self.edit_label.config(text='Edit Marlin/(select file) (filtered by keyword):')
+            try:
+                self.edit_label.config(fg='black')
+            except Exception:
+                pass
             self.current_file_label.config(text='')
             self.lines = []
             self.base_lines = []
@@ -855,6 +898,10 @@ class ConfiguratorApp(tk.Tk):
                     logging.debug('Could not clear config_file_menu display')
                 self.opened_config_path = None
                 self.edit_label.config(text='Edit Marlin/(select file) (filtered by keyword):')
+                try:
+                    self.edit_label.config(fg='black')
+                except Exception:
+                    pass
                 self.current_file_label.config(text='')
                 self.lines = []
                 self.base_lines = []
