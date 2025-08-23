@@ -9,7 +9,8 @@ a = Analysis(
         ('/usr/share/tcltk/tcl8.6', 'tcl'),  # (source, dest in bundle)
         ('/usr/share/tcltk/tk8.6', 'tk'),
         ('flash_cards.json', '.'), 
-        ('workflow.json', '.')
+        ('workflow.json', '.'),
+        ('config.json', '.')  
     ],
     hiddenimports=[],
     hookspath=[],
