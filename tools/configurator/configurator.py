@@ -55,6 +55,7 @@ import json
 import logging
 import subprocess
 import webbrowser
+import shutil
 # Import flash card logic
 from flash_cards import load_flash_cards
 
@@ -191,11 +192,6 @@ class ConfiguratorApp(tk.Tk):
         # Update colour of example description label text
         env_fg = self.example_env_label.cget("fg")
         self.example_desc_label.config(fg=env_fg)
-        # Ensure default envs display is populated now that widgets exist
-        try:
-            self.update_default_envs_label()
-        except Exception:
-            logging.exception('Failed to call update_default_envs_label during init')
 
         # Main row frame
         self.main_row_frame = tk.Frame(self.content_frame)
@@ -382,6 +378,12 @@ class ConfiguratorApp(tk.Tk):
         # Attach trace to OK checkboxes to update button color on toggle
         self.config_h_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
         self.config_adv_ok_var.trace_add('write', self._on_ok_checkbox_toggle)
+
+        # Populate default_envs now that OK checkbox variables exist
+        try:
+            self.update_default_envs_label()
+        except Exception:
+            logging.exception('Failed to call update_default_envs_label during init')
 
         # --- Rest of the editor frame below ---
         self.current_file_label = tk.Label(self.editor_frame, text='', font=('Arial', 10, 'bold'), fg='darkgreen', anchor='w', justify='left')
@@ -1183,8 +1185,26 @@ class ConfiguratorApp(tk.Tk):
         # Run build command
         try:
             build_script = os.path.join(REPO_ROOT, 'tools', 'configurator', 'auto_build.py')
-            build_cmd = [sys.executable, build_script, 'build']
-            logging.info('Running build command: %s in %s', build_cmd, REPO_ROOT)
+            # When running as a PyInstaller frozen executable, sys.executable is the
+            # frozen binary. Launching that with a Python script will start a new
+            # instance of the GUI. Prefer the original/system Python interpreter
+            # so the helper script runs headless.
+            if getattr(sys, 'frozen', False):
+                # Prefer a real system Python binary when available so we don't
+                # launch the frozen GUI executable again. Only fall back to
+                # a packaged/base executable if it is different from the
+                # frozen binary.
+                python_exe = shutil.which('python3') or shutil.which('python')
+                if not python_exe:
+                    base_exec = getattr(sys, '_base_executable', None)
+                    if base_exec and os.path.abspath(base_exec) != os.path.abspath(sys.executable):
+                        python_exe = base_exec
+                    else:
+                        python_exe = 'python3'
+            else:
+                python_exe = sys.executable
+            build_cmd = [python_exe, build_script, 'build']
+            logging.info('Running build command with interpreter %s: %s in %s', python_exe, build_cmd, REPO_ROOT)
             subprocess.Popen(build_cmd, cwd=REPO_ROOT)
             messagebox.showinfo('Build Started', 'Firmware build started in background. Check terminal or logs for output.')
         except Exception as e:  # pylint: disable=broad-exception-caught
