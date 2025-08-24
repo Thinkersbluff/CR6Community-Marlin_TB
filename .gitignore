@@ -107,6 +107,7 @@ tags
 
 # Executables
 *.exe
+!tools/configurator/EXECUTABLES/For_Windows/configurator.exe
 *.out
 *.app
 *.i*86
