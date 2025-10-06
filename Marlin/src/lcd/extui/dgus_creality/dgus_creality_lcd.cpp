@@ -26,21 +26,20 @@
  * DGUS implementation written by coldtobi in 2019 for Marlin
  */
 
-#define DEBUG_OUT 1
-#include "../../inc/MarlinConfigPre.h"
+#include "../../../inc/MarlinConfigPre.h"
 
 #if ENABLED(DGUS_LCD_UI_CREALITY_TOUCH)
 
-#include "ui_api.h"
-#include "../marlinui.h"
-#include "dgus_creality/DGUSDisplay.h"
-#include "dgus_creality/DGUSDisplayDef.h"
-#include "dgus_creality/DGUSScreenHandler.h"
-#include "dgus_creality/creality_touch/PIDHandler.h"
-#include "dgus_creality/creality_touch/MeshValidationHandler.h"
+#include "../ui_api.h"
+#include "../../marlinui.h"
+#include "DGUSDisplay.h"
+#include "DGUSDisplayDef.h"
+#include "DGUSScreenHandler.h"
+#include "./creality_touch/PIDHandler.h"
+#include "./creality_touch/MeshValidationHandler.h"
 
 #if ENABLED(POWER_LOSS_RECOVERY)
-  #include "../../feature/powerloss.h"
+  #include "../../../feature/powerloss.h"
 #endif
 
 extern const char NUL_STR[];
@@ -115,20 +114,15 @@ bool hasPrintTimer = false;
   }
 
   void onFilamentRunout(const extruder_t extruder) {
-    #ifdef FILAMENT_RUNOUT_SCRIPT
     // Only navigate to filament runout screen when we don't use M600 for changing the filament - otherwise it gets confusing for the user
     if (strcmp_P(FILAMENT_RUNOUT_SCRIPT, PSTR("M600")) != 0) {
       ScreenHandler.FilamentRunout();
     }
-    #endif
   }
 
   void onUserConfirmed() {
     DEBUG_ECHOLN("User confirmation invoked");
 
-#if M600_PURGE_MORE_RESUMABLE
-    setPauseMenuResponse(PAUSE_RESPONSE_RESUME_PRINT);
-#endif
     ExtUI::setUserConfirmed();
   }
 
