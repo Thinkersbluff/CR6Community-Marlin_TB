@@ -8,6 +8,12 @@ Marlin 2.0.9.1 release reveals numerous differences between the two.
 We can not be certain that all of the functionality (or indeed of the bugs) in the official Marlin release are also captured in this release 6.2.
 We have done our best to ensure that this release is stable and fully-functional.  Please check the Issues before deciding to download and use this firmware.
 If you find issues with this code on your printer, please advise Thinkersbluff, either in an Issue here or on the CR6Community Discord.
+
+If you prefer to configure and compile the June 2021 Release 6.1 version of Community Firmware, you can instead download the Compilable_Source.zip file
+from here: https://github.com/CR6Community/Marlin/releases/download/v2.0.8.1-cr6-community-release-6.1/Compilable_Source.zip
+
+If you prefer to experiment with the latest Pre-Release of Marlin-bugfix-2.1.x_For_CR6, you can find that here: https://github.com/Thinkersbluff/Marlin-bugfix-2.1.x_For_CR6
+CAUTION: Read the Issues, Discussions and Release Notes carefully flashing bugfix2.1.x_For_CR6. It may NOT be stable code.
 ```
 
 <details>
