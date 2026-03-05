@@ -11,9 +11,6 @@ If you find issues with this code on your printer, please advise Thinkersbluff, 
 
 If you prefer to configure and compile the June 2021 Release 6.1 version of Community Firmware, you can instead download the Compilable_Source.zip file
 from here: https://github.com/CR6Community/Marlin/releases/download/v2.0.8.1-cr6-community-release-6.1/Compilable_Source.zip
-
-If you prefer to experiment with the latest Pre-Release of Marlin-bugfix-2.1.x_For_CR6, you can find that here: https://github.com/Thinkersbluff/Marlin-bugfix-2.1.x_For_CR6
-CAUTION: Read the Issues, Discussions and Release Notes carefully flashing bugfix2.1.x_For_CR6. It may NOT be stable code.
 ```
 
 <details>
